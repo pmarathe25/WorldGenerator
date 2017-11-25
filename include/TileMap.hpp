@@ -4,40 +4,52 @@
 #include <iostream>
 
 namespace StealthWorldGenerator {
-    template <typename Tile, int rowsAtCompileTime, int colsAtCompileTime>
+    template <typename Tile>
     class TileMap {
         public:
             typedef Tile TileType;
 
-            enum {
-                rows = rowsAtCompileTime,
-                cols = colsAtCompileTime,
-                size = rows * cols
-            };
-
-            TileMap() : tiles(rowsAtCompileTime * colsAtCompileTime, Tile()) { }
+            TileMap(int rows, int cols) : tiles(rows * cols, Tile()), mapRows(rows), mapCols(cols), mapSize(rows * cols) { }
 
             Tile& at(int row, int col) {
-                return tiles[row * colsAtCompileTime + col];
+                return tiles[row * mapCols + col];
             }
 
             const Tile& at(int row, int col) const {
-                return tiles[row * colsAtCompileTime + col];
+                return tiles[row * mapCols + col];
+            }
+
+            int rows() const {
+                return mapRows;
+            }
+
+            int cols() const {
+                return mapCols;
+            }
+
+            int size() const {
+                return mapSize;
             }
         private:
             std::vector<Tile> tiles;
+            const int mapRows, mapCols, mapSize;
     };
 
     template <typename T>
-    inline void displayTile(T i) {
-        std::cout << i << " ";
+    inline std::string to_string(const T& i) {
+        return std::to_string(i);
+    }
+
+    template <>
+    inline std::string to_string(const std::string& tile) {
+        return tile;
     }
 
     template <typename TileMapType>
     void display(const TileMapType& tileMap) {
-        for (int i = 0; i < TileMapType::rows; ++i) {
-            for (int j = 0; j < TileMapType::cols; ++j) {
-                displayTile(tileMap.at(i, j));
+        for (int i = 0; i < tileMap.rows(); ++i) {
+            for (int j = 0; j < tileMap.cols(); ++j) {
+                std::cout << to_string(tileMap.at(i, j)) << " ";
             }
             std::cout << '\n';
         }

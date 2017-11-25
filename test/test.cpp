@@ -1,10 +1,12 @@
 #include "TileMap.hpp"
-#include "StealthNoise.hpp"
+#include "Noise/NoiseGenerator.hpp"
 
 int main() {
-    StealthWorldGenerator::TileMap<int, 5, 5> terrainMap{};
+    StealthWorldGenerator::TileMap<int> terrainMap{5, 5};
     display(terrainMap);
     std::cout << '\n';
-    StealthWorldGenerator::StealthNoise<8, 8> noise{};
-    display(noise);
+    // StealthWorldGenerator::StealthNoiseGenerator<8, 8> noise{};
+    // display(noise);
+    StealthWorldGenerator::InterpolationKernel kernel{3};
+    display(kernel);
 }
