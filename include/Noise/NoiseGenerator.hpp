@@ -23,7 +23,7 @@ namespace StealthWorldGenerator {
             }
 
             // Create the smoothed noise
-            template <typename Generator = std::default_random_engine, typename Distribution = std::normal_distribution<float>>
+            template <typename Distribution = std::normal_distribution<float>, typename Generator = std::default_random_engine>
             void randomize(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
                 Generator generator = std::default_random_engine(CURRENT_TIME)) {
                 NoiseMapType internalNoiseMap = generateScaledNoiseMap(distribution, generator);
@@ -35,10 +35,13 @@ namespace StealthWorldGenerator {
                 }
             }
 
+        private:
             // Initialize with random values according to provided distribution
-            template <typename Generator = std::default_random_engine, typename Distribution = std::normal_distribution<float>>
-            NoiseMapType generateScaledNoiseMap(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
-                Generator generator = std::default_random_engine(CURRENT_TIME)) {
+            // template <typename Distribution = std::normal_distribution<float>, typename Generator = std::default_random_engine>
+            // NoiseMapType generateScaledNoiseMap(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
+            //     Generator generator = std::default_random_engine(CURRENT_TIME)) {
+            template <typename Distribution, typename Generator>
+            NoiseMapType generateScaledNoiseMap(Distribution& distribution, Generator& generator) {
                 // Internal noise map should be large enough to fit tiles of size (scale, scale).
                 NoiseMapType internalNoiseMap{ceilDivide(rows(), scale) + 1, ceilDivide(cols(), scale) + 1};
                 for (int i = 0; i < internalNoiseMap.rows(); ++i) {
@@ -48,7 +51,6 @@ namespace StealthWorldGenerator {
                 }
                 return internalNoiseMap;
             }
-        private:
             const int scale;
             // // Interpolate a single point inside a triangle from the internalNoiseMap
             float interpolatePoint(int x, int y) {

@@ -42,10 +42,9 @@ namespace StealthWorldGenerator {
                 initializeKernel();
             }
 
-            const InterpolationWeights& getWeights(int i, int j) const {
-                return this -> at(i % scale, j % scale);
+            const InterpolationWeights& getWeights(int x, int y) const {
+                return this -> at(x % scale, y % scale);
             }
-
         private:
             const int scale;
 

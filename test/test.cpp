@@ -6,7 +6,7 @@ int main() {
     // display(terrainMap);
     std::cout << '\n';
     StealthWorldGenerator::NoiseGenerator noise{4, 4, 2};
-    display(noise.generateScaledNoiseMap());
+    // display(noise);
     std::cout << '\n';
     StealthWorldGenerator::InterpolationKernel kernel{4};
     display(kernel);
