@@ -34,11 +34,16 @@ namespace StealthWorldGenerator {
 
     /*
     Maintains a cache of weights to use for each possible location of a pixel.
+    Stored in Column-major order
     */
     class InterpolationKernel : public TileMap<InterpolationWeights> {
         public:
             InterpolationKernel(int scale = 1) : scale(scale), TileMap<InterpolationWeights>{scale, scale} {
                 initializeKernel();
+            }
+
+            const InterpolationWeights& getWeights(int i, int j) const {
+                return this -> at(i % scale, j % scale);
             }
 
         private:
@@ -54,43 +59,41 @@ namespace StealthWorldGenerator {
 
             void initializeDiagonalQuadrant(int quadrantBound) {
                 // Compute top-right diagonal of top-left quadrant
-                for (int row = 0; row < quadrantBound; ++row) {
-                    for (int col = row; col < quadrantBound; ++col) {
-                        this -> at(row, col) = generatePoint(row, col);
+                for (int x = 0; x < quadrantBound; ++x) {
+                    for (int y = x; y < quadrantBound; ++y) {
+                        this -> at(x, y) = generatePoint(x, y);
                     }
                 }
             }
 
             void reflectDiagonal(int quadrantBound) {
-                for (int row = 0; row < quadrantBound; ++row) {
-                    for (int col = 0; col < row; ++col) {
-                        this -> at(row, col) = this -> at(col, row).diagonalMirror();
+                for (int x = 0; x < quadrantBound; ++x) {
+                    for (int y = 0; y < x; ++y) {
+                        this -> at(x, y) = this -> at(y, x).diagonalMirror();
                     }
                 }
             }
 
             void reflectVertical(int quadrantBound) {
-                for (int row = 0; row < quadrantBound; ++row) {
-                    for (int col = quadrantBound; col < scale; ++col) {
-                        this -> at(row, col) = this -> at(row, (scale - 1) - col).verticalMirror();
+                for (int x = 0; x < quadrantBound; ++x) {
+                    for (int y = quadrantBound; y < scale; ++y) {
+                        this -> at(x, y) = this -> at(x, (scale - 1) - y).verticalMirror();
                     }
                 }
             }
 
             void reflectHorizontal(int quadrantBound) {
-                for (int row = quadrantBound; row < scale; ++row) {
-                    for (int col = 0; col < scale; ++col) {
-                        this -> at(row, col) = this -> at((scale - 1) - row, col).horizontalMirror();
+                for (int x = quadrantBound; x < scale; ++x) {
+                    for (int y = 0; y < scale; ++y) {
+                        this -> at(x, y) = this -> at((scale - 1) - x, y).horizontalMirror();
                     }
                 }
             }
 
-            InterpolationWeights generatePoint(int row, int col) {
-                float downsampledX = col / (float) scale;
-                float downsampledY = row / (float) scale;
+            InterpolationWeights generatePoint(int x, int y) {
                 // Compute a relative location.
-                float interpolationOffsetX = downsampledX + 0.5 * 1 / scale;
-                float interpolationOffsetY = downsampledY + 0.5 * 1 / scale;
+                float interpolationOffsetX = (y / (float) scale) + 0.5 * 1 / scale;
+                float interpolationOffsetY = (x / (float) scale) + 0.5 * 1 / scale;
                 // Cache common subexpressions
                 float xSq = pow(interpolationOffsetX, 2);
                 float xInvSq = pow(1.0f - interpolationOffsetX, 2);

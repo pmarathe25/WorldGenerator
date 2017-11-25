@@ -3,10 +3,13 @@
 
 int main() {
     StealthWorldGenerator::TileMap<int> terrainMap{5, 5};
-    display(terrainMap);
+    // display(terrainMap);
     std::cout << '\n';
-    // StealthWorldGenerator::StealthNoiseGenerator<8, 8> noise{};
-    // display(noise);
-    StealthWorldGenerator::InterpolationKernel kernel{3};
+    StealthWorldGenerator::NoiseGenerator noise{4, 4, 2};
+    display(noise.generateScaledNoiseMap());
+    std::cout << '\n';
+    StealthWorldGenerator::InterpolationKernel kernel{4};
     display(kernel);
+    std::cout << '\n';
+    std::cout << to_string(kernel.getWeights(4, 1)) << '\n';
 }

@@ -9,7 +9,7 @@ namespace StealthWorldGenerator {
         public:
             typedef Tile TileType;
 
-            TileMap(int rows, int cols) : tiles(rows * cols, Tile()), mapRows(rows), mapCols(cols), mapSize(rows * cols) { }
+            TileMap(int rows, int cols) : tiles(rows * cols), mapRows(rows), mapCols(cols), mapSize(rows * cols) { }
 
             Tile& at(int row, int col) {
                 return tiles[row * mapCols + col];

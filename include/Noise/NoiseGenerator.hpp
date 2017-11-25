@@ -7,49 +7,54 @@
 #include <random>
 
 namespace StealthWorldGenerator {
-    template <int numerator, int denominator>
-    constexpr inline int ceilDivide() {
+    inline int ceilDivide(int numerator, int denominator) {
         return 1 + ((numerator - 1) / denominator);
     }
 
     /*
     Scale maps one pixel of the generated noise to n pixels of the output.
     */
-    template <int scale = 1>
-    class NoiseGenerator : public TileMap<std::string> {
+    class NoiseGenerator : public TileMap<float> {
+        typedef TileMap<float> NoiseMapType;
+
         public:
+            NoiseGenerator(int rows, int cols, int scale = 1) : NoiseMapType(rows, cols), scale(scale) {
+                randomize();
+            }
+
+            // Create the smoothed noise
             template <typename Generator = std::default_random_engine, typename Distribution = std::normal_distribution<float>>
-            NoiseGenerator(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
+            void randomize(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
                 Generator generator = std::default_random_engine(CURRENT_TIME)) {
-                // initializeNoiseMap(distribution, generator);
-                // interpolateNoise();
+                NoiseMapType internalNoiseMap = generateScaledNoiseMap(distribution, generator);
+                for (int i = 0; i < rows(); ++i) {
+                    for (int j = 0; j < cols(); ++j) {
+                        // Figure out where the point lies and its distance to points on the internalNoiseMap
+                        this -> at(i, j) = interpolatePoint(i, j);
+                    }
+                }
+            }
+
+            // Initialize with random values according to provided distribution
+            template <typename Generator = std::default_random_engine, typename Distribution = std::normal_distribution<float>>
+            NoiseMapType generateScaledNoiseMap(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
+                Generator generator = std::default_random_engine(CURRENT_TIME)) {
+                // Internal noise map should be large enough to fit tiles of size (scale, scale).
+                NoiseMapType internalNoiseMap{ceilDivide(rows(), scale) + 1, ceilDivide(cols(), scale) + 1};
+                for (int i = 0; i < internalNoiseMap.rows(); ++i) {
+                    for (int j = 0; j < internalNoiseMap.cols(); ++j) {
+                        internalNoiseMap.at(i, j) = distribution(generator);
+                    }
+                }
+                return internalNoiseMap;
             }
         private:
-            // // Maintain internal noise map
-            // typedef TileMap<float, ceilDivide<rowsAtCompileTime, scale>(), ceilDivide<colsAtCompileTime, scale>()> NoiseMapType;
-            // NoiseMapType noiseMap;
-            // // Initialize with random values according to provided distribution
-            // template <typename Generator, typename Distribution>
-            // void initializeNoiseMap(Distribution& distribution, Generator& generator) {
-            //     for (int i = 0; i < NoiseMapType::rows; ++i) {
-            //         for (int j = 0; j < NoiseMapType::cols; ++j) {
-            //             noiseMap.at(i, j) = distribution(generator);
-            //         }
-            //     }
-            // }
-            // // Create the smoothed noise
-            // void interpolateNoise() {
-            //     for (int i = 0; i < NoiseGenerator::rows; ++i) {
-            //         for (int j = 0; j < NoiseGenerator::cols; ++j) {
-            //             // Figure out where the point lies and its distance to points on the noiseMap
-            //             this -> at(i, j) = interpolatePoint(i, j);
-            //         }
-            //     }
-            // }
-            // // Interpolate a single point inside a triangle from the noiseMap
-            // std::string interpolatePoint(int i, int j) {
-            //     return "";
-            // }
+            const int scale;
+            // // Interpolate a single point inside a triangle from the internalNoiseMap
+            float interpolatePoint(int x, int y) {
+                // return "";
+                return 0.0f;
+            }
 
     };
 } /* StealthWorldGenerator */
