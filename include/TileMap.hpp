@@ -5,7 +5,7 @@
 
 namespace StealthWorldGenerator {
     template <typename Tile, int rowsAtCompileTime, int colsAtCompileTime>
-    class TileMap{
+    class TileMap {
         public:
             typedef Tile TileType;
 
@@ -15,37 +15,31 @@ namespace StealthWorldGenerator {
                 size = rows * cols
             };
 
-            TileMap() : tiles(rowsAtCompileTime * colsAtCompileTime) { }
+            TileMap() : tiles(rowsAtCompileTime * colsAtCompileTime, Tile()) { }
 
-            template <int row, int col>
-            Tile& at() {
+            Tile& at(int row, int col) {
                 return tiles[row * colsAtCompileTime + col];
             }
 
-            template <int row, int col>
-            const Tile& at() const {
+            const Tile& at(int row, int col) const {
                 return tiles[row * colsAtCompileTime + col];
             }
         private:
             std::vector<Tile> tiles;
     };
 
-    void display(int i) {
+    template <typename T>
+    inline void displayTile(T i) {
         std::cout << i << " ";
     }
 
-    template <typename TileMapType, int currentRow = 0, int currentCol = 0>
+    template <typename TileMapType>
     void display(const TileMapType& tileMap) {
-        // Don't display out of bounds tiles
-        if constexpr (currentRow < TileMapType::rows) {
-            display(tileMap.template at<currentRow, currentCol>());
-            // End of column
-            if constexpr (currentCol >= TileMapType::cols) {
-                std::cout << '\n';
-                display<TileMapType, currentRow + 1, 0>(tileMap);
-            } else {
-                display<TileMapType, currentRow, currentCol + 1>(tileMap);
+        for (int i = 0; i < TileMapType::rows; ++i) {
+            for (int j = 0; j < TileMapType::cols; ++j) {
+                displayTile(tileMap.at(i, j));
             }
+            std::cout << '\n';
         }
     }
 
