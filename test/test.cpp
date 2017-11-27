@@ -8,7 +8,7 @@ int main() {
     StealthWorldGenerator::NoiseGenerator noise{4, 4, 2};
     // display(noise);
     std::cout << '\n';
-    StealthWorldGenerator::InterpolationKernel kernel{4};
+    StealthWorldGenerator::InterpolationKernel kernel{1};
     display(kernel);
     std::cout << '\n';
     std::cout << to_string(kernel.getWeights(4, 1)) << '\n';

@@ -36,6 +36,7 @@ namespace StealthWorldGenerator {
             }
 
         private:
+            const int scale;
             // Initialize with random values according to provided distribution
             // template <typename Distribution = std::normal_distribution<float>, typename Generator = std::default_random_engine>
             // NoiseMapType generateScaledNoiseMap(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
@@ -51,7 +52,6 @@ namespace StealthWorldGenerator {
                 }
                 return internalNoiseMap;
             }
-            const int scale;
             // // Interpolate a single point inside a triangle from the internalNoiseMap
             float interpolatePoint(int x, int y) {
                 // return "";
