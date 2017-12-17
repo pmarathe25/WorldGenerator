@@ -11,9 +11,7 @@ namespace StealthWorldGenerator {
         return 1 + ((numerator - 1) / denominator);
     }
 
-    /*
-    Scale maps one pixel of the generated noise to n pixels of the output.
-    */
+    // Scale maps one pixel of the generated noise to n pixels of the output.
     template <int scale = 1>
     class NoiseGenerator : public TileMap<float> {
         typedef TileMap<float> NoiseMapType;
@@ -52,7 +50,6 @@ namespace StealthWorldGenerator {
             }
             // // Interpolate a single point inside a triangle from the internalNoiseMap
             float interpolatePoint(int x, int y) {
-                // return "";
                 return 0.0f;
             }
     };

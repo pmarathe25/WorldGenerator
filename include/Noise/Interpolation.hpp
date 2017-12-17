@@ -32,10 +32,8 @@ namespace StealthWorldGenerator {
             std::to_string(tile.bottomRight) + ")";
     }
 
-    /*
-    Maintains a cache of weights to use for each possible location of a pirowel.
-    Stored in Column-major order
-    */
+    // Maintains a cache of weights to use for each possible location of a pixel.
+    // Stored in Column-major order
     template <int scale = 1>
     class InterpolationKernel : public TileMap<InterpolationWeights> {
         public:

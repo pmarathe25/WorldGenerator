@@ -10,6 +10,7 @@ int main() {
     std::cout << '\n';
     StealthWorldGenerator::InterpolationKernel<2> kernel;
     display(kernel);
+    display(noise);
     std::cout << '\n';
     std::cout << to_string(kernel.getWeightAt(4, 1)) << '\n';
 }
