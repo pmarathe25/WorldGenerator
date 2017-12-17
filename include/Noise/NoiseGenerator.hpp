@@ -24,38 +24,39 @@ namespace StealthWorldGenerator {
 
     // Scale maps one pixel of the generated noise to n pixels of the output.
     template <int scale = 1>
-    class NoiseGenerator : public TileMap<float> {
+    class NoiseGenerator {
         typedef TileMap<float> NoiseMapType;
 
         public:
-            NoiseGenerator(int rows, int cols) : NoiseMapType(rows, cols) {
-                randomize();
-            }
+            NoiseGenerator() { }
 
             // Create the smoothed noise
             template <typename Distribution = std::normal_distribution<float>, typename Generator = std::default_random_engine>
-            void randomize(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
+            NoiseMapType generate(int rows, int cols, Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
                 Generator generator = std::default_random_engine(CURRENT_TIME)) {
-                NoiseMapType internalNoiseMap = generateInternalNoiseMap(distribution, generator);
+                NoiseMapType internalNoiseMap = generateInternalNoiseMap(rows, cols, distribution, generator);
+                NoiseMapType generatedNoise{rows, cols};
 
-                display(internalNoiseMap, "Noise Map");
-                display(interpolationKernel, "Interpolation Kernel");
+                // display(internalNoiseMap, "Noise Map");
+                // display(interpolationKernel, "Interpolation Kernel");
 
-                for (int i = 0; i < rows(); ++i) {
-                    for (int j = 0; j < cols(); ++j) {
+                for (int i = 0; i < rows; ++i) {
+                    for (int j = 0; j < cols; ++j) {
                         // Figure out where the point lies and its distance to points on the internalNoiseMap
-                        this -> at(i, j) = interpolatePoint(i, j, internalNoiseMap);
+                        generatedNoise.at(i, j) = interpolatePoint(i, j, internalNoiseMap);
                     }
                 }
+                return generatedNoise;
             }
 
         private:
             static const InterpolationKernel<scale> interpolationKernel;
+
             // Initialize with random values according to provided distribution
             template <typename Distribution, typename Generator>
-            NoiseMapType generateInternalNoiseMap(Distribution& distribution, Generator& generator) {
+            NoiseMapType generateInternalNoiseMap(int rows, int cols, Distribution& distribution, Generator& generator) {
                 // Internal noise map should be large enough to fit tiles of size (scale, scale).
-                NoiseMapType internalNoiseMap{ceilDivide(rows(), scale) + 1, ceilDivide(cols(), scale) + 1};
+                NoiseMapType internalNoiseMap{ceilDivide(rows, scale) + 1, ceilDivide(cols, scale) + 1};
                 for (int i = 0; i < internalNoiseMap.rows(); ++i) {
                     for (int j = 0; j < internalNoiseMap.cols(); ++j) {
                         internalNoiseMap.at(i, j) = distribution(generator);
@@ -63,13 +64,14 @@ namespace StealthWorldGenerator {
                 }
                 return internalNoiseMap;
             }
+
             // Interpolate a single point inside a square from the internalNoiseMap
             float interpolatePoint(int row, int col, const NoiseMapType& internalNoiseMap) {
                 int scaledRow = row / scale;
                 int scaledCol = col / scale;
 
-                std::cout << "Looking at top-left point (" << scaledRow << ", " << scaledCol
-                    << ") on noise map for point (" << row << ", " << col << ")" << '\n';
+                // std::cout << "Looking at top-left point (" << scaledRow << ", " << scaledCol
+                //     << ") on noise map for point (" << row << ", " << col << ")" << '\n';
 
                 return linearInterpolation(internalNoiseMap.at(scaledRow, scaledCol), internalNoiseMap.at(scaledRow, scaledCol + 1),
                     internalNoiseMap.at(scaledRow + 1, scaledCol), internalNoiseMap.at(scaledRow + 1, scaledCol + 1),

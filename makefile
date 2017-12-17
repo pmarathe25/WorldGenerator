@@ -13,11 +13,11 @@ HEADERS = $(addprefix $(INCLUDEPATH)/, TileMap.hpp Terrain/TerrainTile.hpp Noise
 CXX = g++
 CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3
 LFLAGS = -shared -flto
-TESTLFLAGS = -flto
+TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -flto
 EXECLFLAGS = -flto
 
 $(TESTDIR)/test: $(TESTOBJS) $(HEADERS)
-	$(CXX) $(TESTLFLAGS) $(TESTOBJS) -o $(TESTDIR)/test
+	$(CXX) $(TESTOBJS) $(TESTLFLAGS) -o $(TESTDIR)/test
 
 $(BUILDDIR)/test.o: $(TESTDIR)/test.cpp $(HEADERS)
 	$(CXX) $(CFLAGS) $(TESTDIR)/test.cpp -o $(BUILDDIR)/test.o
