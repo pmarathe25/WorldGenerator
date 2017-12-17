@@ -3,8 +3,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-const int WINDOW_X = 1600;
-const int WINDOW_Y = 900;
+const int WINDOW_X = 800;
+const int WINDOW_Y = 800;
 
 sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float>& noise) {
     sf::Image im;
@@ -24,21 +24,28 @@ int main() {
     // StealthWorldGenerator::TileMap<int> terrainMap{5, 5};
     // display(terrainMap);
     std::cout << '\n';
-    StealthWorldGenerator::NoiseGenerator<1> noiseGenerator;
-    StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(900, 1600);
+    // StealthWorldGenerator::NoiseGenerator<80> noiseGenerator;
+    StealthWorldGenerator::NoiseGenerator<8> noiseGenerator;
+    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X, std::uniform_real_distribution<float>(0.0f, 1.0f));
+    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X);
+    StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate<StealthWorldGenerator::divisorScale>(WINDOW_Y, WINDOW_X);
     // display(noise);
     std::cout << '\n';
     StealthWorldGenerator::InterpolationKernel<2> kernel;
-    // display(kernel);
+    display(kernel);
     // display(noise);
     std::cout << '\n';
     // std::cout << to_string(kernel.getDistanceAt(4, 1)) << '\n';
-    // Main Loop.
+    // Show noise on-screen.
     sf::Clock clock;
     sf::Texture noiseTexture;
     noiseTexture.loadFromImage(imageFromNoise(noise));
     sf::Sprite noiseSprite;
     noiseSprite.setTexture(noiseTexture);
+    // Draw
+    window.draw(noiseSprite);
+    // Display.
+    window.display();
     while (window.isOpen()) {
         // Handle events.
         sf::Event event;
@@ -47,13 +54,5 @@ int main() {
               window.close();
             }
         }
-        // Calculate frametime
-        float frametime = clock.restart().asSeconds();
-        // Clear previous frame.
-        window.clear(sf::Color::White);
-        // Draw
-        window.draw(noiseSprite);
-        // Display.
-        window.display();
     }
 }
