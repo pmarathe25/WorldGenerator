@@ -22,7 +22,7 @@ namespace StealthWorldGenerator {
 
     template <float scaleFunc(float, float)>
     inline float sumInterpolation(float topLeft, float topRight, float bottomLeft, float bottomRight, const InterpolationDistances& distances) {
-        // Linearly interpolate between four points.
+        // Add interpolations from four corner points.
         return scaleFunc(topLeft, distances.at(0, 0)) + scaleFunc(topRight, distances.at(0, 1))
             + scaleFunc(bottomLeft, distances.at(1, 0)) + scaleFunc(bottomRight, distances.at(1, 1));
     }
