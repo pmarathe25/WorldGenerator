@@ -24,7 +24,7 @@ int main() {
     // StealthWorldGenerator::TileMap<int> terrainMap{5, 5};
     // display(terrainMap);
     std::cout << '\n';
-    StealthWorldGenerator::NoiseGenerator<100> noiseGenerator;
+    StealthWorldGenerator::NoiseGenerator<1> noiseGenerator;
     StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(900, 1600);
     // display(noise);
     std::cout << '\n';
