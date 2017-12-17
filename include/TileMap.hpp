@@ -37,9 +37,9 @@ namespace StealthWorldGenerator {
             int size() const {
                 return mapSize;
             }
-        private:
+        protected:
             std::vector<Tile> tiles;
-            const int mapRows, mapCols, mapSize;
+            int mapRows, mapCols, mapSize;
     };
 
     template <typename T>
@@ -53,13 +53,15 @@ namespace StealthWorldGenerator {
     }
 
     template <typename TileMapType>
-    void display(const TileMapType& tileMap) {
+    void display(const TileMapType& tileMap, const std::string& title = "") {
+        std::cout << title << (title != "" ? '\n' : '\0');
         for (int i = 0; i < tileMap.rows(); ++i) {
             for (int j = 0; j < tileMap.cols(); ++j) {
                 std::cout << to_string(tileMap.at(i, j)) << " ";
             }
             std::cout << '\n';
         }
+        std::cout << '\n';
     }
 
 } /* StealthWorldGenerator */

@@ -16,7 +16,7 @@ LFLAGS = -shared -flto
 TESTLFLAGS = -flto
 EXECLFLAGS = -flto
 
-$(TESTDIR)/test: $(TESTOBJS)
+$(TESTDIR)/test: $(TESTOBJS) $(HEADERS)
 	$(CXX) $(TESTLFLAGS) $(TESTOBJS) -o $(TESTDIR)/test
 
 $(BUILDDIR)/test.o: $(TESTDIR)/test.cpp $(HEADERS)

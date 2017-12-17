@@ -1,47 +1,46 @@
 #ifndef STEALTH_INTERPOLATION_H
 #define STEALTH_INTERPOLATION_H
+#include "TileMap.hpp"
 #include <cmath>
 
 namespace StealthWorldGenerator {
-    class InterpolationWeights {
-        friend std::string to_string(const InterpolationWeights& tile);
+    class InterpolationDistances : public TileMap<float> {
+        friend std::string to_string(const InterpolationDistances& tile);
         public:
-            InterpolationWeights(float topLeft = 0.0f, float topRight = 0.0f, float bottomLeft = 0.0f, float bottomRight = 0.0f) :
-                topLeft(topLeft), topRight(topRight), bottomLeft(bottomLeft), bottomRight(bottomRight) { }
-
-            InterpolationWeights diagonalMirror() {
-                return InterpolationWeights{topLeft, bottomLeft, topRight, bottomRight};
+            InterpolationDistances(std::initializer_list<float> init = {0.0f, 0.0f, 0.0f, 0.0f}) : TileMap<float>{2, 2} {
+                tiles = init;
             }
 
-            InterpolationWeights verticalMirror() {
-                return InterpolationWeights{topRight, topLeft, bottomRight, bottomLeft};
+            InterpolationDistances diagonalMirror() {
+                return InterpolationDistances{{at(0, 0), at(1, 0), at(0, 1), at(1, 1)}};
             }
 
-            InterpolationWeights horizontalMirror() {
-                return InterpolationWeights{bottomLeft, bottomRight, topLeft, topRight};
+            InterpolationDistances verticalMirror() {
+                return InterpolationDistances{{at(0, 1), at(0, 0), at(1, 1), at(1, 0)}};
             }
-        private:
-            // Data
-            float topLeft, topRight, bottomLeft, bottomRight;
+
+            InterpolationDistances horizontalMirror() {
+                return InterpolationDistances{{at(1, 0), at(1, 1), at(0, 0), at(0, 1)}};
+            }
     };
 
-    std::string to_string(const InterpolationWeights& tile) {
-        return "(" + std::to_string(tile.topLeft) + ", " +
-            std::to_string(tile.topRight) + ", " +
-            std::to_string(tile.bottomLeft) + ", " +
-            std::to_string(tile.bottomRight) + ")";
+    std::string to_string(const InterpolationDistances& tile) {
+        return "(" + std::to_string(tile.at(0, 0)) + ", " +
+            std::to_string(tile.at(0, 1)) + ", " +
+            std::to_string(tile.at(1, 0)) + ", " +
+            std::to_string(tile.at(1, 1)) + ")";
     }
 
-    // Maintains a cache of weights to use for each possible location of a pixel.
+    // Maintains a cache of distances to use for each possible location of a pixel.
     // Stored in Column-major order
     template <int scale = 1>
-    class InterpolationKernel : public TileMap<InterpolationWeights> {
+    class InterpolationKernel : public TileMap<InterpolationDistances> {
         public:
-            InterpolationKernel() : TileMap<InterpolationWeights>{scale, scale} {
+            InterpolationKernel() : TileMap<InterpolationDistances>{scale, scale} {
                 initializeKernel();
             }
 
-            const InterpolationWeights& getWeightAt(int row, int col) const {
+            const InterpolationDistances& getDistanceAt(int row, int col) const {
                 return this -> at(row % scale, col % scale);
             }
         private:
@@ -87,7 +86,7 @@ namespace StealthWorldGenerator {
                 }
             }
 
-            InterpolationWeights generatePoint(int row, int col) {
+            InterpolationDistances generatePoint(int row, int col) {
                 // Compute a relative location.
                 float interpolationOffsetX = (col / (float) scale) + 0.5 * 1 / scale;
                 float interpolationOffsetY = (row / (float) scale) + 0.5 * 1 / scale;
@@ -101,8 +100,8 @@ namespace StealthWorldGenerator {
                 float topRightDist = sqrt(rowInvSq + colSq);
                 float bottomLeftDist = sqrt(rowSq + colInvSq);
                 float bottomRightDist = sqrt(rowInvSq + colInvSq);
-                // Construct the weight struct
-                return InterpolationWeights(topLeftDist, topRightDist, bottomLeftDist, bottomRightDist);
+                // Construct the distance struct
+                return InterpolationDistances({topLeftDist, topRightDist, bottomLeftDist, bottomRightDist});
             }
     };
 } /* StealthWorldGenerator */
