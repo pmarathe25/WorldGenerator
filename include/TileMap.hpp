@@ -4,8 +4,15 @@
 #include <iostream>
 
 namespace StealthWorldGenerator {
+    template <typename Derived>
+    class TileMapBase {
+        public:
+
+        private:
+    };
+
     template <typename Tile>
-    class TileMap {
+    class TileMap : public TileMapBase<TileMap<Tile>> {
         public:
             typedef Tile TileType;
 

@@ -5,11 +5,11 @@ int main() {
     StealthWorldGenerator::TileMap<int> terrainMap{5, 5};
     // display(terrainMap);
     std::cout << '\n';
-    StealthWorldGenerator::NoiseGenerator noise{4, 4, 2};
+    StealthWorldGenerator::NoiseGenerator<2> noise{4, 4};
     // display(noise);
     std::cout << '\n';
-    StealthWorldGenerator::InterpolationKernel kernel{1};
+    StealthWorldGenerator::InterpolationKernel<2> kernel;
     display(kernel);
     std::cout << '\n';
-    std::cout << to_string(kernel.getWeights(4, 1)) << '\n';
+    std::cout << to_string(kernel.getWeightAt(4, 1)) << '\n';
 }

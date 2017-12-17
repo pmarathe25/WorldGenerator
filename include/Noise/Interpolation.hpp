@@ -36,19 +36,19 @@ namespace StealthWorldGenerator {
     Maintains a cache of weights to use for each possible location of a pirowel.
     Stored in Column-major order
     */
+    template <int scale = 1>
     class InterpolationKernel : public TileMap<InterpolationWeights> {
         public:
-            InterpolationKernel(int scale = 1) : scale(scale), TileMap<InterpolationWeights>{scale, scale} {
+            InterpolationKernel() : TileMap<InterpolationWeights>{scale, scale} {
                 initializeKernel();
             }
 
-            const InterpolationWeights& getWeights(int row, int col) const {
+            const InterpolationWeights& getWeightAt(int row, int col) const {
                 return this -> at(row % scale, col % scale);
             }
         private:
-            const int scale;
-
             void initializeKernel() {
+                // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
                 int quadrantBound = ceil(scale / 2.0f);
                 initializeDiagonalQuadrant(quadrantBound);
                 reflectDiagonal(quadrantBound);

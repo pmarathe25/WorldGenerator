@@ -7,18 +7,19 @@
 #include <random>
 
 namespace StealthWorldGenerator {
-    inline int ceilDivide(int numerator, int denominator) {
+    inline constexpr int ceilDivide(int numerator, int denominator) {
         return 1 + ((numerator - 1) / denominator);
     }
 
     /*
     Scale maps one pixel of the generated noise to n pixels of the output.
     */
+    template <int scale = 1>
     class NoiseGenerator : public TileMap<float> {
         typedef TileMap<float> NoiseMapType;
 
         public:
-            NoiseGenerator(int rows, int cols, int scale = 1) : NoiseMapType(rows, cols), scale(scale) {
+            NoiseGenerator(int rows, int cols) : NoiseMapType(rows, cols) {
                 randomize();
             }
 
@@ -26,7 +27,7 @@ namespace StealthWorldGenerator {
             template <typename Distribution = std::normal_distribution<float>, typename Generator = std::default_random_engine>
             void randomize(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
                 Generator generator = std::default_random_engine(CURRENT_TIME)) {
-                NoiseMapType internalNoiseMap = generateScaledNoiseMap(distribution, generator);
+                NoiseMapType internalNoiseMap = generateInternalNoiseMap(distribution, generator);
                 for (int i = 0; i < rows(); ++i) {
                     for (int j = 0; j < cols(); ++j) {
                         // Figure out where the point lies and its distance to points on the internalNoiseMap
@@ -36,13 +37,10 @@ namespace StealthWorldGenerator {
             }
 
         private:
-            const int scale;
+            static const InterpolationKernel<scale> interpolationKernel;
             // Initialize with random values according to provided distribution
-            // template <typename Distribution = std::normal_distribution<float>, typename Generator = std::default_random_engine>
-            // NoiseMapType generateScaledNoiseMap(Distribution distribution = std::normal_distribution<float>(0.5, 0.16667),
-            //     Generator generator = std::default_random_engine(CURRENT_TIME)) {
             template <typename Distribution, typename Generator>
-            NoiseMapType generateScaledNoiseMap(Distribution& distribution, Generator& generator) {
+            NoiseMapType generateInternalNoiseMap(Distribution& distribution, Generator& generator) {
                 // Internal noise map should be large enough to fit tiles of size (scale, scale).
                 NoiseMapType internalNoiseMap{ceilDivide(rows(), scale) + 1, ceilDivide(cols(), scale) + 1};
                 for (int i = 0; i < internalNoiseMap.rows(); ++i) {
@@ -57,7 +55,6 @@ namespace StealthWorldGenerator {
                 // return "";
                 return 0.0f;
             }
-
     };
 } /* StealthWorldGenerator */
 
