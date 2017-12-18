@@ -21,38 +21,33 @@ sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float>& noise) {
 int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
-    // StealthWorldGenerator::TileMap<int> terrainMap{5, 5};
-    // display(terrainMap);
-    std::cout << '\n';
-    // StealthWorldGenerator::NoiseGenerator<80> noiseGenerator;
-    StealthWorldGenerator::NoiseGenerator<8> noiseGenerator;
+    StealthWorldGenerator::NoiseGenerator<80> noiseGenerator;
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X, std::uniform_real_distribution<float>(0.0f, 1.0f));
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X);
-    StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate<StealthWorldGenerator::divisorScale>(WINDOW_Y, WINDOW_X);
-    // display(noise);
-    std::cout << '\n';
-    StealthWorldGenerator::InterpolationKernel<2> kernel;
-    display(kernel);
-    // display(noise);
-    std::cout << '\n';
-    // std::cout << to_string(kernel.getDistanceAt(4, 1)) << '\n';
+    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate<StealthWorldGenerator::divisorScale>(WINDOW_Y, WINDOW_X);
+    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate<StealthWorldGenerator::divisorScale>(WINDOW_Y, WINDOW_X, std::uniform_real_distribution<float>(0.0f, 1.0f));
+
+    StealthWorldGenerator::InterpolationKernel<5> kernel;
+    display(kernel.getDistances());
+    display(kernel.getPoints());
+
     // Show noise on-screen.
-    sf::Clock clock;
-    sf::Texture noiseTexture;
-    noiseTexture.loadFromImage(imageFromNoise(noise));
-    sf::Sprite noiseSprite;
-    noiseSprite.setTexture(noiseTexture);
-    // Draw
-    window.draw(noiseSprite);
-    // Display.
-    window.display();
-    while (window.isOpen()) {
-        // Handle events.
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if(event.type == sf::Event::Closed) {
-              window.close();
-            }
-        }
-    }
+    // sf::Clock clock;
+    // sf::Texture noiseTexture;
+    // noiseTexture.loadFromImage(imageFromNoise(noise));
+    // sf::Sprite noiseSprite;
+    // noiseSprite.setTexture(noiseTexture);
+    // // Draw
+    // window.draw(noiseSprite);
+    // // Display.
+    // window.display();
+    // while (window.isOpen()) {
+    //     // Handle events.
+    //     sf::Event event;
+    //     while (window.pollEvent(event)) {
+    //         if(event.type == sf::Event::Closed) {
+    //           window.close();
+    //         }
+    //     }
+    // }
 }

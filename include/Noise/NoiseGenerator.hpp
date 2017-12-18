@@ -13,7 +13,10 @@ namespace StealthWorldGenerator {
     }
 
     inline constexpr float linearScale(float value, float distance) {
-        return value * std::max(1.0f - distance, 0.0f);
+        // Return a neutral contribution if this point is too far to affect scaling.
+        // return (distance < 0.707f) ? value * (0.707f - distance) : 0.125f;
+        return value * std::max(1.4f - distance, 0.0f);
+        // return (distance < 0.707f) ? value * (0.707f - distance) : 0.0f;
     }
 
     inline constexpr float divisorScale(float value, float distance) {
@@ -81,7 +84,7 @@ namespace StealthWorldGenerator {
 
                 return sumInterpolation<scaleFunc>(internalNoiseMap.at(scaledRow, scaledCol), internalNoiseMap.at(scaledRow, scaledCol + 1),
                     internalNoiseMap.at(scaledRow + 1, scaledCol), internalNoiseMap.at(scaledRow + 1, scaledCol + 1),
-                    interpolationKernel.getDistanceAt(row, col));
+                    interpolationKernel.getDistances().at(row % scale, col % scale));
             }
     };
 
