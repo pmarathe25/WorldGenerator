@@ -82,9 +82,6 @@ namespace StealthWorldGenerator {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = row; col < quadrantBound; ++col) {
                         calculatePoint(row, col);
-
-                        std::cout << row << ", " << col << '\n';
-
                     }
                 }
             }
