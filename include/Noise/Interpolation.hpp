@@ -4,47 +4,48 @@
 #include <cmath>
 
 namespace StealthWorldGenerator {
-    class InterpolationPoint {
+    inline constexpr float attenuationPolynomial(float distance) {
+        return (6 * pow(distance, 5) - 15 * pow(distance, 4) + 10 * pow(distance, 3));
+    }
+
+    class Point {
         public:
-            InterpolationPoint(float row = 0.0f, float col = 0.0f) : row(row), col(col) { }
-
-            InterpolationPoint diagonalMirror() {
-                return InterpolationPoint(col, row);
-            }
-
-            InterpolationPoint verticalMirror() {
-                return InterpolationPoint(row, 1.0f - col);
-            }
-
-            InterpolationPoint horizontalMirror() {
-                return InterpolationPoint(1.0f - row, col);
-            }
-
+            Point(float row = 0.0f, float col = 0.0f) : row(row), col(col) { }
             float row, col;
     };
 
-    class InterpolationDistances : public TileMap<float> {
-        friend std::string to_string(const InterpolationDistances& tile);
+
+    Point diagonalMirror(const Point& other) {
+        return Point(other.col, other.row);
+    }
+
+    Point verticalMirror(const Point& other) {
+        return Point(other.row, 1.0f - other.col);
+    }
+
+    Point horizontalMirror(const Point& other) {
+        return Point(1.0f - other.row, other.col);
+    }
+
+
+    class PointAttenuation {
         public:
-            InterpolationDistances(std::initializer_list<float> init = {0.0f, 0.0f, 0.0f, 0.0f}) : TileMap<float>{2, 2} {
-                tiles = init;
+            PointAttenuation() {
+                row = 0.0f;
+                col = 0.0f;
             }
 
-            void operator=(std::initializer_list<float> init) {
-                tiles = init;
+            PointAttenuation(const Point& other) {
+                row = attenuationPolynomial(other.row);
+                col = attenuationPolynomial(other.col);
             }
 
-            InterpolationDistances diagonalMirror() {
-                return InterpolationDistances{{at(0, 0), at(1, 0), at(0, 1), at(1, 1)}};
+            PointAttenuation(float row, float col) {
+                this -> row = attenuationPolynomial(row);
+                this -> col = attenuationPolynomial(col);
             }
 
-            InterpolationDistances verticalMirror() {
-                return InterpolationDistances{{at(0, 1), at(0, 0), at(1, 1), at(1, 0)}};
-            }
-
-            InterpolationDistances horizontalMirror() {
-                return InterpolationDistances{{at(1, 0), at(1, 1), at(0, 0), at(0, 1)}};
-            }
+            float row, col;
     };
 
     // Maintains a cache of distances to use for each possible location of a pixel.
@@ -56,17 +57,17 @@ namespace StealthWorldGenerator {
                 initializeKernel();
             }
 
-            const TileMap<InterpolationDistances>& getDistances() const {
-                return distances;
-            }
-
-            const TileMap<InterpolationPoint>& getPoints() const {
+            const TileMap<Point>& getPoints() const {
                 return points;
             }
 
+            const TileMap<PointAttenuation>& getPointAttenuations() const {
+                return attenuations;
+            }
+
         private:
-            TileMap<InterpolationDistances> distances{scale, scale};
-            TileMap<InterpolationPoint> points{scale, scale};
+            TileMap<Point> points{scale, scale};
+            TileMap<PointAttenuation> attenuations{scale, scale};
 
             void initializeKernel() {
                 // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
@@ -89,8 +90,8 @@ namespace StealthWorldGenerator {
             void reflectDiagonal(int quadrantBound) {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = 0; col < row; ++col) {
-                        distances.at(row, col) = distances.at(col, row).diagonalMirror();
-                        points.at(row, col) = points.at(col, row).diagonalMirror();
+                        points.at(row, col) = diagonalMirror(points.at(col, row));
+                        attenuations.at(row, col) = PointAttenuation(points.at(row, col));
                     }
                 }
             }
@@ -98,8 +99,8 @@ namespace StealthWorldGenerator {
             void reflectVertical(int quadrantBound) {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = quadrantBound; col < scale; ++col) {
-                        distances.at(row, col) = distances.at(row, (scale - 1) - col).verticalMirror();
-                        points.at(row, col) = points.at(row, (scale - 1) - col).verticalMirror();
+                        points.at(row, col) = verticalMirror(points.at(row, (scale - 1) - col));
+                        attenuations.at(row, col) = PointAttenuation(points.at(row, col));
                     }
                 }
             }
@@ -107,42 +108,29 @@ namespace StealthWorldGenerator {
             void reflectHorizontal(int quadrantBound) {
                 for (int row = quadrantBound; row < scale; ++row) {
                     for (int col = 0; col < scale; ++col) {
-                        distances.at(row, col) = distances.at((scale - 1) - row, col).horizontalMirror();
-                        points.at(row, col) = points.at((scale - 1) - row, col).horizontalMirror();
+                        points.at(row, col) = horizontalMirror(points.at((scale - 1) - row, col));
+                        attenuations.at(row, col) = PointAttenuation(points.at(row, col));
                     }
                 }
             }
 
             void calculatePoint(int row, int col) {
                 // Compute a relative location.
-                float interpolationOffsetX = (col / (float) scale) + 0.5 * 1 / scale;
-                float interpolationOffsetY = (row / (float) scale) + 0.5 * 1 / scale;
-                // Cache common subexpressions
-                float ySq = pow(interpolationOffsetX, 2);
-                float yInvSq = pow(1.0f - interpolationOffsetX, 2);
-                float xSq = pow(interpolationOffsetY, 2);
-                float xInvSq = pow(1.0f - interpolationOffsetY, 2);
-                // Compute distances to diagonals
-                float topLeftDist = sqrt(ySq + xSq);
-                float topRightDist = sqrt(yInvSq + xSq);
-                float bottomLeftDist = sqrt(ySq + xInvSq);
-                float bottomRightDist = sqrt(yInvSq + xInvSq);
-                // Construct the distance and point TileMaps
-                distances.at(row, col) = {topLeftDist, topRightDist, bottomLeftDist, bottomRightDist};
-                points.at(row, col) = InterpolationPoint(interpolationOffsetY, interpolationOffsetX);
+                float interpolationOffsetX = (col / (float) scale) + 0.5 * 1.0f / scale;
+                float interpolationOffsetY = (row / (float) scale) + 0.5 * 1.0f / scale;
+                // Construct the point and pointAttenuation TileMaps
+                points.at(row, col) = Point(interpolationOffsetY, interpolationOffsetX);
+                attenuations.at(row, col) = PointAttenuation(points.at(row, col));
             }
     };
 
     // Display functions
-    std::string to_string(const InterpolationPoint& tile) {
+    std::string to_string(const Point& tile) {
         return "(" + std::to_string(tile.row) + ", " + std::to_string(tile.col) + ")";
     }
 
-    std::string to_string(const InterpolationDistances& tile) {
-        return "(" + std::to_string(tile.at(0, 0)) + ", " +
-            std::to_string(tile.at(0, 1)) + ", " +
-            std::to_string(tile.at(1, 0)) + ", " +
-            std::to_string(tile.at(1, 1)) + ")";
+    std::string to_string(const PointAttenuation& tile) {
+        return "(" + std::to_string(tile.row) + ", " + std::to_string(tile.col) + ")";
     }
 
 } /* StealthWorldGenerator */

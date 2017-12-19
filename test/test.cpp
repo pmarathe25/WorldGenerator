@@ -3,8 +3,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
-const int WINDOW_X = 800;
-const int WINDOW_Y = 800;
+const int WINDOW_X = 1600;
+const int WINDOW_Y = 900;
 
 sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float>& noise) {
     sf::Image im;
@@ -22,11 +22,11 @@ int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
     StealthWorldGenerator::NoiseGenerator<80> noiseGenerator;
-    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X);
+    StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X);
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
     //         StealthWorldGenerator::TriangularSumInterpolator{StealthWorldGenerator::QuadraticBlender{}});
-    StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
-            StealthWorldGenerator::TriangularGradientInterpolater{});
+    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
+    //         StealthWorldGenerator::TriangularGradientInterpolater{});
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
     //         StealthWorldGenerator::RectangularGradientInterpolater{});
 
