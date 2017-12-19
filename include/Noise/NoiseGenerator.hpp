@@ -39,7 +39,8 @@ namespace StealthWorldGenerator {
         // Interpolate vertically
         float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
         // Scale from (-1, 1) to (0, 1)
-        return (nxy + 1.0f) * 0.5f;
+        // return (nxy + 1.0f) * 0.5f;
+        return (nxy + 0.5f);
     }
 
     // Scale maps one pixel of the generated noise to n pixels of the output.
