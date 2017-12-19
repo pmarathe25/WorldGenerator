@@ -9,18 +9,6 @@ namespace StealthWorldGenerator {
             float row, col;
     };
 
-    inline Point diagonalMirror(const Point& other) {
-        return Point(other.col, other.row);
-    }
-
-    inline Point verticalMirror(const Point& other) {
-        return Point(other.row, 1.0f - other.col);
-    }
-
-    inline Point horizontalMirror(const Point& other) {
-        return Point(1.0f - other.row, other.col);
-    }
-
     class RandomGradient {
         public:
             RandomGradient(float seed = 0.0f) {

@@ -36,10 +36,22 @@ namespace StealthWorldGenerator {
 
             inline Point calculatePoint(int row, int col) {
                 // Compute a relative location.
-                float interpolationOffsetX = (col / (float) scale) + 0.5 * 1.0f / scale;
-                float interpolationOffsetY = (row / (float) scale) + 0.5 * 1.0f / scale;
+                float interpolationOffsetX = (col / (float) scale) + 0.5f * 1.0f / scale;
+                float interpolationOffsetY = (row / (float) scale) + 0.5f * 1.0f / scale;
                 // Construct the point and pointAttenuation TileMaps
                 return Point(interpolationOffsetY, interpolationOffsetX);
+            }
+
+            inline Point diagonallyMirror(const Point& other) {
+                return Point(other.col, other.row);
+            }
+
+            inline Point verticallyMirror(const Point& other) {
+                return Point(other.row, 1.0f - other.col);
+            }
+
+            inline Point horizontallyMirror(const Point& other) {
+                return Point(1.0f - other.row, other.col);
             }
 
             inline void initializeDiagonalQuadrant(int quadrantBound) {
@@ -56,7 +68,7 @@ namespace StealthWorldGenerator {
             inline void reflectDiagonal(int quadrantBound) {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = 0; col < row; ++col) {
-                        points.at(row, col) = diagonalMirror(points.at(col, row));
+                        points.at(row, col) = diagonallyMirror(points.at(col, row));
                         attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
                             attenuationPolynomial(points.at(row, col).col));
                     }
@@ -66,7 +78,7 @@ namespace StealthWorldGenerator {
             inline void reflectVertical(int quadrantBound) {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = quadrantBound; col < scale; ++col) {
-                        points.at(row, col) = verticalMirror(points.at(row, (scale - 1) - col));
+                        points.at(row, col) = verticallyMirror(points.at(row, (scale - 1) - col));
                         attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
                             attenuationPolynomial(points.at(row, col).col));
                     }
@@ -76,7 +88,7 @@ namespace StealthWorldGenerator {
             inline void reflectHorizontal(int quadrantBound) {
                 for (int row = quadrantBound; row < scale; ++row) {
                     for (int col = 0; col < scale; ++col) {
-                        points.at(row, col) = horizontalMirror(points.at((scale - 1) - row, col));
+                        points.at(row, col) = horizontallyMirror(points.at((scale - 1) - row, col));
                         attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
                             attenuationPolynomial(points.at(row, col).col));
                     }
