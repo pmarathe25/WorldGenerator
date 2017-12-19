@@ -6,10 +6,9 @@
 
 namespace StealthWorldGenerator {
     // Maintains a cache of points and attenuations to use for each possible location of a pixel.
-    template <int scale = 1>
     class InterpolationKernel {
         public:
-            InterpolationKernel() {
+            InterpolationKernel(int scale) : scale(scale) {
                 initializeKernel();
             }
 
@@ -22,6 +21,7 @@ namespace StealthWorldGenerator {
             }
 
         private:
+            const int scale;
             TileMap<Point> points{scale, scale};
             TileMap<Point> attenuations{scale, scale};
 

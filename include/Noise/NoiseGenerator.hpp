@@ -6,6 +6,7 @@
 #include "Noise/InterpolationKernel.hpp"
 #include <chrono>
 #include <random>
+#include <unordered_map>
 
 namespace StealthWorldGenerator {
     typedef TileMap<float> NoiseMap;
@@ -41,15 +42,18 @@ namespace StealthWorldGenerator {
     }
 
     // Scale maps one pixel of the generated noise to n pixels of the output.
-    template <int scale = 1>
     class NoiseGenerator {
         public:
             NoiseGenerator() { }
 
             // Create the smoothed noise
             template <typename Distribution = std::uniform_real_distribution<float>, typename Generator = std::default_random_engine>
-            NoiseMap generate(int rows, int cols, Distribution distribution = std::uniform_real_distribution(0.0f, 1.0f), Generator generator =
+            NoiseMap generate(int rows, int cols, int scale = 1, Distribution distribution = std::uniform_real_distribution(0.0f, 1.0f), Generator generator =
                 std::default_random_engine(CURRENT_TIME)) {
+                // Generate a new interpolation kernel if one does not exist.
+                if (kernels.count(scale) < 1) {
+                    kernels.emplace(scale, InterpolationKernel{scale});
+                }
                 // Generate a new internal noise map.
                 InternalNoiseMap internalNoiseMap = generateInternalNoiseMap(ceilDivide(rows, scale) + 1, ceilDivide(cols, scale) + 1, distribution, generator);
                 // Return noise map.
@@ -57,14 +61,14 @@ namespace StealthWorldGenerator {
                 for (int i = 0; i < internalNoiseMap.rows() - 1; ++i) {
                     for (int j = 0; j < internalNoiseMap.cols() - 1; ++j) {
                         // Fill a tile of size scale x scale.
-                        fillTile(i, j, internalNoiseMap, generatedNoise);
+                        fillTile(i, j, scale, internalNoiseMap, generatedNoise);
                     }
                 }
                 return generatedNoise;
             }
 
         private:
-            void fillTile(int internalRow, int internalCol, const InternalNoiseMap& internalNoise, NoiseMap& generatedNoise) {
+            void fillTile(int internalRow, int internalCol, int scale, const InternalNoiseMap& internalNoise, NoiseMap& generatedNoise) {
                 // Coordinates on generated noise.
                 const int scaledRow = internalRow * scale;
                 const int scaledCol = internalCol * scale;
@@ -78,17 +82,16 @@ namespace StealthWorldGenerator {
                         generatedNoise.at(scaledRow + row, scaledCol + col)
                             = interpolatePerlin(internalNoise.at(internalRow, internalCol), internalNoise.at(internalRow, internalCol + 1),
                             internalNoise.at(internalRow + 1, internalCol), internalNoise.at(internalRow + 1, internalCol + 1),
-                            interpolationKernel.getPoints().at(row, col), interpolationKernel.getAttenuations().at(row, col));
+                            kernels.at(scale).getPoints().at(row, col), kernels.at(scale).getAttenuations().at(row, col));
                     }
                 }
             }
 
-            static const InterpolationKernel<scale> interpolationKernel;
+            // Maintain a cache of interpolation kernels of different sizes
+            static std::unordered_map<int, const InterpolationKernel> kernels;
     };
 
-    // Create static interpolation kernel for different scales.
-    template <int scale>
-    const InterpolationKernel<scale> NoiseGenerator<scale>::interpolationKernel{};
+    std::unordered_map<int, const InterpolationKernel> NoiseGenerator::kernels{};
 } /* StealthWorldGenerator */
 
 #endif
