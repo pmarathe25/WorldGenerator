@@ -21,24 +21,12 @@ sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float>& noise) {
 int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
-    StealthWorldGenerator::NoiseGenerator<80> noiseGenerator;
+    StealthWorldGenerator::NoiseGenerator<8> noiseGenerator;
     StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X);
-    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
-    //         StealthWorldGenerator::TriangularSumInterpolator{StealthWorldGenerator::QuadraticBlender{}});
-    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
-    //         StealthWorldGenerator::TriangularGradientInterpolater{});
-    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X,
-    //         StealthWorldGenerator::RectangularGradientInterpolater{});
-
-    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(4, 4);
+    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(10, 10);
     // display(noise);
 
-    // StealthWorldGenerator::InterpolationKernel<5> kernel;
-    // display(kernel.getDistances());
-    // display(kernel.getPoints());
-
     // Show noise on-screen.
-    sf::Clock clock;
     sf::Texture noiseTexture;
     noiseTexture.loadFromImage(imageFromNoise(noise));
     sf::Sprite noiseSprite;
