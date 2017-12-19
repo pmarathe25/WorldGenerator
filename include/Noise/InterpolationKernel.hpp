@@ -1,6 +1,6 @@
 #ifndef STEALTH_INTERPOLATION_H
 #define STEALTH_INTERPOLATION_H
-#include "TileMap.hpp"
+#include "TileMap/TileMap.hpp"
 #include "Utility.hpp"
 #include "Vector2.hpp"
 

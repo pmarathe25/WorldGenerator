@@ -1,9 +1,9 @@
 #ifndef STEALTH_NOISE_GENERATOR_H
 #define STEALTH_NOISE_GENERATOR_H
 #define CURRENT_TIME std::chrono::system_clock::now().time_since_epoch().count()
-#include "TileMap.hpp"
-#include "Utility.hpp"
+#include "TileMap/TileMap.hpp"
 #include "Noise/InterpolationKernel.hpp"
+#include "Utility.hpp"
 #include <chrono>
 #include <random>
 #include <any>
