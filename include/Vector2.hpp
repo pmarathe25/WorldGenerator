@@ -6,7 +6,9 @@ namespace StealthWorldGenerator {
     template <typename ScalarType>
     class Vector2 {
         public:
-            Vector2(ScalarType x = ScalarType(), ScalarType y = ScalarType()) : x(x), y(y) { }
+            Vector2() { }
+
+            Vector2(ScalarType x, ScalarType y) : x(x), y(y) { }
             ScalarType x, y;
     };
 

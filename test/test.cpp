@@ -26,7 +26,6 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
     StealthWorldGenerator::NoiseGenerator noiseGenerator;
     auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
-    std::cout << "Noise Generated!" << '\n';
     // StealthWorldGenerator::TileMap<float, 10, 10> noise;
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(10, 10);
     // display(noise);
