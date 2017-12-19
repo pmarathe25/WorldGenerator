@@ -11,35 +11,29 @@ namespace StealthWorldGenerator {
         private:
     };
 
-    template <typename Tile>
-    class TileMap : public TileMapBase<TileMap<Tile>> {
+    template <typename Tile, int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime = rowsAtCompileTime * colsAtCompileTime>
+    class TileMap : public TileMapBase<TileMap<Tile, rowsAtCompileTime, colsAtCompileTime>> {
         public:
             typedef Tile TileType;
 
-            TileMap(int rows, int cols) : tiles(rows * cols), mapRows(rows), mapCols(cols), mapSize(rows * cols) { }
+            enum {
+                rows = rowsAtCompileTime,
+                cols = colsAtCompileTime,
+                size = sizeAtCompileTime
+            };
+
+            TileMap() : tiles(sizeAtCompileTime) { }
 
             Tile& at(int row, int col) {
-                return tiles[row * mapCols + col];
+                return tiles[row * cols + col];
             }
 
             const Tile& at(int row, int col) const {
-                return tiles[row * mapCols + col];
+                return tiles[row * cols + col];
             }
 
-            int rows() const {
-                return mapRows;
-            }
-
-            int cols() const {
-                return mapCols;
-            }
-
-            int size() const {
-                return mapSize;
-            }
         protected:
             std::vector<Tile> tiles;
-            int mapRows, mapCols, mapSize;
     };
 
     template <typename T>

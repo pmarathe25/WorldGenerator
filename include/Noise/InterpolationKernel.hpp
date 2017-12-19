@@ -6,28 +6,28 @@
 
 namespace StealthWorldGenerator {
     // Maintains a cache of points and attenuations to use for each possible location of a pixel.
+    template <int scale = 1>
     class InterpolationKernel {
         public:
-            InterpolationKernel(int scale) : scale(scale) {
+            InterpolationKernel() {
                 initializeKernel();
             }
 
-            const TileMap<Vector2f>& getPoints() const {
+            const TileMap<Vector2f, scale, scale>& getPoints() const {
                 return points;
             }
 
-            const TileMap<Vector2f>& getAttenuations() const {
+            const TileMap<Vector2f, scale, scale>& getAttenuations() const {
                 return attenuations;
             }
 
         private:
-            const int scale;
-            TileMap<Vector2f> points{scale, scale};
-            TileMap<Vector2f> attenuations{scale, scale};
+            TileMap<Vector2f, scale, scale> points{};
+            TileMap<Vector2f, scale, scale> attenuations{};
 
             inline void initializeKernel() {
                 // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
-                int quadrantBound = ceilDivide(scale, 2);
+                constexpr int quadrantBound = ceilDivide(scale, 2);
                 initializeDiagonalQuadrant(quadrantBound);
                 reflectDiagonal(quadrantBound);
                 reflectVertical(quadrantBound);

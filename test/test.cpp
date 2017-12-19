@@ -8,11 +8,12 @@
 const int WINDOW_X = 1600;
 const int WINDOW_Y = 900;
 
-sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float>& noise) {
+template <int rows, int cols>
+sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
     sf::Image im;
-    im.create(noise.cols(), noise.rows());
-    for (int i = 0; i < noise.rows(); ++i) {
-        for (int j = 0; j < noise.cols(); ++j) {
+    im.create(cols, rows);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
             float color = noise.at(i, j) * 255.0f;
             im.setPixel(j, i, sf::Color(color, color, color));
         }
@@ -24,7 +25,9 @@ int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
     StealthWorldGenerator::NoiseGenerator noiseGenerator;
-    StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(WINDOW_Y, WINDOW_X, 200);
+    auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
+    std::cout << "Noise Generated!" << '\n';
+    // StealthWorldGenerator::TileMap<float, 10, 10> noise;
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(10, 10);
     // display(noise);
 
