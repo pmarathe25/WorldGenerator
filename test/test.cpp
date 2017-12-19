@@ -2,6 +2,7 @@
 #include "Noise/NoiseGenerator.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <unistd.h>
 
 const int WINDOW_X = 1600;
 const int WINDOW_Y = 900;
@@ -26,9 +27,6 @@ int main() {
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(10, 10);
     // display(noise);
 
-    StealthWorldGenerator::InterpolationKernel kernel{4};
-    display(kernel.getPoints());
-
     // Show noise on-screen.
     sf::Texture noiseTexture;
     noiseTexture.loadFromImage(imageFromNoise(noise));
@@ -46,5 +44,6 @@ int main() {
               window.close();
             }
         }
+        sleep(0.1);
     }
 }
