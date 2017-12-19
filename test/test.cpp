@@ -2,7 +2,8 @@
 #include "Noise/NoiseGenerator.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <unistd.h>
+#include <thread>
+#include <chrono>
 
 const int WINDOW_X = 1600;
 const int WINDOW_Y = 900;
@@ -44,6 +45,6 @@ int main() {
               window.close();
             }
         }
-        sleep(0.1);
+        std::this_thread::sleep_for (std::chrono::seconds(0.1));
     }
 }
