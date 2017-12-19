@@ -2,7 +2,7 @@
 #define STEALTH_INTERPOLATION_H
 #include "TileMap.hpp"
 #include "Utility.hpp"
-#include "Noise/Point.hpp"
+#include "Vector2.hpp"
 
 namespace StealthWorldGenerator {
     // Maintains a cache of points and attenuations to use for each possible location of a pixel.
@@ -12,18 +12,18 @@ namespace StealthWorldGenerator {
                 initializeKernel();
             }
 
-            const TileMap<Point>& getPoints() const {
+            const TileMap<Vector2f>& getPoints() const {
                 return points;
             }
 
-            const TileMap<Point>& getAttenuations() const {
+            const TileMap<Vector2f>& getAttenuations() const {
                 return attenuations;
             }
 
         private:
             const int scale;
-            TileMap<Point> points{scale, scale};
-            TileMap<Point> attenuations{scale, scale};
+            TileMap<Vector2f> points{scale, scale};
+            TileMap<Vector2f> attenuations{scale, scale};
 
             inline void initializeKernel() {
                 // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
@@ -34,24 +34,23 @@ namespace StealthWorldGenerator {
                 reflectHorizontal(quadrantBound);
             }
 
-            inline Point calculatePoint(int row, int col) {
+            inline Vector2f calculatePoint(int row, int col) {
                 // Compute a relative location.
                 float interpolationOffsetX = (col / (float) scale) + 0.5f * 1.0f / scale;
                 float interpolationOffsetY = (row / (float) scale) + 0.5f * 1.0f / scale;
-                // Construct the point and pointAttenuation TileMaps
-                return Point(interpolationOffsetY, interpolationOffsetX);
+                return Vector2f(interpolationOffsetX, interpolationOffsetY);
             }
 
-            inline Point diagonallyMirror(const Point& other) {
-                return Point(other.col, other.row);
+            inline Vector2f diagonallyMirror(const Vector2f& other) {
+                return Vector2f(other.y, other.x);
             }
 
-            inline Point verticallyMirror(const Point& other) {
-                return Point(other.row, 1.0f - other.col);
+            inline Vector2f verticallyMirror(const Vector2f& other) {
+                return Vector2f(1.0f - other.x, other.y);
             }
 
-            inline Point horizontallyMirror(const Point& other) {
-                return Point(1.0f - other.row, other.col);
+            inline Vector2f horizontallyMirror(const Vector2f& other) {
+                return Vector2f(other.x, 1.0f - other.y);
             }
 
             inline void initializeDiagonalQuadrant(int quadrantBound) {
@@ -59,8 +58,8 @@ namespace StealthWorldGenerator {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = row; col < quadrantBound; ++col) {
                         points.at(row, col) = calculatePoint(row, col);
-                        attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
-                            attenuationPolynomial(points.at(row, col).col));
+                        attenuations.at(row, col) = Vector2f(attenuationPolynomial(points.at(row, col).x),
+                            attenuationPolynomial(points.at(row, col).y));
                     }
                 }
             }
@@ -69,8 +68,8 @@ namespace StealthWorldGenerator {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = 0; col < row; ++col) {
                         points.at(row, col) = diagonallyMirror(points.at(col, row));
-                        attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
-                            attenuationPolynomial(points.at(row, col).col));
+                        attenuations.at(row, col) = Vector2f(attenuationPolynomial(points.at(row, col).x),
+                            attenuationPolynomial(points.at(row, col).y));
                     }
                 }
             }
@@ -79,8 +78,8 @@ namespace StealthWorldGenerator {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = quadrantBound; col < scale; ++col) {
                         points.at(row, col) = verticallyMirror(points.at(row, (scale - 1) - col));
-                        attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
-                            attenuationPolynomial(points.at(row, col).col));
+                        attenuations.at(row, col) = Vector2f(attenuationPolynomial(points.at(row, col).x),
+                            attenuationPolynomial(points.at(row, col).y));
                     }
                 }
             }
@@ -89,17 +88,12 @@ namespace StealthWorldGenerator {
                 for (int row = quadrantBound; row < scale; ++row) {
                     for (int col = 0; col < scale; ++col) {
                         points.at(row, col) = horizontallyMirror(points.at((scale - 1) - row, col));
-                        attenuations.at(row, col) = Point(attenuationPolynomial(points.at(row, col).row),
-                            attenuationPolynomial(points.at(row, col).col));
+                        attenuations.at(row, col) = Vector2f(attenuationPolynomial(points.at(row, col).x),
+                            attenuationPolynomial(points.at(row, col).y));
                     }
                 }
             }
     };
-
-    // Display functions
-    std::string to_string(const Point& tile) {
-        return "(" + std::to_string(tile.row) + ", " + std::to_string(tile.col) + ")";
-    }
 
 } /* StealthWorldGenerator */
 

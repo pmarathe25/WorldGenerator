@@ -10,7 +10,7 @@
 
 namespace StealthWorldGenerator {
     typedef TileMap<float> NoiseMap;
-    typedef TileMap<RandomGradient> InternalNoiseMap;
+    typedef TileMap<Vector2f> InternalNoiseMap;
 
     // Initialize with random values according to provided distribution
     template <typename Distribution, typename Generator>
@@ -19,24 +19,25 @@ namespace StealthWorldGenerator {
         InternalNoiseMap internalNoiseMap{internalRows, internalCols};
         for (int i = 0; i < internalNoiseMap.rows(); ++i) {
             for (int j = 0; j < internalNoiseMap.cols(); ++j) {
-                internalNoiseMap.at(i, j) = RandomGradient{distribution(generator)};
+                float angle = distribution(generator) * 2 * PI;
+                internalNoiseMap.at(i, j) = Vector2f{(float) cos(angle), (float) sin(angle)};
             }
         }
         return internalNoiseMap;
     }
 
-    inline float interpolatePerlin(const RandomGradient& topLeft, const RandomGradient& topRight, const RandomGradient& bottomLeft,
-        const RandomGradient& bottomRight, const Point& point, const Point& attenuation) {
+    inline float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
+        const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) {
         // Compute dot products.
-        float n00 = topLeft.y * point.row + topLeft.x * point.col;
-        float n01 = topRight.y * point.row + topRight.x * (point.col - 1.0f);
-        float n10 = bottomLeft.y * (point.row - 1.0f) + bottomLeft.x * point.col;
-        float n11 = bottomRight.y * (point.row - 1.0f) + bottomRight.x * (point.col - 1.0f);
+        float n00 = topLeft.y * point.y + topLeft.x * point.x;
+        float n01 = topRight.y * point.y + topRight.x * (point.x - 1.0f);
+        float n10 = bottomLeft.y * (point.y - 1.0f) + bottomLeft.x * point.x;
+        float n11 = bottomRight.y * (point.y - 1.0f) + bottomRight.x * (point.x - 1.0f);
         // Interpolate horizontally
-        float nx0 = n00 * (1.0f - attenuation.col) + n01 * (attenuation.col);
-        float nx1 = n10 * (1.0f - attenuation.col) + n11 * (attenuation.col);
+        float nx0 = n00 * (1.0f - attenuation.x) + n01 * (attenuation.x);
+        float nx1 = n10 * (1.0f - attenuation.x) + n11 * (attenuation.x);
         // Interpolate vertically
-        float nxy = nx0 * (1.0f - attenuation.row) + nx1 * (attenuation.row);
+        float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
         // Scale from (-1, 1) to (0, 1)
         return (nxy + 1.0f) * 0.5f;
     }

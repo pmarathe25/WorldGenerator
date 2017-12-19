@@ -26,6 +26,9 @@ int main() {
     // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(10, 10);
     // display(noise);
 
+    StealthWorldGenerator::InterpolationKernel kernel{4};
+    display(kernel.getPoints());
+
     // Show noise on-screen.
     sf::Texture noiseTexture;
     noiseTexture.loadFromImage(imageFromNoise(noise));
