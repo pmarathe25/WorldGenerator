@@ -2,7 +2,7 @@
 #define UTILITY_H
 #include <cmath>
 
-const float PI = 3.14159265f; 
+const float TAU = 6.28318530718f; 
 
 namespace StealthWorldGenerator {
     inline constexpr int ceilDivide(int numerator, int denominator) {

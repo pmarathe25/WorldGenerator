@@ -19,7 +19,7 @@ namespace StealthWorldGenerator {
         InternalNoiseMap internalNoiseMap{internalRows, internalCols};
         for (int i = 0; i < internalNoiseMap.rows(); ++i) {
             for (int j = 0; j < internalNoiseMap.cols(); ++j) {
-                float angle = distribution(generator) * 2 * PI;
+                float angle = distribution(generator) * TAU;
                 internalNoiseMap.at(i, j) = Vector2f{(float) cos(angle), (float) sin(angle)};
             }
         }
