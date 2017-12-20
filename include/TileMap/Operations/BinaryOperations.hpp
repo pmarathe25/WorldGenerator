@@ -63,7 +63,6 @@ namespace StealthWorldGenerator {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::divide>{lhs, rhs};
     }
-
 } /* StealthWorldGenerator */
 
 #endif

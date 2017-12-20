@@ -7,6 +7,7 @@ namespace StealthWorldGenerator {
         template <typename LHS, typename UnaryOperation>
         struct traits<UnaryOp<LHS, UnaryOperation>> {
             typedef typename std::invoke_result<UnaryOperation, typename internal::traits<LHS>::ScalarType>::type ScalarType;
+            // Dimensions
             static constexpr int rows = internal::traits<LHS>::rows,
                 cols = internal::traits<LHS>::cols,
                 size = internal::traits<LHS>::size;
@@ -17,6 +18,7 @@ namespace StealthWorldGenerator {
     class UnaryOp : public TileMapBase<UnaryOp<LHS, UnaryOperation>> {
         public:
             typedef typename internal::traits<UnaryOp>::ScalarType ScalarType;
+            // Dimensions
             static constexpr int rows = internal::traits<UnaryOp>::rows, cols = internal::traits<UnaryOp>::cols,
                 size = internal::traits<UnaryOp>::size;
 

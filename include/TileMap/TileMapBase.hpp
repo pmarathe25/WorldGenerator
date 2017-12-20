@@ -8,7 +8,7 @@ namespace StealthWorldGenerator {
     class TileMapBase {
         public:
             typedef typename internal::traits<Derived>::ScalarType ScalarType;
-
+            // Dimensions
             static constexpr int rows = internal::traits<Derived>::rows,
                 cols = internal::traits<Derived>::cols,
                 size = internal::traits<Derived>::size;

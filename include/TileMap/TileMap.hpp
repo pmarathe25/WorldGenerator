@@ -19,10 +19,12 @@ namespace StealthWorldGenerator {
     class TileMap : public TileMapBase<TileMap<type, rowsAtCompileTime, colsAtCompileTime>> {
         public:
             typedef type ScalarType;
+            // Dimensions
             static constexpr int rows = rowsAtCompileTime, cols = colsAtCompileTime, size = sizeAtCompileTime;
 
             constexpr TileMap() : tiles(sizeAtCompileTime) { }
 
+            // Copy
             template <typename OtherDerived>
             constexpr TileMap(const TileMapBase<OtherDerived>& other) {
                 tiles = std::vector<ScalarType>(sizeAtCompileTime);
@@ -34,8 +36,10 @@ namespace StealthWorldGenerator {
                 *this = other;
             }
 
+            // Move
             constexpr TileMap(TileMap&& other) noexcept = default;
 
+            // Assignment
             constexpr void operator=(const TileMap& other) {
                 copy(other);
             }
@@ -60,7 +64,6 @@ namespace StealthWorldGenerator {
             constexpr const ScalarType& operator[](int index) const {
                 return tiles[index];
             }
-
         protected:
             std::vector<ScalarType> tiles;
 

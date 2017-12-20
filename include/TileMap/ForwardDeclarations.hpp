@@ -21,7 +21,6 @@ namespace StealthWorldGenerator {
     // Binary Op
     template <typename LHS, typename RHS>
     using BinaryOperation = typename std::common_type<LHS, RHS>::type (*)(const LHS&, const RHS&);
-
     template <typename LHS, typename RHS, BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>
     class BinaryOp;
 

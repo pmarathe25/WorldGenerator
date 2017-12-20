@@ -14,6 +14,7 @@ namespace StealthWorldGenerator {
             typedef typename internal::traits<LHS>::ScalarType ScalarTypeLHS;
             typedef typename internal::traits<RHS>::ScalarType ScalarTypeRHS;
             typedef typename std::common_type<ScalarTypeLHS, ScalarTypeRHS>::type ScalarType;
+            // Dimensions
             static constexpr int rows = (std::is_scalar<LHS>::value ? internal::traits<RHS>::rows : internal::traits<LHS>::rows),
                 cols = (std::is_scalar<LHS>::value ? internal::traits<RHS>::cols : internal::traits<LHS>::cols),
                 size = (std::is_scalar<LHS>::value ? internal::traits<RHS>::size : internal::traits<LHS>::size);
@@ -27,6 +28,7 @@ namespace StealthWorldGenerator {
             typedef typename internal::traits<BinaryOp>::ScalarType ScalarType;
             typedef typename internal::traits<BinaryOp>::ScalarTypeLHS ScalarTypeLHS;
             typedef typename internal::traits<BinaryOp>::ScalarTypeRHS ScalarTypeRHS;
+            // Dimensions
             static constexpr int rows = internal::traits<BinaryOp>::rows, cols = internal::traits<BinaryOp>::cols,
                 size = internal::traits<BinaryOp>::size;
 
@@ -52,7 +54,6 @@ namespace StealthWorldGenerator {
                     return op(lhs.at(i, j), rhs.at(i, j));
                 }
             }
-
         private:
             const LHS& lhs;
             const RHS& rhs;
