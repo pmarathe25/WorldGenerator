@@ -1,5 +1,6 @@
 #ifndef FORWARD_DECLARATIONS_H
 #define FORWARD_DECLARATIONS_H
+#include <type_traits>
 
 namespace StealthWorldGenerator {
     namespace internal {
@@ -17,8 +18,8 @@ namespace StealthWorldGenerator {
     class TileMap;
 
     // Binary Op
-    template <typename LHS, typename RHS, typename ret = LHS>
-    using BinaryOperation = ret (*)(const LHS&, const RHS&);
+    template <typename LHS, typename RHS>
+    using BinaryOperation = typename std::common_type<LHS, RHS>::type (*)(const LHS&, const RHS&);
 
     template <typename LHS, typename RHS,
         BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>

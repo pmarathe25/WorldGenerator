@@ -37,7 +37,13 @@ namespace StealthWorldGenerator {
     BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs);
 
     template <typename Derived, typename OtherDerived>
+    BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs);
+
+    template <typename Derived, typename OtherDerived>
     BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs);
+
+    template <typename Derived, typename OtherDerived>
+    BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs);
 } /* StealthWorldGenerator */
 
 #endif

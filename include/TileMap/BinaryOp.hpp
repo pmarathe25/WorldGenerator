@@ -12,9 +12,9 @@ namespace StealthWorldGenerator {
         template <typename LHS, typename RHS,
             BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>
         struct traits<BinaryOp<LHS, RHS, op>> {
-            typedef typename internal::traits<LHS>::ScalarType ScalarType;
             typedef typename internal::traits<LHS>::ScalarType ScalarTypeLHS;
             typedef typename internal::traits<RHS>::ScalarType ScalarTypeRHS;
+            typedef typename std::common_type<ScalarTypeLHS, ScalarTypeRHS>::type ScalarType;
             static constexpr int rows = (std::is_scalar<LHS>::value ? internal::traits<RHS>::rows : internal::traits<LHS>::rows),
                 cols = (std::is_scalar<LHS>::value ? internal::traits<RHS>::cols : internal::traits<LHS>::cols),
                 size = (std::is_scalar<LHS>::value ? internal::traits<RHS>::size : internal::traits<LHS>::size);
@@ -66,11 +66,22 @@ namespace StealthWorldGenerator {
     }
 
     template <typename Derived, typename OtherDerived>
+    BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs) {
+        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
+        return BinaryOp<Derived, OtherDerived, internal::ops::subtract>{lhs, rhs};
+    }
+
+    template <typename Derived, typename OtherDerived>
     BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs) {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::multiply>{lhs, rhs};
     }
 
+    template <typename Derived, typename OtherDerived>
+    BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs) {
+        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
+        return BinaryOp<Derived, OtherDerived, internal::ops::divide>{lhs, rhs};
+    }
 } /* StealthWorldGenerator */
 
 #endif

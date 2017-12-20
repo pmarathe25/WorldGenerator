@@ -30,7 +30,7 @@ int main() {
     display(noise);
     display(noise2);
 
-    StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> test = 1.0f + noise * 2.0f + noise2;
+    StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> test = 1.0f + noise * 2 + noise2 / 0.5f - 4.0f;
     // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> test = noise + noise2;
     display(test);
     // StealthWorldGenerator::TileMap<float, 10, 10> noise;
