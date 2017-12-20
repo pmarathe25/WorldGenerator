@@ -8,7 +8,7 @@
 #include <iostream>
 #include <thread>
 
-constexpr int NUM_THREADS = 16;
+constexpr int NUM_THREADS = 8;
 
 namespace StealthWorldGenerator {
     namespace internal {
@@ -72,7 +72,7 @@ namespace StealthWorldGenerator {
             }
         protected:
             std::vector<ScalarType> tiles;
-            std::vector<std::thread> copyThreads;
+            std::array<std::thread, NUM_THREADS> copyThreads;
 
             template <typename Derived>
             constexpr void copyPortion(const TileMapBase<Derived>* other, int portionStart, int portionEnd) {
@@ -87,7 +87,7 @@ namespace StealthWorldGenerator {
                 constexpr int portionSize = ceilDivide(size, NUM_THREADS);
                 // Create threads
                 for (int i = 0; i < NUM_THREADS; ++i) {
-                    copyThreads.emplace_back(&TileMap::copyPortion<Derived>, this, &other, portionSize * i, std::min(portionSize * (i + 1), size));
+                    copyThreads[i] = std::thread{&TileMap::copyPortion<Derived>, this, &other, portionSize * i, std::min(portionSize * (i + 1), size)};
                 }
                 // Wait for all threads to finish
                 for (auto& thread : copyThreads) {

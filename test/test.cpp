@@ -45,14 +45,26 @@ int main() {
     // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
     //     * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.03125f * octave5;
 
+    unsigned long long int totalTime = 0;
+    int numFrames = 0;
+
     while (window.isOpen()) {
         auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
         auto noise2 = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
-        // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
-        // noise = noise && (noise < noise2);
-        // noise = noise * (noise > noise2);
-        // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
-        // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
+
+        auto start = std::chrono::steady_clock::now();
+
+        noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
+        noise = noise && (noise < noise2);
+        noise = noise * (noise > noise2);
+        StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
+        noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
+
+        auto end = std::chrono::steady_clock::now();
+        totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+        std::cout << "Average Time:  " << (totalTime / (float) ++numFrames) << " milliseconds" << '\r';
+
         // Show noise on-screen.
         sf::Texture noiseTexture;
         noiseTexture.loadFromImage(imageFromNoise(noise));

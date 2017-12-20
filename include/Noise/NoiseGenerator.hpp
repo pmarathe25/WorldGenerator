@@ -59,7 +59,7 @@ namespace StealthWorldGenerator {
                 if (kernels.count(scale) < 1) {
                     kernels.emplace(scale, InterpolationKernel<scale>{});
                 }
-                const auto& kernel = std::any_cast<const InterpolationKernel<scale>>(kernels[scale]);
+                const InterpolationKernel<scale>& kernel = std::any_cast<const InterpolationKernel<scale>>(kernels[scale]);
                 // Generate a new internal noise map.
                 constexpr int internalRows = ceilDivide(rows, scale) + 1;
                 constexpr int internalCols = ceilDivide(cols, scale) + 1;
