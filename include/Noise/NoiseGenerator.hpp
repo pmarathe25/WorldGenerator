@@ -48,7 +48,18 @@ namespace StealthWorldGenerator {
     // Scale maps one pixel of the generated noise to n pixels of the output.
     class NoiseGenerator {
         public:
-            constexpr NoiseGenerator() = default;
+            // Create octaved noise
+            template <int rows, int cols, int scale, int numOctaves, typename Distribution = std::uniform_real_distribution<float>,
+            typename Generator = std::default_random_engine>
+            constexpr NoiseMap<rows, cols> generateOctaves(float multiplier = 0.5f, float decayFactor = 0.5f, Distribution distribution
+                = std::uniform_real_distribution(0.0f, TAU), Generator generator = std::default_random_engine(CURRENT_TIME)) {
+                    if constexpr (numOctaves == 1) {
+                        return multiplier * generate<rows, cols, scale>(distribution, generator);
+                    } else {
+                        return multiplier * generate<rows, cols, scale>(distribution, generator)
+                        + generateOctaves<rows, cols, ceilDivide(scale, 2), numOctaves - 1>(multiplier * decayFactor, decayFactor, distribution, generator);
+                    }
+                }
 
             // Create the smoothed noise
             template <int rows, int cols, int scale = 1, typename Distribution = std::uniform_real_distribution<float>,
@@ -67,46 +78,55 @@ namespace StealthWorldGenerator {
                     = generateInternalNoiseMap<internalRows, internalCols>(distribution, generator);
                 // Return noise map.
                 NoiseMap<rows, cols> generatedNoise;
-                for (int i = 0; i < internalRows - 1; ++i) {
+                // Create threads
+                for (int i = 0; i < NUM_THREADS; ++i) {
+                    noiseThreads[i] = std::thread{&NoiseGenerator::fillRows<internalRows, internalCols, rows, cols, scale>,
+                        this, i, &internalNoiseMap, &generatedNoise, &kernel};
+                }
+                // Wait for all threads to finish
+                for (auto& thread : noiseThreads) {
+                    thread.join();
+                }
+                return generatedNoise;
+            }
+        private:
+            std::array<std::thread, NUM_THREADS> noiseThreads;
+
+            template <int internalRows, int internalCols, int rows, int cols, int scale>
+            constexpr void fillRows(int id, InternalNoiseMap<internalRows, internalCols>* internalNoiseMap,
+                NoiseMap<rows, cols>* generatedNoise, const InterpolationKernel<scale>* kernel) {
+                constexpr int portionSize = ceilDivide(internalRows - 1, NUM_THREADS);
+                const int start = id * portionSize;
+                const int end = std::min(start + portionSize, internalRows - 1);
+                for (int i = start; i < end; ++i) {
                     for (int j = 0; j < internalCols - 1; ++j) {
                         // Fill a tile of size scale x scale.
                         fillTile<scale>(i, j, internalNoiseMap, generatedNoise, kernel);
                     }
                 }
-                return generatedNoise;
             }
 
-            // Create octaved noise
-            template <int rows, int cols, int scale, int numOctaves, typename Distribution = std::uniform_real_distribution<float>,
-                typename Generator = std::default_random_engine>
-            constexpr NoiseMap<rows, cols> generateOctaves(float multiplier = 0.5f, float decayFactor = 0.5f, Distribution distribution
-                = std::uniform_real_distribution(0.0f, TAU), Generator generator = std::default_random_engine(CURRENT_TIME)) {
-                if constexpr (numOctaves == 1) {
-                    return multiplier * generate<rows, cols, scale>(distribution, generator);
-                } else {
-                    return multiplier * generate<rows, cols, scale>(distribution, generator)
-                        + generateOctaves<rows, cols, ceilDivide(scale, 2), numOctaves - 1>(multiplier * decayFactor, decayFactor, distribution, generator);
-                }
-            }
-
-        private:
             template <int scale, int internalRows, int internalCols, int rows, int cols>
-            constexpr void fillTile(int internalRow, int internalCol, const InternalNoiseMap<internalRows, internalCols>& internalNoise,
-                NoiseMap<rows, cols>& generatedNoise, const InterpolationKernel<scale>& kernel) const {
+            constexpr void fillTile(int internalRow, int internalCol, const InternalNoiseMap<internalRows, internalCols>* internalNoise,
+                NoiseMap<rows, cols>* generatedNoise, const InterpolationKernel<scale>* kernel) const {
                 // Coordinates on generated noise.
                 const int scaledRow = internalRow * scale;
                 const int scaledCol = internalCol * scale;
                 // Only fill the part of the tile that is valid.
-                const int maxValidRow = rows - scaledRow;
-                const int maxValidCol = cols - scaledCol;
+                const int maxValidRow = std::min(rows - scaledRow, scale);
+                const int maxValidCol = std::min(cols - scaledCol, scale);
+                // Cache local gradient vectors
+                const Vector2f topLeft = internalNoise -> at(internalRow, internalCol);
+                const Vector2f topRight = internalNoise -> at(internalRow, internalCol + 1);
+                const Vector2f bottomLeft = internalNoise -> at(internalRow + 1, internalCol);
+                const Vector2f bottomRight = internalNoise -> at(internalRow + 1, internalCol + 1);
                 // Loop over one interpolation kernel tile.
-                for (int row = 0; row < scale && row < maxValidRow; ++row) {
-                    for (int col = 0; col < scale && col < maxValidCol; ++col) {
+                for (int row = 0; row < maxValidRow; ++row) {
+                    for (int col = 0; col < maxValidCol; ++col) {
                         // Interpolate based on the 4 surrounding internal noise points.
-                        generatedNoise.at(scaledRow + row, scaledCol + col)
-                            = interpolatePerlin(internalNoise.at(internalRow, internalCol), internalNoise.at(internalRow, internalCol + 1),
-                            internalNoise.at(internalRow + 1, internalCol), internalNoise.at(internalRow + 1, internalCol + 1),
-                            kernel.getPoints().at(row, col), kernel.getAttenuations().at(row, col));
+                        generatedNoise -> at(scaledRow + row, scaledCol + col)
+                            = interpolatePerlin(topLeft, topRight, bottomLeft, bottomRight,
+                            kernel -> getPoints().at(row, col), kernel -> getAttenuations().at(row, col));
                     }
                 }
             }

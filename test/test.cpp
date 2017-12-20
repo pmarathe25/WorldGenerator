@@ -49,20 +49,20 @@ int main() {
     int numFrames = 0;
 
     while (window.isOpen()) {
+        auto start = std::chrono::steady_clock::now();
+
         auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
         auto noise2 = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
 
-        auto start = std::chrono::steady_clock::now();
-
-        noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
-        noise = noise && (noise < noise2);
-        noise = noise * (noise > noise2);
-        StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
-        noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
-
+        //
+        // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
+        // noise = noise && (noise < noise2);
+        // noise = noise * (noise > noise2);
+        // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
+        // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
+        //
         auto end = std::chrono::steady_clock::now();
         totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
         std::cout << "Average Time:  " << (totalTime / (float) ++numFrames) << " milliseconds" << '\r';
 
         // Show noise on-screen.
