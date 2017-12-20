@@ -2,7 +2,6 @@
 #define TILE_MAP_BASE_H
 #include "TileMap/ForwardDeclarations.hpp"
 #include "TileMap/Ops.hpp"
-#include <type_traits>
 
 namespace StealthWorldGenerator {
     template <typename Derived>

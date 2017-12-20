@@ -1,3 +1,4 @@
+#include "TileMap/TileMap.hpp"
 #include "Noise/NoiseGenerator.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -8,7 +9,7 @@ const int WINDOW_X = 1600;
 const int WINDOW_Y = 900;
 
 template <int rows, int cols>
-sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
+constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
     sf::Image im;
     im.create(cols, rows);
     for (int i = 0; i < rows; ++i) {

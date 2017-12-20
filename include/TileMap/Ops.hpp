@@ -1,6 +1,5 @@
 #ifndef OPS_H
 #define OPS_H
-#include <iostream>
 #include <type_traits>
 
 namespace StealthWorldGenerator {
