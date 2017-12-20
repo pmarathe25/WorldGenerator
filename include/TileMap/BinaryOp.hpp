@@ -31,7 +31,7 @@ namespace StealthWorldGenerator {
             static constexpr int rows = internal::traits<BinaryOp>::rows, cols = internal::traits<BinaryOp>::cols,
                 size = internal::traits<BinaryOp>::size;
 
-            BinaryOp(const LHS& lhs, const RHS& rhs)
+            constexpr BinaryOp(const LHS& lhs, const RHS& rhs)
                 : lhs(lhs), rhs(rhs) { }
 
             constexpr ScalarType operator[](int index) const {

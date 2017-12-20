@@ -9,7 +9,7 @@ namespace StealthWorldGenerator {
     template <int scale = 1>
     class InterpolationKernel {
         public:
-            InterpolationKernel() {
+            constexpr InterpolationKernel() {
                 initializeKernel();
             }
 

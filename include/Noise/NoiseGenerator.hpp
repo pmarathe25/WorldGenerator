@@ -48,7 +48,7 @@ namespace StealthWorldGenerator {
     // Scale maps one pixel of the generated noise to n pixels of the output.
     class NoiseGenerator {
         public:
-            NoiseGenerator() = default;
+            constexpr NoiseGenerator() = default;
 
             // Create the smoothed noise
             template <int rows, int cols, int scale = 1, typename Distribution = std::uniform_real_distribution<float>,

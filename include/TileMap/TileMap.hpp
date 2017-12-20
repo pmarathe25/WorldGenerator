@@ -20,20 +20,20 @@ namespace StealthWorldGenerator {
             typedef type ScalarType;
             static constexpr int rows = rowsAtCompileTime, cols = colsAtCompileTime, size = sizeAtCompileTime;
 
-            TileMap() : tiles(sizeAtCompileTime) { }
+            constexpr TileMap() : tiles(sizeAtCompileTime) { }
 
             template <typename OtherDerived>
-            TileMap(const TileMapBase<OtherDerived>& other) {
+            constexpr TileMap(const TileMapBase<OtherDerived>& other) {
                 tiles = std::vector<ScalarType>(sizeAtCompileTime);
                 *this = other;
             }
 
-            TileMap(const TileMap& other) {
+            constexpr TileMap(const TileMap& other) {
                 tiles = std::vector<ScalarType>(sizeAtCompileTime);
                 *this = other;
             }
 
-            TileMap(TileMap&& other) = default;
+            constexpr TileMap(TileMap&& other) noexcept = default;
 
             constexpr void operator=(const TileMap& other) {
                 copy(other);
