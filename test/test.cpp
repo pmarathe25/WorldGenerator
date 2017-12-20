@@ -16,7 +16,7 @@ constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, r
         for (int j = 0; j < cols; ++j) {
             // Scale from (-1, 1) to (0, 1)
             float color = (noise.at(i, j) + 1.0f) * 127.5f;
-            im.setPixel(j, i, sf::Color(color, color, color));
+            im.setPixel(j, i, sf::Color(color, 0.0f, 0.0f));
         }
     }
     return im;
@@ -26,14 +26,16 @@ int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
     StealthWorldGenerator::NoiseGenerator noiseGenerator;
-    auto octave1 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 400>();
-    auto octave2 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 200>();
-    auto octave3 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
-    auto octave4 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 50>();
-    auto octave5 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 25>();
+    // auto octave1 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 400>();
+    // auto octave2 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 200>();
+    // auto octave3 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
+    // auto octave4 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 50>();
+    // auto octave5 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 25>();
 
-    StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
-        * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.03125f * octave5;
+    // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
+    //     * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.03125f * octave5;
+
+    auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 800, 5>();
 
     // Show noise on-screen.
     sf::Texture noiseTexture;
