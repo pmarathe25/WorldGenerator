@@ -15,8 +15,8 @@ namespace StealthWorldGenerator {
     class TileMapBase;
 
     // TileMap
-    template <typename type, int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime
-        = rowsAtCompileTime * colsAtCompileTime>
+    template <typename type, int rowsAtCompileTime, int colsAtCompileTime,
+        int sizeAtCompileTime = rowsAtCompileTime * colsAtCompileTime>
     class TileMap;
 
     // Binary Op
