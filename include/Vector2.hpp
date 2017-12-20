@@ -1,6 +1,5 @@
 #ifndef VECTOR_2_H
 #define VECTOR_2_H
-// #include "Utility.hpp"
 
 namespace StealthWorldGenerator {
     template <typename ScalarType>
