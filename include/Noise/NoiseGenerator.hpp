@@ -17,7 +17,7 @@ namespace StealthWorldGenerator {
 
     // Initialize with random values according to provided distribution
     template <int internalRows, int internalCols, typename Distribution, typename Generator>
-    inline constexpr InternalNoiseMap<internalRows, internalCols> generateInternalNoiseMap(Distribution& distribution, Generator& generator) {
+    constexpr InternalNoiseMap<internalRows, internalCols> generateInternalNoiseMap(Distribution& distribution, Generator& generator) {
         // Internal noise map should be large enough to fit tiles of size (scale, scale).
         InternalNoiseMap<internalRows, internalCols> internalNoiseMap{};
         for (int i = 0; i < internalRows; ++i) {
@@ -29,7 +29,7 @@ namespace StealthWorldGenerator {
         return internalNoiseMap;
     }
 
-    inline constexpr float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
+    constexpr float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
         const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) {
         // Compute dot products.
         float n00 = topLeft.y * point.y + topLeft.x * point.x;
@@ -78,7 +78,7 @@ namespace StealthWorldGenerator {
 
         private:
             template <int scale, int internalRows, int internalCols, int rows, int cols>
-            inline constexpr void fillTile(int internalRow, int internalCol, const InternalNoiseMap<internalRows, internalCols>& internalNoise,
+            constexpr void fillTile(int internalRow, int internalCol, const InternalNoiseMap<internalRows, internalCols>& internalNoise,
                 NoiseMap<rows, cols>& generatedNoise, const InterpolationKernel<scale>& kernel) const {
                 // Coordinates on generated noise.
                 const int scaledRow = internalRow * scale;
