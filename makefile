@@ -9,8 +9,8 @@ TESTOBJS = $(BUILDDIR)/test.o
 INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
 HEADERS = $(addprefix $(INCLUDEPATH)/, TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp \
-	TileMap/Ops.hpp TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp Utility.hpp Vector2.hpp Terrain/TerrainTile.hpp \
-	Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp)
+	TileMap/Operations/InternalOperations.hpp TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp\
+	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp Utility.hpp Vector2.hpp Terrain/TerrainTile.hpp Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp)
 # Compiler settings
 CXX = g++
 CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3

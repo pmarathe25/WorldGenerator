@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <thread>
 #include <chrono>
+#include <functional>
 
 const int WINDOW_X = 800;
 const int WINDOW_Y = 800;
@@ -13,6 +14,9 @@ constexpr float doubleUp(float in) {
     return in * 2.0;
 }
 
+constexpr float threshold(float in, float threshold) {
+    return (in > threshold) ? in : 0.0f;
+}
 
 template <int rows, int cols>
 constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
@@ -20,9 +24,9 @@ constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, r
     im.create(cols, rows);
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            // Scale from (-1, 1) to (0, 1)
-            float color = (noise.at(i, j) + 1.0f) * 127.5f;
-            im.setPixel(j, i, sf::Color(255.0f, color, color));
+            // Scale from (0, 1) to (0, 255)
+            int color = (noise.at(i, j)) * 255.0f;
+            im.setPixel(j, i, sf::Color(255, color, color));
         }
     }
     return im;
@@ -43,7 +47,12 @@ int main() {
 
     while (window.isOpen()) {
         auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
-        StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
+        auto noise2 = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
+        // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
+        // noise = noise && (noise < noise2);
+        // noise = noise * (noise > noise2);
+        // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
+        // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
         // Show noise on-screen.
         sf::Texture noiseTexture;
         noiseTexture.loadFromImage(imageFromNoise(noise));

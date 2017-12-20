@@ -1,7 +1,7 @@
 #ifndef TILE_MAP_BASE_H
 #define TILE_MAP_BASE_H
 #include "TileMap/ForwardDeclarations.hpp"
-#include "TileMap/Ops.hpp"
+#include "TileMap/Operations/InternalOperations.hpp"
 
 namespace StealthWorldGenerator {
     template <typename Derived>
@@ -31,21 +31,6 @@ namespace StealthWorldGenerator {
                 return static_cast<const Derived*>(this) -> at(i, j);
             }
     };
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs);
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs);
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs);
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs);
-
-    template <typename Derived, typename UnaryOperation>
-    constexpr UnaryOp<Derived, UnaryOperation> apply(UnaryOperation& op, const Derived& lhs);
 } /* StealthWorldGenerator */
 
 #endif

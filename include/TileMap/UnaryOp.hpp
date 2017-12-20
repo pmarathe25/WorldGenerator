@@ -1,7 +1,6 @@
 #ifndef UNARY_OP_H
 #define UNARY_OP_H
 #include "TileMap/TileMapBase.hpp"
-#include "TileMap/Ops.hpp"
 
 namespace StealthWorldGenerator {
     namespace internal {
@@ -21,9 +20,7 @@ namespace StealthWorldGenerator {
             static constexpr int rows = internal::traits<UnaryOp>::rows, cols = internal::traits<UnaryOp>::cols,
                 size = internal::traits<UnaryOp>::size;
 
-            constexpr UnaryOp(UnaryOperation& op, const LHS& lhs) : op(op), lhs(lhs) {
-
-            }
+            constexpr UnaryOp(const UnaryOperation& op, const LHS& lhs) : op(op), lhs(lhs) { }
 
             constexpr ScalarType operator[](int index) const {
                 return op(lhs[index]);
@@ -32,17 +29,10 @@ namespace StealthWorldGenerator {
             constexpr ScalarType at(int i, int j) const {
                 return op(lhs.at(i, j));
             }
-
         private:
             const LHS& lhs;
-            UnaryOperation& op;
+            const UnaryOperation& op;
     };
-
-    template <typename Derived, typename UnaryOperation>
-    constexpr UnaryOp<Derived, UnaryOperation> apply(UnaryOperation& op, const Derived& lhs) {
-        return UnaryOp<Derived, UnaryOperation>(op, lhs);
-    }
-
 } /* StealthWorldGenerator */
 
 #endif

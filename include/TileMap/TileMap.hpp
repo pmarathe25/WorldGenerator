@@ -1,8 +1,8 @@
 #ifndef STEALTH_TILEMAP_H
 #define STEALTH_TILEMAP_H
 #include "TileMap/TileMapBase.hpp"
-#include "TileMap/BinaryOp.hpp"
-#include "TileMap/UnaryOp.hpp"
+#include "TileMap/Operations/BinaryOperations.hpp"
+#include "TileMap/Operations/UnaryOperations.hpp"
 #include <vector>
 #include <iostream>
 

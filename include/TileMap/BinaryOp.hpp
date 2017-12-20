@@ -4,7 +4,6 @@
     && internal::traits<Derived>::cols == internal::traits<OtherDerived>::cols) \
     || (internal::traits<Derived>::size == 1 || internal::traits<OtherDerived>::size == 1), "Cannot operate on incompatible arguments");
 #include "TileMap/TileMapBase.hpp"
-#include "TileMap/Ops.hpp"
 #include <type_traits>
 
 namespace StealthWorldGenerator {
@@ -58,30 +57,6 @@ namespace StealthWorldGenerator {
             const LHS& lhs;
             const RHS& rhs;
     };
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs) {
-        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
-        return BinaryOp<Derived, OtherDerived, internal::ops::add>{lhs, rhs};
-    }
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs) {
-        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
-        return BinaryOp<Derived, OtherDerived, internal::ops::subtract>{lhs, rhs};
-    }
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs) {
-        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
-        return BinaryOp<Derived, OtherDerived, internal::ops::multiply>{lhs, rhs};
-    }
-
-    template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs) {
-        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
-        return BinaryOp<Derived, OtherDerived, internal::ops::divide>{lhs, rhs};
-    }
 } /* StealthWorldGenerator */
 
 #endif
