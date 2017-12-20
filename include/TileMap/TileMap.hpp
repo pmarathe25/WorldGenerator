@@ -75,19 +75,21 @@ namespace StealthWorldGenerator {
             std::array<std::thread, NUM_THREADS> copyThreads;
 
             template <typename Derived>
-            constexpr void copyPortion(const TileMapBase<Derived>* other, int portionStart, int portionEnd) {
+            constexpr void copyPortion(const TileMapBase<Derived>* other, int id) {
                 // Copy elements for a single portion of the TileMap.
-                for (int i = portionStart; i < portionEnd; ++i) {
+                constexpr int portionSize = ceilDivide(size, NUM_THREADS);
+                const int start = id * portionSize;
+                const int end = std::min(start + portionSize, size);
+                for (int i = start; i < end; ++i) {
                     tiles[i] = other -> operator[](i);
                 }
             }
 
             template <typename Derived>
             constexpr void copyMultithreaded(const TileMapBase<Derived>& other) {
-                constexpr int portionSize = ceilDivide(size, NUM_THREADS);
                 // Create threads
                 for (int i = 0; i < NUM_THREADS; ++i) {
-                    copyThreads[i] = std::thread{&TileMap::copyPortion<Derived>, this, &other, portionSize * i, std::min(portionSize * (i + 1), size)};
+                    copyThreads[i] = std::thread{&TileMap::copyPortion<Derived>, this, &other, i};
                 }
                 // Wait for all threads to finish
                 for (auto& thread : copyThreads) {
