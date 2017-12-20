@@ -2,6 +2,7 @@
 #define TILE_MAP_BASE_H
 #include "TileMap/ForwardDeclarations.hpp"
 #include "TileMap/Ops.hpp"
+#include <type_traits>
 
 namespace StealthWorldGenerator {
     template <typename Derived>
@@ -9,11 +10,9 @@ namespace StealthWorldGenerator {
         public:
             typedef typename internal::traits<Derived>::ScalarType ScalarType;
 
-            enum {
-                rows = internal::traits<Derived>::rows,
+            static constexpr int rows = internal::traits<Derived>::rows,
                 cols = internal::traits<Derived>::cols,
-                size = internal::traits<Derived>::size
-            };
+                size = internal::traits<Derived>::size;
 
             TileMapBase() { }
 
@@ -21,7 +20,7 @@ namespace StealthWorldGenerator {
                 return static_cast<Derived*>(this) -> operator[](index);
             }
 
-            inline const ScalarType operator[](int index) const {
+            inline ScalarType operator[](int index) const {
                 return static_cast<const Derived*>(this) -> operator[](index);
             }
 
@@ -29,10 +28,16 @@ namespace StealthWorldGenerator {
                 return static_cast<Derived*>(this) -> at(i, j);
             }
 
-            template <typename OtherDerived>
-            // friend BinaryOp<Derived, OtherDerived, BinaryOps::add> operator+(const TileMapBase<Derived>& lhs, const TileMapBase<OtherDerived>& rhs);
-            BinaryOp<Derived, OtherDerived, BinaryOps::add> operator+(const TileMapBase<OtherDerived>& rhs);
+            inline ScalarType at(int i, int j) const {
+                return static_cast<Derived*>(this) -> at(i, j);
+            }
     };
+
+    template <typename Derived, typename OtherDerived>
+    BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs);
+
+    template <typename Derived, typename OtherDerived>
+    BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs);
 } /* StealthWorldGenerator */
 
 #endif

@@ -10,26 +10,15 @@ namespace StealthWorldGenerator {
         template <typename type, int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime>
         struct traits<TileMap<type, rowsAtCompileTime, colsAtCompileTime, sizeAtCompileTime>> {
             typedef type ScalarType;
-
-            enum {
-                rows = rowsAtCompileTime,
-                cols = colsAtCompileTime,
-                size = sizeAtCompileTime
-            };
+            static constexpr int rows = rowsAtCompileTime, cols = colsAtCompileTime, size = sizeAtCompileTime;
         };
     } /* internal */
-
 
     template <typename type, int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime>
     class TileMap : public TileMapBase<TileMap<type, rowsAtCompileTime, colsAtCompileTime>> {
         public:
             typedef type ScalarType;
-
-            enum {
-                rows = rowsAtCompileTime,
-                cols = colsAtCompileTime,
-                size = sizeAtCompileTime
-            };
+            static constexpr int rows = rowsAtCompileTime, cols = colsAtCompileTime, size = sizeAtCompileTime;
 
             TileMap() : tiles(sizeAtCompileTime) { }
 

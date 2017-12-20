@@ -3,7 +3,10 @@
 
 namespace StealthWorldGenerator {
     namespace internal {
-        template <typename T> struct traits;
+        template <typename T> struct traits {
+            typedef T ScalarType;
+            static constexpr int rows = 1, cols = 1, size = 1;
+        };
     } /* internal */
 
     // TileMapBase
@@ -15,13 +18,10 @@ namespace StealthWorldGenerator {
 
     // Binary Op
     template <typename LHS, typename RHS, typename ret = LHS>
-    using Operation = ret (*)(const LHS&, const RHS&);
+    using BinaryOperation = ret (*)(const LHS&, const RHS&);
+
     template <typename LHS, typename RHS,
-        Operation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op,
-        typename LHSType = typename internal::traits<LHS>::ScalarType, typename RHSType =
-        typename internal::traits<RHS>::ScalarType, int rowsAtCompileTime =
-        internal::traits<LHS>::rows, int colsAtCompileTime = internal::traits<LHS>::cols,
-        int sizeAtCompileTime = internal::traits<LHS>::size>
+        BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>
     class BinaryOp;
 } /* StealthWorldGenerator */
 
