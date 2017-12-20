@@ -28,6 +28,13 @@ namespace StealthWorldGenerator {
                 *this = other;
             }
 
+            TileMap(const TileMap& other) {
+                tiles = std::vector<ScalarType>(sizeAtCompileTime);
+                *this = other;
+            }
+
+            TileMap(TileMap&& other) = default;
+
             void operator=(const TileMap& other) {
                 copy(other);
             }
