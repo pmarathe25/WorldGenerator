@@ -15,16 +15,14 @@ namespace StealthWorldGenerator {
     class TileMapBase;
 
     // TileMap
-    template <typename type, int rowsAtCompileTime, int colsAtCompileTime,
-        int sizeAtCompileTime = rowsAtCompileTime * colsAtCompileTime>
+    template <typename type, int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime = rowsAtCompileTime * colsAtCompileTime>
     class TileMap;
 
     // Binary Op
     template <typename LHS, typename RHS>
     using BinaryOperation = typename std::common_type<LHS, RHS>::type (*)(const LHS&, const RHS&);
 
-    template <typename LHS, typename RHS, BinaryOperation<typename internal::traits<LHS>::ScalarType,
-        typename internal::traits<RHS>::ScalarType> op>
+    template <typename LHS, typename RHS, BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>
     class BinaryOp;
 
     // Unary Op
