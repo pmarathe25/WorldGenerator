@@ -3,8 +3,12 @@
 #include "TileMap/TileMapBase.hpp"
 #include "TileMap/Operations/BinaryOperations.hpp"
 #include "TileMap/Operations/UnaryOperations.hpp"
+#include "Utility.hpp"
 #include <vector>
 #include <iostream>
+#include <thread>
+
+constexpr int NUM_THREADS = 16;
 
 namespace StealthWorldGenerator {
     namespace internal {
@@ -27,12 +31,12 @@ namespace StealthWorldGenerator {
             // Copy
             template <typename OtherDerived>
             constexpr TileMap(const TileMapBase<OtherDerived>& other) {
-                tiles = std::vector<ScalarType>(sizeAtCompileTime);
+                tiles = std::vector<ScalarType>(TileMapBase<OtherDerived>::size);
                 *this = other;
             }
 
             constexpr TileMap(const TileMap& other) {
-                tiles = std::vector<ScalarType>(sizeAtCompileTime);
+                tiles = std::vector<ScalarType>(TileMap::size);
                 *this = other;
             }
 
@@ -41,12 +45,14 @@ namespace StealthWorldGenerator {
 
             // Assignment
             constexpr void operator=(const TileMap& other) {
-                copy(other);
+                tiles = std::vector<ScalarType>(TileMap::size);
+                copyMultithreaded(other);
             }
 
-            template <typename Derived>
-            constexpr void operator=(const TileMapBase<Derived>& other) {
-                copy(other);
+            template <typename OtherDerived>
+            constexpr void operator=(const TileMapBase<OtherDerived>& other) {
+                tiles = std::vector<ScalarType>(TileMapBase<OtherDerived>::size);
+                copyMultithreaded(other);
             }
 
             constexpr ScalarType& at(int row, int col) {
@@ -66,11 +72,26 @@ namespace StealthWorldGenerator {
             }
         protected:
             std::vector<ScalarType> tiles;
+            std::vector<std::thread> copyThreads;
 
             template <typename Derived>
-            constexpr void copy(const TileMapBase<Derived>& other) {
-                for (int i = 0; i < size; ++i) {
-                    tiles[i] = other[i];
+            constexpr void copyPortion(const TileMapBase<Derived>* other, int portionStart, int portionEnd) {
+                // Copy elements for a single portion of the TileMap.
+                for (int i = portionStart; i < portionEnd; ++i) {
+                    tiles[i] = other -> operator[](i);
+                }
+            }
+
+            template <typename Derived>
+            constexpr void copyMultithreaded(const TileMapBase<Derived>& other) {
+                constexpr int portionSize = ceilDivide(size, NUM_THREADS);
+                // Create threads
+                for (int i = 0; i < NUM_THREADS; ++i) {
+                    copyThreads.emplace_back(&TileMap::copyPortion<Derived>, this, &other, portionSize * i, std::min(portionSize * (i + 1), size));
+                }
+                // Wait for all threads to finish
+                for (auto& thread : copyThreads) {
+                    thread.join();
                 }
             }
     };

@@ -15,7 +15,7 @@ HEADERS = $(addprefix $(INCLUDEPATH)/, TileMap/TileMap.hpp TileMap/TileMapBase.h
 CXX = g++
 CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3
 LFLAGS = -shared -flto
-TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -flto
+TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto
 EXECLFLAGS = -flto
 
 $(TESTDIR)/test: $(TESTOBJS) $(HEADERS)
