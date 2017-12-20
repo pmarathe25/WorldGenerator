@@ -47,7 +47,7 @@ namespace StealthWorldGenerator {
             constexpr ScalarType at(int i, int j) const {
                 if constexpr (std::is_scalar<RHS>::value) {
                     return op(lhs.at(i, j), rhs);
-                } else if (std::is_scalar<LHS>::value) {
+                } else if constexpr (std::is_scalar<LHS>::value) {
                     return op(lhs, rhs.at(i, j));
                 } else {
                     return op(lhs.at(i, j), rhs.at(i, j));
