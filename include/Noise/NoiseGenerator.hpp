@@ -22,7 +22,7 @@ namespace StealthWorldGenerator {
         InternalNoiseMap<internalRows, internalCols> internalNoiseMap{};
         for (int i = 0; i < internalRows; ++i) {
             for (int j = 0; j < internalCols; ++j) {
-                float angle = distribution(generator) * TAU;
+                float angle = distribution(generator);
                 internalNoiseMap.at(i, j) = Vector2f{(float) cos(angle), (float) sin(angle)};
             }
         }
@@ -53,7 +53,7 @@ namespace StealthWorldGenerator {
             // Create the smoothed noise
             template <int rows, int cols, int scale = 1, typename Distribution = std::uniform_real_distribution<float>,
                 typename Generator = std::default_random_engine>
-            inline NoiseMap<rows, cols> generate(Distribution distribution = std::uniform_real_distribution(0.0f, 1.0f),
+            inline NoiseMap<rows, cols> generate(Distribution distribution = std::uniform_real_distribution(0.0f, TAU),
                 Generator generator = std::default_random_engine(CURRENT_TIME)) {
                 // Generate a new interpolation kernel if one does not exist.
                 if (kernels.count(scale) < 1) {
