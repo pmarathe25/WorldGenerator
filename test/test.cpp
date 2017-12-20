@@ -16,7 +16,7 @@ constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, r
         for (int j = 0; j < cols; ++j) {
             // Scale from (-1, 1) to (0, 1)
             float color = (noise.at(i, j) + 1.0f) * 127.5f;
-            im.setPixel(j, i, sf::Color(color, 0.0f, 0.0f));
+            im.setPixel(j, i, sf::Color(255.0f, color, color));
         }
     }
     return im;
@@ -35,18 +35,17 @@ int main() {
     // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
     //     * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.03125f * octave5;
 
-    auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 800, 5>();
-
-    // Show noise on-screen.
-    sf::Texture noiseTexture;
-    noiseTexture.loadFromImage(imageFromNoise(noise));
-    sf::Sprite noiseSprite;
-    noiseSprite.setTexture(noiseTexture);
-    // Draw
-    window.draw(noiseSprite);
-    // Display.
-    window.display();
     while (window.isOpen()) {
+        auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
+        // Show noise on-screen.
+        sf::Texture noiseTexture;
+        noiseTexture.loadFromImage(imageFromNoise(noise));
+        sf::Sprite noiseSprite;
+        noiseSprite.setTexture(noiseTexture);
+        // Draw
+        window.draw(noiseSprite);
+        // Display.
+        window.display();
         // Handle events.
         sf::Event event;
         while (window.pollEvent(event)) {
