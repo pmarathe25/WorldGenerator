@@ -5,8 +5,8 @@
 #include <thread>
 #include <chrono>
 
-const int WINDOW_X = 1600;
-const int WINDOW_Y = 900;
+const int WINDOW_X = 800;
+const int WINDOW_Y = 800;
 
 template <int rows, int cols>
 constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
@@ -33,7 +33,7 @@ int main() {
     auto octave5 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 25>();
 
     StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
-        * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.0625f * octave5;
+        * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.03125f * octave5;
 
     // Show noise on-screen.
     sf::Texture noiseTexture;
