@@ -8,6 +8,7 @@ namespace StealthWorldGenerator {
             Vector2() { }
 
             Vector2(ScalarType x, ScalarType y) : x(x), y(y) { }
+
             ScalarType x, y;
     };
 
@@ -17,7 +18,9 @@ namespace StealthWorldGenerator {
         return "(" + std::to_string(tile.x) + ", " + std::to_string(tile.y) + ")";
     }
 
+    using Vector2i = Vector2<int>;
     using Vector2f = Vector2<float>;
+    using Vector2d = Vector2<double>;
 } /* StealthWorldGenerator */
 
 #endif
