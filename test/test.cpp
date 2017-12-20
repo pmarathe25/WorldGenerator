@@ -4,8 +4,8 @@
 #include <thread>
 #include <chrono>
 
-const int WINDOW_X = 10;
-const int WINDOW_Y = 10;
+const int WINDOW_X = 1600;
+const int WINDOW_Y = 900;
 
 template <int rows, int cols>
 sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
@@ -13,7 +13,8 @@ sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>
     im.create(cols, rows);
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            float color = noise.at(i, j) * 255.0f;
+            // Scale from (-1, 1) to (0, 1)
+            float color = (noise.at(i, j) + 1.0f) * 127.5f;
             im.setPixel(j, i, sf::Color(color, color, color));
         }
     }
@@ -24,36 +25,32 @@ int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
     StealthWorldGenerator::NoiseGenerator noiseGenerator;
-    auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 8>();
-    auto noise2 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 2>();
+    auto octave1 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 400>();
+    auto octave2 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 200>();
+    auto octave3 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
+    auto octave4 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 50>();
+    auto octave5 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 25>();
 
-    display(noise);
-    display(noise2);
-
-    StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> test = 1.0f + noise * 2 + noise2 / 0.5f - 4.0f;
-    // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> test = noise + noise2;
-    display(test);
-    // StealthWorldGenerator::TileMap<float, 10, 10> noise;
-    // StealthWorldGenerator::TileMap<float> noise = noiseGenerator.generate(10, 10);
-    // display(noise);
+    StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
+        * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.0625f * octave5;
 
     // Show noise on-screen.
-    // sf::Texture noiseTexture;
-    // noiseTexture.loadFromImage(imageFromNoise(noise));
-    // sf::Sprite noiseSprite;
-    // noiseSprite.setTexture(noiseTexture);
-    // // Draw
-    // window.draw(noiseSprite);
-    // // Display.
-    // window.display();
-    // while (window.isOpen()) {
-    //     // Handle events.
-    //     sf::Event event;
-    //     while (window.pollEvent(event)) {
-    //         if(event.type == sf::Event::Closed) {
-    //           window.close();
-    //         }
-    //     }
-    //     std::this_thread::sleep_for(std::chrono::milliseconds(250));
-    // }
+    sf::Texture noiseTexture;
+    noiseTexture.loadFromImage(imageFromNoise(noise));
+    sf::Sprite noiseSprite;
+    noiseSprite.setTexture(noiseTexture);
+    // Draw
+    window.draw(noiseSprite);
+    // Display.
+    window.display();
+    while (window.isOpen()) {
+        // Handle events.
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if(event.type == sf::Event::Closed) {
+              window.close();
+            }
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    }
 }
