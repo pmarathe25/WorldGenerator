@@ -14,7 +14,7 @@ namespace StealthWorldGenerator {
 
     // Display functions
     template <typename ScalarType>
-    std::string to_string(const Vector2<ScalarType>& tile) {
+    constexpr std::string to_string(const Vector2<ScalarType>& tile) {
         return "(" + std::to_string(tile.x) + ", " + std::to_string(tile.y) + ")";
     }
 

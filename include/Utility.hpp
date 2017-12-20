@@ -2,14 +2,14 @@
 #define UTILITY_H
 #include <cmath>
 
-const float TAU = 6.28318530718f; 
+const float TAU = 6.28318530718f;
 
 namespace StealthWorldGenerator {
-    inline constexpr int ceilDivide(int numerator, int denominator) {
+    constexpr int ceilDivide(int numerator, int denominator) {
         return 1 + ((numerator - 1) / denominator);
     }
 
-    inline constexpr float attenuationPolynomial(float distance) {
+    constexpr float attenuationPolynomial(float distance) {
         return (6 * pow(distance, 5) - 15 * pow(distance, 4) + 10 * pow(distance, 3));
     }
 } /* StealthWorldGenerator */
