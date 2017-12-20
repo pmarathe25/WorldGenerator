@@ -24,6 +24,11 @@ namespace StealthWorldGenerator::internal::ops {
     }
 
     template <typename LHS, typename RHS>
+    constexpr typename std::common_type<LHS, RHS>::type eq(const LHS& lhs, const RHS& rhs) {
+        return lhs == rhs;
+    }
+
+    template <typename LHS, typename RHS>
     constexpr typename std::common_type<LHS, RHS>::type less(const LHS& lhs, const RHS& rhs) {
         return lhs < rhs;
     }

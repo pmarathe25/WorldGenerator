@@ -3,6 +3,9 @@
 #include "TileMap/BinaryOp.hpp"
 #include "TileMap/Operations/InternalOperations.hpp"
 
+
+#include <iostream>
+
 namespace StealthWorldGenerator {
     template <typename Derived, typename OtherDerived>
     constexpr BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs) {
@@ -20,6 +23,12 @@ namespace StealthWorldGenerator {
     constexpr BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs) {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::multiply>{lhs, rhs};
+    }
+
+    template <typename Derived, typename OtherDerived>
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::eq> operator==(const Derived& lhs, const OtherDerived& rhs) {
+        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
+        return BinaryOp<Derived, OtherDerived, internal::ops::eq>{lhs, rhs};
     }
 
     template <typename Derived, typename OtherDerived>

@@ -31,13 +31,19 @@ namespace StealthWorldGenerator {
             // Copy
             template <typename OtherDerived>
             constexpr TileMap(const TileMapBase<OtherDerived>& other) {
-                tiles = std::vector<ScalarType>(TileMapBase<OtherDerived>::size);
-                *this = other;
+                // Only reallocate if the two TileMaps are not the same one.
+                if (tiles.capacity() == 0) {
+                    tiles = std::vector<ScalarType>(TileMapBase<OtherDerived>::size);
+                }
+                copyMultithreaded(other);
             }
 
             constexpr TileMap(const TileMap& other) {
-                tiles = std::vector<ScalarType>(TileMap::size);
-                *this = other;
+                // Only reallocate if the two TileMaps are not the same one.
+                if (tiles.capacity() == 0) {
+                    tiles = std::vector<ScalarType>(TileMap::size);
+                }
+                copyMultithreaded(other);
             }
 
             // Move
@@ -45,13 +51,11 @@ namespace StealthWorldGenerator {
 
             // Assignment
             constexpr void operator=(const TileMap& other) {
-                tiles = std::vector<ScalarType>(TileMap::size);
                 copyMultithreaded(other);
             }
 
             template <typename OtherDerived>
             constexpr void operator=(const TileMapBase<OtherDerived>& other) {
-                tiles = std::vector<ScalarType>(TileMapBase<OtherDerived>::size);
                 copyMultithreaded(other);
             }
 
