@@ -8,6 +8,12 @@
 const int WINDOW_X = 800;
 const int WINDOW_Y = 800;
 
+
+constexpr float doubleUp(float in) {
+    return in * 2.0;
+}
+
+
 template <int rows, int cols>
 constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
     sf::Image im;
@@ -37,6 +43,7 @@ int main() {
 
     while (window.isOpen()) {
         auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
+        StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
         // Show noise on-screen.
         sf::Texture noiseTexture;
         noiseTexture.loadFromImage(imageFromNoise(noise));

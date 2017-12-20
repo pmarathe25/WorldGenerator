@@ -43,6 +43,9 @@ namespace StealthWorldGenerator {
 
     template <typename Derived, typename OtherDerived>
     constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs);
+
+    template <typename Derived, typename UnaryOperation>
+    constexpr UnaryOp<Derived, UnaryOperation> apply(UnaryOperation& op, const Derived& lhs);
 } /* StealthWorldGenerator */
 
 #endif

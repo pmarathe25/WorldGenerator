@@ -2,6 +2,7 @@
 #define STEALTH_TILEMAP_H
 #include "TileMap/TileMapBase.hpp"
 #include "TileMap/BinaryOp.hpp"
+#include "TileMap/UnaryOp.hpp"
 #include <vector>
 #include <iostream>
 
@@ -96,6 +97,8 @@ namespace StealthWorldGenerator {
     template <int rowsAtCompileTime, int colsAtCompileTime>
     using TileMapF = TileMap<float, rowsAtCompileTime, colsAtCompileTime>;
 
+    template <int rowsAtCompileTime, int colsAtCompileTime>
+    using TileMapD = TileMap<double, rowsAtCompileTime, colsAtCompileTime>;
 } /* StealthWorldGenerator */
 
 #endif

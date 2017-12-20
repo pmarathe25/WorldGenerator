@@ -26,6 +26,7 @@ namespace StealthWorldGenerator {
             }
         } /* ops */
     } /* internal */
+
 } /* StealthWorldGenerator */
 
 #endif

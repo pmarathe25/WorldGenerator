@@ -26,6 +26,10 @@ namespace StealthWorldGenerator {
     template <typename LHS, typename RHS, BinaryOperation<typename internal::traits<LHS>::ScalarType,
         typename internal::traits<RHS>::ScalarType> op>
     class BinaryOp;
+
+    // Unary Op
+    template <typename LHS, typename UnaryOperation>
+    class UnaryOp;
 } /* StealthWorldGenerator */
 
 #endif
