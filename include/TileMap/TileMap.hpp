@@ -74,7 +74,7 @@ namespace StealthWorldGenerator {
             constexpr const ScalarType& operator[](int index) const {
                 return tiles[index];
             }
-        protected:
+        private:
             std::vector<ScalarType> tiles;
             std::array<std::thread, NUM_THREADS> copyThreads;
 

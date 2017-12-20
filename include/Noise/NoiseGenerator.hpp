@@ -91,6 +91,8 @@ namespace StealthWorldGenerator {
             }
         private:
             std::array<std::thread, NUM_THREADS> noiseThreads;
+            // Maintain a cache of interpolation kernels of different sizes
+            static std::unordered_map<int, std::any> kernels;
 
             template <int internalRows, int internalCols, int rows, int cols, int scale>
             constexpr void fillRows(int id, InternalNoiseMap<internalRows, internalCols>* internalNoiseMap,
@@ -135,9 +137,6 @@ namespace StealthWorldGenerator {
                     }
                 }
             }
-
-            // Maintain a cache of interpolation kernels of different sizes
-            static std::unordered_map<int, std::any> kernels;
     };
 
     std::unordered_map<int, std::any> NoiseGenerator::kernels{};
