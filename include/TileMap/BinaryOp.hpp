@@ -9,8 +9,8 @@
 
 namespace StealthWorldGenerator {
     namespace internal {
-        template <typename LHS, typename RHS,
-            BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>
+        template <typename LHS, typename RHS, BinaryOperation<typename internal::traits<LHS>::ScalarType,
+            typename internal::traits<RHS>::ScalarType> op>
         struct traits<BinaryOp<LHS, RHS, op>> {
             typedef typename internal::traits<LHS>::ScalarType ScalarTypeLHS;
             typedef typename internal::traits<RHS>::ScalarType ScalarTypeRHS;
@@ -21,8 +21,8 @@ namespace StealthWorldGenerator {
         };
     } /* internal */
 
-    template <typename LHS, typename RHS,
-        BinaryOperation<typename internal::traits<LHS>::ScalarType, typename internal::traits<RHS>::ScalarType> op>
+    template <typename LHS, typename RHS, BinaryOperation<typename internal::traits<LHS>::ScalarType,
+        typename internal::traits<RHS>::ScalarType> op>
     class BinaryOp : public TileMapBase<BinaryOp<LHS, RHS, op>> {
         public:
             typedef typename internal::traits<BinaryOp>::ScalarType ScalarType;
@@ -34,7 +34,7 @@ namespace StealthWorldGenerator {
             BinaryOp(const LHS& lhs, const RHS& rhs)
                 : lhs(lhs), rhs(rhs) { }
 
-            inline ScalarType operator[](int index) const {
+            constexpr ScalarType operator[](int index) const {
                 if constexpr (std::is_scalar<RHS>::value) {
                     return op(lhs[index], rhs);
                 } else if constexpr (std::is_scalar<LHS>::value) {
@@ -44,7 +44,7 @@ namespace StealthWorldGenerator {
                 }
             }
 
-            inline ScalarType at(int i, int j) const {
+            constexpr ScalarType at(int i, int j) const {
                 if constexpr (std::is_scalar<RHS>::value) {
                     return op(lhs.at(i, j), rhs);
                 } else if (std::is_scalar<LHS>::value) {
@@ -60,25 +60,25 @@ namespace StealthWorldGenerator {
     };
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs) {
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs) {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::add>{lhs, rhs};
     }
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs) {
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs) {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::subtract>{lhs, rhs};
     }
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs) {
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs) {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::multiply>{lhs, rhs};
     }
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs) {
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs) {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::divide>{lhs, rhs};
     }

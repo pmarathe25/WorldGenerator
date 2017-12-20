@@ -16,34 +16,34 @@ namespace StealthWorldGenerator {
 
             TileMapBase() { }
 
-            inline ScalarType operator[](int index) {
+            constexpr ScalarType operator[](int index) {
                 return static_cast<Derived*>(this) -> operator[](index);
             }
 
-            inline ScalarType operator[](int index) const {
+            constexpr ScalarType operator[](int index) const {
                 return static_cast<const Derived*>(this) -> operator[](index);
             }
 
-            inline ScalarType at(int i, int j) {
+            constexpr ScalarType at(int i, int j) {
                 return static_cast<Derived*>(this) -> at(i, j);
             }
 
-            inline ScalarType at(int i, int j) const {
-                return static_cast<Derived*>(this) -> at(i, j);
+            constexpr ScalarType at(int i, int j) const {
+                return static_cast<const Derived*>(this) -> at(i, j);
             }
     };
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs);
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::add> operator+(const Derived& lhs, const OtherDerived& rhs);
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs);
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::subtract> operator-(const Derived& lhs, const OtherDerived& rhs);
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs);
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::multiply> operator*(const Derived& lhs, const OtherDerived& rhs);
 
     template <typename Derived, typename OtherDerived>
-    BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs);
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs);
 } /* StealthWorldGenerator */
 
 #endif

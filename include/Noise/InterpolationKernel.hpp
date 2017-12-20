@@ -25,7 +25,7 @@ namespace StealthWorldGenerator {
             TileMap<Vector2f, scale, scale> points{};
             TileMap<Vector2f, scale, scale> attenuations{};
 
-            inline void initializeKernel() {
+            inline constexpr void initializeKernel() {
                 // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
                 constexpr int quadrantBound = ceilDivide(scale, 2);
                 initializeDiagonalQuadrant(quadrantBound);

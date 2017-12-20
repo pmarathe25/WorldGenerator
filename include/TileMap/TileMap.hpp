@@ -35,28 +35,28 @@ namespace StealthWorldGenerator {
 
             TileMap(TileMap&& other) = default;
 
-            void operator=(const TileMap& other) {
+            constexpr void operator=(const TileMap& other) {
                 copy(other);
             }
 
             template <typename Derived>
-            void operator=(const TileMapBase<Derived>& other) {
+            constexpr void operator=(const TileMapBase<Derived>& other) {
                 copy(other);
             }
 
-            inline ScalarType& at(int row, int col) {
+            constexpr ScalarType& at(int row, int col) {
                 return tiles[row * cols + col];
             }
 
-            inline const ScalarType& at(int row, int col) const {
+            constexpr const ScalarType& at(int row, int col) const {
                 return tiles[row * cols + col];
             }
 
-            inline ScalarType& operator[](int index) {
+            constexpr ScalarType& operator[](int index) {
                 return tiles[index];
             }
 
-            inline const ScalarType& operator[](int index) const {
+            constexpr const ScalarType& operator[](int index) const {
                 return tiles[index];
             }
 
@@ -64,7 +64,7 @@ namespace StealthWorldGenerator {
             std::vector<ScalarType> tiles;
 
             template <typename Derived>
-            void copy(const TileMapBase<Derived>& other) {
+            constexpr void copy(const TileMapBase<Derived>& other) {
                 for (int i = 0; i < size; ++i) {
                     tiles[i] = other[i];
                 }
@@ -72,17 +72,17 @@ namespace StealthWorldGenerator {
     };
 
     template <typename T>
-    inline std::string to_string(const T& i) {
+    constexpr std::string to_string(const T& i) {
         return std::to_string(i);
     }
 
     template <>
-    inline std::string to_string(const std::string& tile) {
+    std::string to_string(const std::string& tile) {
         return tile;
     }
 
     template <typename TileMapType>
-    void display(const TileMapType& tileMap, const std::string& title = "") {
+    constexpr void display(const TileMapType& tileMap, const std::string& title = "") {
         std::cout << title << (title != "" ? '\n' : '\0');
         for (int i = 0; i < TileMapType::rows; ++i) {
             for (int j = 0; j < TileMapType::cols; ++j) {
