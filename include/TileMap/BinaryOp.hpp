@@ -54,6 +54,10 @@ namespace StealthWorldGenerator {
                     return op(lhs.at(i, j), rhs.at(i, j));
                 }
             }
+
+            constexpr TileMap<ScalarType, rows, cols> eval() {
+                return (*this);
+            }
         private:
             const LHS& lhs;
             const RHS& rhs;

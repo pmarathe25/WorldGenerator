@@ -7,7 +7,6 @@
 const int WINDOW_X = 800;
 const int WINDOW_Y = 800;
 
-
 constexpr float doubleUp(float in) {
     return in * 2.0;
 }
@@ -46,7 +45,6 @@ int main() {
     unsigned long long int totalTime = 0;
     int numFrames = 0;
 
-
     while (window.isOpen()) {
         auto start = std::chrono::steady_clock::now();
 
@@ -59,8 +57,8 @@ int main() {
         // noise = -noise2 + 1.0f;
         // noise = noise * (noise < (noise2 * 2));
         // noise = noise - noise2;
-        // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
-        // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
+        StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
+        noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
 
         auto end = std::chrono::steady_clock::now();
         totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();

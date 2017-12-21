@@ -31,6 +31,10 @@ namespace StealthWorldGenerator {
             constexpr ScalarType at(int i, int j) const {
                 return op(lhs.at(i, j));
             }
+
+            constexpr TileMap<ScalarType, rows, cols> eval() {
+                return (*this);
+            }
         private:
             const LHS& lhs;
             const UnaryOperation& op;
