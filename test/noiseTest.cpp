@@ -1,11 +1,16 @@
 #include "TileMap/TileMap.hpp"
 #include "Noise/NoiseGenerator.hpp"
+#include "Color/ColorPalette.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-const int WINDOW_X = 800;
-const int WINDOW_Y = 800;
+using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
+
+constexpr int WINDOW_X = 800;
+constexpr int WINDOW_Y = 800;
+
+const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
 
 constexpr float doubleUp(float in) {
     return in * 2.0;
@@ -13,20 +18,6 @@ constexpr float doubleUp(float in) {
 
 constexpr float threshold(float in, float threshold) {
     return (in > threshold) ? in : 0.0f;
-}
-
-template <int rows, int cols>
-constexpr sf::Image imageFromNoise(const StealthWorldGenerator::TileMap<float, rows, cols>& noise) {
-    sf::Image im;
-    im.create(cols, rows);
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            // Scale from (0, 1) to (0, 255)
-            int color = (noise.at(i, j)) * 255.0f;
-            im.setPixel(j, i, sf::Color(color, color, color));
-        }
-    }
-    return im;
 }
 
 int main() {
@@ -67,7 +58,7 @@ int main() {
 
         // Show noise on-screen.
         sf::Texture noiseTexture;
-        noiseTexture.loadFromImage(imageFromNoise(noise));
+        noiseTexture.loadFromImage(imageFromColorMap(applyPalette(noisePalette, noise)));
         sf::Sprite noiseSprite;
         noiseSprite.setTexture(noiseTexture);
         // Draw

@@ -6,22 +6,15 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-const int WINDOW_X = 800;
-const int WINDOW_Y = 800;
+using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
 
-using StealthWorldGenerator::Color;
+constexpr int WINDOW_X = 800;
+constexpr int WINDOW_Y = 800;
 
 const StealthWorldGenerator::DiscreteColorPalette elevationDiscrete{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
 
 const StealthWorldGenerator::GradientColorPalette elevationGradient{Color(0, 0, 0), Color(255, 255, 255)};
-
-template <int rows, int cols>
-constexpr sf::Image imageFromColorMap(const StealthWorldGenerator::ColorMap<rows, cols>& colors) {
-    sf::Image im;
-    im.create(rows, cols, (uint8_t*) colors.data());
-    return im;
-}
 
 template <int rowsAtCompileTime, int colsAtCompileTime, int scale, int numOctaves = 8>
 StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generateTerrain() {
@@ -51,7 +44,7 @@ int main() {
 
     // Show terrain on-screen.
     sf::Texture terrainTexture;
-    terrainTexture.loadFromImage(imageFromColorMap(StealthWorldGenerator::applyPalette(elevationDiscrete, terrain.getElevationMap())));
+    terrainTexture.loadFromImage(imageFromColorMap(applyPalette(elevationDiscrete, terrain.getElevationMap())));
     sf::Sprite terrainSprite;
     terrainSprite.setTexture(terrainTexture);
     // Draw
