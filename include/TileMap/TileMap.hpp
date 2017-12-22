@@ -120,7 +120,7 @@ namespace StealthWorldGenerator {
             }
     };
 
-    // Specialization for boolean map
+    // Specialization for boolean maps
     template <int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime>
     class TileMap<bool, rowsAtCompileTime, colsAtCompileTime, sizeAtCompileTime>
         : public TileMapBase<TileMap<bool, rowsAtCompileTime, colsAtCompileTime>> {
