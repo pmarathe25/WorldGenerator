@@ -8,6 +8,7 @@
 namespace StealthWorldGenerator {
     template <int rowsAtCompileTime, int colsAtCompileTime>
     class TerrainMap {
+        // Simple container for terrain related data. 
         public:
             typedef TileMapF<rowsAtCompileTime, colsAtCompileTime> NoiseMap;
 
