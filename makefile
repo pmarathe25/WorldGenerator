@@ -10,8 +10,11 @@ INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
 HEADERS = $(addprefix $(INCLUDEPATH)/, TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp \
 	TileMap/Operations/InternalOperations.hpp TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp\
-	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp Utility.hpp Vector2.hpp Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp\
-	Terrain/TerrainMap.hpp Color/Color.hpp Color/ColorPalette.hpp Color/ColorMap.hpp)
+	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
+	Utility.hpp Vector2.hpp \
+	Noise/NoiseGenerator.hpp Noise/StealthNoiseGenerator.hpp Noise/PerlinNoiseGenerator.hpp Noise/InterpolationKernel.hpp\
+	Terrain/TerrainMap.hpp \
+	Color/Color.hpp Color/ColorPalette.hpp Color/ColorMap.hpp)
 # Compiler settings
 CXX = g++
 CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3

@@ -1,5 +1,5 @@
 #include "TileMap/TileMap.hpp"
-#include "Noise/NoiseGenerator.hpp"
+#include "Noise/StealthNoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
 #include "Color/ColorPalette.hpp"
 #include <SFML/Window.hpp>
@@ -18,7 +18,7 @@ const StealthWorldGenerator::GradientColorPalette elevationGradient{Color(0, 0, 
 
 template <int rowsAtCompileTime, int colsAtCompileTime, int scale, int numOctaves = 8>
 StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generateTerrain() {
-    StealthWorldGenerator::NoiseGenerator noiseGenerator;
+    StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
     auto&& elevation = noiseGenerator.generateOctaves<rowsAtCompileTime, colsAtCompileTime, scale, numOctaves>();
     return StealthWorldGenerator::TerrainMap{elevation};
 }

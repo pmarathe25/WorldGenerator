@@ -1,9 +1,11 @@
 #include "TileMap/TileMap.hpp"
-#include "Noise/NoiseGenerator.hpp"
+#include "Noise/StealthNoiseGenerator.hpp"
 #include "Color/ColorPalette.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <chrono>
+#include <thread>
 
 using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
 
@@ -23,7 +25,7 @@ constexpr float threshold(float in, float threshold) {
 int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
-    StealthWorldGenerator::NoiseGenerator noiseGenerator;
+    StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
     // auto octave1 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 400>();
     // auto octave2 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 200>();
     // auto octave3 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
@@ -44,7 +46,7 @@ int main() {
 
         // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
         // noise = noise && (noise < noise2);
-        noise = noise * (noise < noise2);
+        // noise = noise * (noise < noise2);
         // noise = noise2;
         // noise = -1.0f * noise2 + 1.0f;
         // noise = noise * (noise < (noise2 * 2));
@@ -72,5 +74,7 @@ int main() {
               window.close();
             }
         }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
 }
