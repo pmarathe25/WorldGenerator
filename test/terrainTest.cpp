@@ -1,10 +1,13 @@
 #include "TileMap/TileMap.hpp"
 #include "Noise/StealthNoiseGenerator.hpp"
+#include "Noise/PerlinNoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
 #include "Color/ColorPalette.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <chrono>
+#include <thread>
 
 using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
 
@@ -20,6 +23,9 @@ template <int rowsAtCompileTime, int colsAtCompileTime, int scale, int numOctave
 StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generateTerrain() {
     StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
     auto&& elevation = noiseGenerator.generateOctaves<rowsAtCompileTime, colsAtCompileTime, scale, numOctaves>();
+
+    // StealthWorldGenerator::StealthNoiseGenerator perlinNoiseGenerator;
+    // auto&& elevation = perlinNoiseGenerator.generateOctaves<rowsAtCompileTime, colsAtCompileTime, scale, numOctaves>();
     return StealthWorldGenerator::TerrainMap{elevation};
 }
 
@@ -40,19 +46,17 @@ int testTerrainValueRange() {
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
-    auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 200>();
-
-    // Show terrain on-screen.
-    sf::Texture terrainTexture;
-    terrainTexture.loadFromImage(imageFromColorMap(applyPalette(elevationDiscrete, terrain.getElevationMap())));
-    sf::Sprite terrainSprite;
-    terrainSprite.setTexture(terrainTexture);
-    // Draw
-    window.draw(terrainSprite);
-    // Display.
-    window.display();
-
     while (window.isOpen()) {
+        auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 100>();
+        // Show terrain on-screen.
+        sf::Texture terrainTexture;
+        terrainTexture.loadFromImage(imageFromColorMap(applyPalette(elevationDiscrete, terrain.getElevationMap())));
+        sf::Sprite terrainSprite;
+        terrainSprite.setTexture(terrainTexture);
+        // Draw
+        window.draw(terrainSprite);
+        // Display.
+        window.display();
         // Handle events.
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -60,5 +64,7 @@ int main() {
               window.close();
             }
         }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
