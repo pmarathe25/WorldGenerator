@@ -7,10 +7,14 @@
 #include "Utility.hpp"
 #include <chrono>
 #include <random>
-#include <any>
 #include <cmath>
+#include <any>
 
 namespace StealthWorldGenerator {
+    namespace {
+        constexpr float noiseRangeInvDoubled = 1.0f / sqrt(2.0f);
+    }
+
     class PerlinNoiseGenerator : public NoiseGenerator {
         private:
             template <int rows, int cols>
@@ -59,8 +63,6 @@ namespace StealthWorldGenerator {
                 return generatedNoise;
             }
         private:
-            static constexpr float noiseRangeInvDoubled = 1.0f / sqrt(2.0f);
-
             constexpr float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
                 const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) noexcept {
                 // Compute dot products.
@@ -134,7 +136,6 @@ namespace StealthWorldGenerator {
                     scaledRow += scale;
                 }
             }
-
     };
 } /* StealthWorldGenerator */
 

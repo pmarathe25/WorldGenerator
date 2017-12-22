@@ -3,6 +3,7 @@
 #include "Noise/PerlinNoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
 #include "Color/ColorPalette.hpp"
+#include "config.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -10,9 +11,6 @@
 #include <thread>
 
 using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
-
-constexpr int WINDOW_X = 800;
-constexpr int WINDOW_Y = 800;
 
 const StealthWorldGenerator::DiscreteColorPalette elevationDiscrete{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};

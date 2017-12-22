@@ -2,6 +2,7 @@
 #include "Noise/StealthNoiseGenerator.hpp"
 #include "Noise/PerlinNoiseGenerator.hpp"
 #include "Color/ColorPalette.hpp"
+#include "config.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -9,9 +10,6 @@
 #include <thread>
 
 using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
-
-constexpr int WINDOW_X = 800;
-constexpr int WINDOW_Y = 800;
 
 const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
 
@@ -46,8 +44,8 @@ int main() {
         // auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
         // auto noise = perlinNoiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
 
-        // auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
-        auto noise = perlinNoiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
+        auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
+        // auto noise = perlinNoiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
 
         // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
         // noise = noise && (noise < noise2);
@@ -56,8 +54,8 @@ int main() {
         // noise = -1.0f * noise2 + 1.0f;
         // noise = noise * (noise < (noise2 * 2));
         // noise = noise - noise2;
-        StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
-        noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
+        // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);
+        // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
 
         auto end = std::chrono::steady_clock::now();
         totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -80,6 +78,6 @@ int main() {
             }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }

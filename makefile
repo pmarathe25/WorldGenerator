@@ -18,7 +18,7 @@ HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
 	Color/Color.hpp Color/ColorPalette.hpp Color/ColorMap.hpp)
 # Compiler settings
 CXX = g++
-CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3
+CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3 -Wpedantic
 LFLAGS = -shared -flto
 TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto
 EXECLFLAGS = -flto
