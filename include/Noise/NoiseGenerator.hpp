@@ -8,6 +8,7 @@
 #include <random>
 #include <any>
 #include <unordered_map>
+#include <cmath>
 
 namespace StealthWorldGenerator {
     template <int rows, int cols>
@@ -15,6 +16,8 @@ namespace StealthWorldGenerator {
 
     template <int rows, int cols>
     using InternalNoiseMap = TileMap<Vector2f, rows, cols>;
+
+    constexpr float noiseRangeInvDoubled = 1.0f / sqrt(2.0f);
 
     // Initialize with random values according to provided distribution
     template <int internalRows, int internalCols, typename Distribution, typename Generator>
@@ -42,8 +45,8 @@ namespace StealthWorldGenerator {
         float nx1 = n10 * (1.0f - attenuation.x) + n11 * (attenuation.x);
         // Interpolate vertically
         float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
-        // Return a random value in the range (0, 1) instead of (-0.75, 0.75)
-        return (nxy + 0.75f) / 1.5f;
+        // Return a random value in the range (0, 1) instead of (-sqrt(2) / 2, sqrt(2) / 2)
+        return nxy * noiseRangeInvDoubled + 0.5f;
     }
 
     // Scale maps one pixel of the generated noise to n pixels of the output.

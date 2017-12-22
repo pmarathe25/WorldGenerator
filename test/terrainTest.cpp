@@ -30,6 +30,21 @@ StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generate
     return StealthWorldGenerator::TerrainMap{elevation};
 }
 
+int testTerrainValueRange() {
+    // Try to find the minimum and maximum possible outputs from terrain generation.
+    float min = 1.0f, max, current;
+    while (min >= 0.0f && max <= 1.0f) {
+        auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 800>();
+        current = *std::min_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
+        min = (current < min) ? current : min;
+        current = *std::max_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
+        max = (current > max) ? current : max;
+        std::cout << "Min: " << min << "\tMax: " << max << '\r';
+    }
+    std::cout << "\nMin: " << min << "\tMax: " << max << '\n';
+    return 0;
+}
+
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 200>();
