@@ -5,9 +5,9 @@ namespace StealthWorldGenerator {
     template <typename ScalarType>
     class Vector2 {
         public:
-            Vector2() { }
+            Vector2() noexcept = default;
 
-            Vector2(ScalarType x, ScalarType y) : x(x), y(y) { }
+            Vector2(ScalarType x, ScalarType y) noexcept : x(x), y(y) { }
 
             ScalarType x, y;
     };

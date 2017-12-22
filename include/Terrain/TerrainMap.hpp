@@ -11,9 +11,9 @@ namespace StealthWorldGenerator {
         public:
             typedef TileMapF<rowsAtCompileTime, colsAtCompileTime> NoiseMap;
 
-            TerrainMap(NoiseMap elevation) : elevation(elevation) { }
+            TerrainMap(NoiseMap elevation) noexcept : elevation(std::move(elevation)) { }
 
-            const TileMapF<rowsAtCompileTime, colsAtCompileTime>& getElevationMap() {
+            const TileMapF<rowsAtCompileTime, colsAtCompileTime>& getElevationMap() noexcept {
                 return elevation;
             }
         private:

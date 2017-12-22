@@ -13,11 +13,11 @@ namespace StealthWorldGenerator {
                 initializeKernel();
             }
 
-            const TileMap<Vector2f, scale, scale>& getPoints() const {
+            const TileMap<Vector2f, scale, scale>& getPoints() const noexcept {
                 return points;
             }
 
-            const TileMap<Vector2f, scale, scale>& getAttenuations() const {
+            const TileMap<Vector2f, scale, scale>& getAttenuations() const noexcept {
                 return attenuations;
             }
 
@@ -25,7 +25,7 @@ namespace StealthWorldGenerator {
             TileMap<Vector2f, scale, scale> points{};
             TileMap<Vector2f, scale, scale> attenuations{};
 
-            constexpr void initializeKernel() {
+            constexpr void initializeKernel() noexcept {
                 // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
                 constexpr int quadrantBound = ceilDivide(scale, 2);
                 initializeDiagonalQuadrant(quadrantBound);
@@ -34,26 +34,26 @@ namespace StealthWorldGenerator {
                 reflectHorizontal(quadrantBound);
             }
 
-            constexpr Vector2f calculatePoint(int row, int col) const {
+            constexpr Vector2f calculatePoint(int row, int col) const noexcept {
                 // Compute a relative location.
-                float interpolationOffsetX = (col / (float) scale) + 0.5f / scale;
-                float interpolationOffsetY = (row / (float) scale) + 0.5f / scale;
+                float&& interpolationOffsetX = (col / (float) scale) + 0.5f / scale;
+                float&& interpolationOffsetY = (row / (float) scale) + 0.5f / scale;
                 return Vector2f(interpolationOffsetX, interpolationOffsetY);
             }
 
-            constexpr Vector2f diagonallyMirror(const Vector2f& other) const {
+            constexpr Vector2f diagonallyMirror(const Vector2f& other) const noexcept {
                 return Vector2f(other.y, other.x);
             }
 
-            constexpr Vector2f verticallyMirror(const Vector2f& other) const {
+            constexpr Vector2f verticallyMirror(const Vector2f& other) const noexcept {
                 return Vector2f(1.0f - other.x, other.y);
             }
 
-            constexpr Vector2f horizontallyMirror(const Vector2f& other) const {
+            constexpr Vector2f horizontallyMirror(const Vector2f& other) const noexcept {
                 return Vector2f(other.x, 1.0f - other.y);
             }
 
-            constexpr void initializeDiagonalQuadrant(int quadrantBound) {
+            constexpr void initializeDiagonalQuadrant(int quadrantBound) noexcept {
                 // Compute top-right diagonal of top-left quadrant
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = row; col < quadrantBound; ++col) {
@@ -64,7 +64,7 @@ namespace StealthWorldGenerator {
                 }
             }
 
-            constexpr void reflectDiagonal(int quadrantBound) {
+            constexpr void reflectDiagonal(int quadrantBound) noexcept {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = 0; col < row; ++col) {
                         points.at(row, col) = diagonallyMirror(points.at(col, row));
@@ -74,7 +74,7 @@ namespace StealthWorldGenerator {
                 }
             }
 
-            constexpr void reflectVertical(int quadrantBound) {
+            constexpr void reflectVertical(int quadrantBound) noexcept {
                 for (int row = 0; row < quadrantBound; ++row) {
                     for (int col = quadrantBound; col < scale; ++col) {
                         points.at(row, col) = verticallyMirror(points.at(row, (scale - 1) - col));
@@ -84,7 +84,7 @@ namespace StealthWorldGenerator {
                 }
             }
 
-            constexpr void reflectHorizontal(int quadrantBound) {
+            constexpr void reflectHorizontal(int quadrantBound) noexcept {
                 for (int row = quadrantBound; row < scale; ++row) {
                     for (int col = 0; col < scale; ++col) {
                         points.at(row, col) = horizontallyMirror(points.at((scale - 1) - row, col));

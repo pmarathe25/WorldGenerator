@@ -31,7 +31,7 @@ namespace StealthWorldGenerator {
     }
 
     constexpr float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
-        const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) {
+        const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) noexcept {
         // Compute dot products.
         float n00 = topLeft.y * point.y + topLeft.x * point.x;
         float n01 = topRight.y * point.y + topRight.x * (point.x - 1.0f);

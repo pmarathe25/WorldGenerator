@@ -4,7 +4,7 @@
 
 namespace StealthWorldGenerator {
     template <typename Derived, typename UnaryOperation>
-    constexpr UnaryOp<Derived, UnaryOperation> apply(const UnaryOperation& op, const Derived& lhs) {
+    constexpr UnaryOp<Derived, UnaryOperation> apply(const UnaryOperation& op, const Derived& lhs) noexcept {
         return UnaryOp<Derived, UnaryOperation>(op, lhs);
     }
 } /* StealthWorldGenerator */

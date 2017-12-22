@@ -12,9 +12,9 @@ namespace StealthWorldGenerator {
 
     class GradientColorPalette {
         public:
-            GradientColorPalette(const Color& colorA, const Color& colorB);
+            GradientColorPalette(Color colorA, Color colorB) noexcept;
 
-            Color operator()(float val) const;
+            Color operator()(float val) const noexcept;
         private:
             Color colorA, colorB;
     };

@@ -39,15 +39,15 @@ namespace StealthWorldGenerator {
             }
 
             // Move
-            constexpr TileMap(TileMap&& other) = default;
+            constexpr TileMap(TileMap&& other) noexcept = default;
 
             // Assignment
-            constexpr void operator=(const TileMap& other) {
+            constexpr void operator=(const TileMap& other) noexcept {
                 copyMultithreaded(other);
             }
 
             template <typename OtherDerived>
-            constexpr void operator=(const TileMapBase<OtherDerived>& other) {
+            constexpr void operator=(const TileMapBase<OtherDerived>& other) noexcept {
                 copyMultithreaded(other);
             }
 
@@ -67,27 +67,27 @@ namespace StealthWorldGenerator {
                 return tiles[index];
             }
 
-            constexpr const ScalarType* data() const {
+            constexpr const ScalarType* data() const noexcept {
                 return tiles.data();
             }
 
-            constexpr ScalarType* data() {
+            constexpr ScalarType* data() noexcept {
                 return tiles.data();
             }
 
-            constexpr auto begin() {
+            constexpr typename std::vector<ScalarType>::iterator begin() noexcept {
                 return tiles.begin();
             }
 
-            constexpr auto cbegin() const {
+            constexpr typename std::vector<ScalarType>::const_iterator cbegin() const noexcept {
                 return tiles.cbegin();
             }
 
-            constexpr auto end() {
+            constexpr typename std::vector<ScalarType>::iterator end() noexcept {
                 return tiles.end();
             }
 
-            constexpr auto cend() const {
+            constexpr typename std::vector<ScalarType>::const_iterator cend() const noexcept {
                 return tiles.cend();
             }
         private:

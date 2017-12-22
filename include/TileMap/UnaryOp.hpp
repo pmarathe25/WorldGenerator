@@ -22,7 +22,8 @@ namespace StealthWorldGenerator {
             static constexpr int rows = internal::traits<UnaryOp>::rows, cols = internal::traits<UnaryOp>::cols,
                 size = internal::traits<UnaryOp>::size;
 
-            constexpr UnaryOp(const UnaryOperation& op, const LHS& lhs) : op(op), lhs(lhs) { }
+            constexpr UnaryOp(const UnaryOperation& op, const LHS& lhs) noexcept
+                : op(op), lhs(lhs) { }
 
             constexpr ScalarType operator[](int index) const {
                 return op(lhs[index]);

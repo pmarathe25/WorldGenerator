@@ -13,7 +13,7 @@ namespace StealthWorldGenerator {
                 cols = internal::traits<Derived>::cols,
                 size = internal::traits<Derived>::size;
 
-            constexpr TileMapBase() = default;
+            constexpr TileMapBase() noexcept = default;
 
             constexpr ScalarType operator[](int index) {
                 return static_cast<Derived*>(this) -> operator[](index);
