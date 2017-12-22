@@ -33,8 +33,8 @@ namespace StealthWorldGenerator {
                 copyMultithreaded(other);
             }
 
-            constexpr TileMap(const TileMap& other)  : tiles(sizeAtCompileTime){
-                copyMultithreaded(other);
+            constexpr TileMap(const TileMap& other) : tiles(sizeAtCompileTime){
+                tiles = other.tiles;
             }
 
             // Move
@@ -42,7 +42,7 @@ namespace StealthWorldGenerator {
 
             // Assignment
             constexpr void operator=(const TileMap& other) noexcept {
-                copyMultithreaded(other);
+                tiles = other.tiles;
             }
 
             template <typename OtherDerived>
@@ -136,7 +136,7 @@ namespace StealthWorldGenerator {
             }
 
             constexpr TileMap(const TileMap& other)  : tiles(sizeAtCompileTime){
-                copyMultithreaded(other);
+                tiles = other.tiles;
             }
 
             // Move
@@ -144,7 +144,7 @@ namespace StealthWorldGenerator {
 
             // Assignment
             constexpr void operator=(const TileMap& other) noexcept {
-                copyMultithreaded(other);
+                tiles = other.tiles;
             }
 
             template <typename OtherDerived>
