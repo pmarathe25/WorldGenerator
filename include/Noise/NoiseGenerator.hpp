@@ -41,8 +41,8 @@ namespace StealthWorldGenerator {
         float nx1 = n10 * (1.0f - attenuation.x) + n11 * (attenuation.x);
         // Interpolate vertically
         float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
-        // Return a random value in the range (0, 1)
-        return 0.5f * (nxy + 1.0f);
+        // Return a random value in the range (0, 1) instead of (-0.5, 0.5)
+        return nxy + 0.5f;
     }
 
     // Scale maps one pixel of the generated noise to n pixels of the output.

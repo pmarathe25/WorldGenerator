@@ -2,8 +2,8 @@
 #define STEALTH_TERRAIN_MAP_H
 #include "Noise/NoiseGenerator.hpp"
 #include "TileMap/TileMap.hpp"
-#include "Terrain/Color.hpp"
-#include "Terrain/ColorPalette.hpp"
+#include "Color/Color.hpp"
+#include "Color/ColorPalette.hpp"
 
 namespace StealthWorldGenerator {
     template <int rowsAtCompileTime, int colsAtCompileTime>

@@ -54,7 +54,8 @@ int main() {
         // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
         // noise = noise && (noise < noise2);
         noise = noise * (noise < noise2);
-        // noise = -noise2 + 1.0f;
+        // noise = noise2;
+        // noise = -1.0f * noise2 + 1.0f;
         // noise = noise * (noise < (noise2 * 2));
         // noise = noise - noise2;
         StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noiseTest = StealthWorldGenerator::apply(doubleUp, noise);

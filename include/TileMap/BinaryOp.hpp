@@ -1,8 +1,5 @@
 #ifndef BINARY_OP_H
 #define BINARY_OP_H
-#define CHECK_TILEMAP_COMPAT(Derived, OtherDerived) static_assert((internal::traits<Derived>::rows == internal::traits<OtherDerived>::rows \
-    && internal::traits<Derived>::cols == internal::traits<OtherDerived>::cols) \
-    || (internal::traits<Derived>::size == 1 || internal::traits<OtherDerived>::size == 1), "Cannot operate on incompatible arguments");
 #include "TileMap/TileMapBase.hpp"
 #include <type_traits>
 

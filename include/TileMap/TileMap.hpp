@@ -30,24 +30,16 @@ namespace StealthWorldGenerator {
 
             // Copy
             template <typename OtherDerived>
-            constexpr TileMap(const TileMapBase<OtherDerived>& other) {
-                // Only reallocate if the two TileMaps are not the same one.
-                if (tiles.capacity() == 0) {
-                    tiles = std::vector<ScalarType>(TileMapBase<OtherDerived>::size);
-                }
+            constexpr TileMap(const TileMapBase<OtherDerived>& other) : tiles(sizeAtCompileTime) {
                 copyMultithreaded(other);
             }
 
-            constexpr TileMap(const TileMap& other) {
-                // Only reallocate if the two TileMaps are not the same one.
-                if (tiles.capacity() == 0) {
-                    tiles = std::vector<ScalarType>(TileMap::size);
-                }
+            constexpr TileMap(const TileMap& other)  : tiles(sizeAtCompileTime){
                 copyMultithreaded(other);
             }
 
             // Move
-            constexpr TileMap(TileMap&& other) noexcept = default;
+            constexpr TileMap(TileMap&& other) = default;
 
             // Assignment
             constexpr void operator=(const TileMap& other) {
@@ -82,6 +74,30 @@ namespace StealthWorldGenerator {
             constexpr ScalarType* data() {
                 return tiles.data();
             }
+
+            constexpr auto begin() {
+                return tiles.begin();
+            }
+
+            constexpr auto begin() const {
+                return tiles.begin();
+            }
+
+            constexpr auto end() {
+                return tiles.end();
+            }
+
+            constexpr auto end() const {
+                return tiles.end();
+            }
+
+            constexpr const std::vector<ScalarType>& elements() const {
+                return tiles;
+            }
+
+            constexpr std::vector<ScalarType>& elements() {
+                return tiles;
+            }
         private:
             std::vector<ScalarType> tiles;
             std::array<std::thread, NUM_THREADS> copyThreads;
@@ -99,6 +115,9 @@ namespace StealthWorldGenerator {
 
             template <typename Derived>
             constexpr void copyMultithreaded(const TileMapBase<Derived>& other) {
+                // Make sure dimensions are compatible
+                static_assert(internal::traits<Derived>::rows == rows && internal::traits<Derived>::cols == cols,
+                    "Cannot copy incompatible TileMaps");
                 // Create threads
                 for (int i = 0; i < NUM_THREADS; ++i) {
                     copyThreads[i] = std::thread{&TileMap::copyPortion<Derived>, this, &other, i};
