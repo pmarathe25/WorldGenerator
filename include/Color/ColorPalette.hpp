@@ -19,8 +19,8 @@ namespace StealthWorldGenerator {
             Color colorA, colorB;
     };
 
-    template <int rows, int cols, typename ScalarType, typename ColPal>
-    ColorMap<rows, cols> applyPalette(const ColPal& palette, const TileMap<ScalarType, rows, cols>& map) {
+    template <int rows, int cols, typename ScalarType, typename ColorPalette>
+    ColorMap<rows, cols> applyPalette(const ColorPalette& palette, const TileMap<ScalarType, rows, cols>& map) {
         return apply(palette, map);
     }
 } /* StealthWorldGenerator */
