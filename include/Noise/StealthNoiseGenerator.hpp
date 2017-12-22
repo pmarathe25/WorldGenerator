@@ -8,7 +8,6 @@
 #include <chrono>
 #include <random>
 #include <any>
-#include <cmath>
 
 namespace StealthWorldGenerator {
     class StealthNoiseGenerator : public NoiseGenerator {
