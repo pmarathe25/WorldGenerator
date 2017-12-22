@@ -30,9 +30,9 @@ int main() {
     float min = 1.0f, max, current;
     while (min >= 0.0f && max <= 1.0f) {
         auto terrain = StealthWorldGenerator::generateTerrain<WINDOW_Y, WINDOW_X, 200>();
-        current = *std::min_element(terrain.getElevationMap().begin(), terrain.getElevationMap().end());
+        current = *std::min_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
         min = (current < min) ? current : min;
-        current = *std::max_element(terrain.getElevationMap().begin(), terrain.getElevationMap().end());
+        current = *std::max_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
         max = (current > max) ? current : max;
         std::cout << "Min: " << min << "\tMax: " << max << '\r';
     }

@@ -79,24 +79,16 @@ namespace StealthWorldGenerator {
                 return tiles.begin();
             }
 
-            constexpr auto begin() const {
-                return tiles.begin();
+            constexpr auto cbegin() const {
+                return tiles.cbegin();
             }
 
             constexpr auto end() {
                 return tiles.end();
             }
 
-            constexpr auto end() const {
-                return tiles.end();
-            }
-
-            constexpr const std::vector<ScalarType>& elements() const {
-                return tiles;
-            }
-
-            constexpr std::vector<ScalarType>& elements() {
-                return tiles;
+            constexpr auto cend() const {
+                return tiles.cend();
             }
         private:
             std::vector<ScalarType> tiles;
