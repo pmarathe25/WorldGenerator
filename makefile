@@ -3,7 +3,7 @@ BINDIR = ~/bin/
 TESTDIR = test/
 SRCDIR = src/
 # Objects
-OBJS =
+OBJS = $(addprefix $(BUILDDIR)/, Color.o ColorPalette.o)
 TESTOBJS = $(addprefix $(BUILDDIR)/, noiseTest.o terrainTest.o)
 # Headers
 INCLUDEPATH = include/
@@ -19,17 +19,23 @@ LFLAGS = -shared -flto
 TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto
 EXECLFLAGS = -flto
 
-$(TESTDIR)/noiseTest: $(BUILDDIR)/noiseTest.o $(HEADERS)
-	$(CXX) $(BUILDDIR)/noiseTest.o $(TESTLFLAGS) -o $(TESTDIR)/noiseTest
+$(TESTDIR)/noiseTest: $(BUILDDIR)/noiseTest.o $(HEADERS) $(OBJS)
+	$(CXX) $(BUILDDIR)/noiseTest.o $(OBJS) $(TESTLFLAGS) -o $(TESTDIR)/noiseTest
 
 $(BUILDDIR)/noiseTest.o: $(TESTDIR)/noiseTest.cpp $(HEADERS)
 	$(CXX) $(CFLAGS) $(TESTDIR)/noiseTest.cpp -o $(BUILDDIR)/noiseTest.o
 
-$(TESTDIR)/terrainTest: $(BUILDDIR)/terrainTest.o $(HEADERS)
-	$(CXX) $(BUILDDIR)/terrainTest.o $(TESTLFLAGS) -o $(TESTDIR)/terrainTest
+$(TESTDIR)/terrainTest: $(BUILDDIR)/terrainTest.o $(HEADERS) $(OBJS)
+	$(CXX) $(BUILDDIR)/terrainTest.o $(OBJS) $(TESTLFLAGS) -o $(TESTDIR)/terrainTest
 
 $(BUILDDIR)/terrainTest.o: $(TESTDIR)/terrainTest.cpp $(HEADERS)
 	$(CXX) $(CFLAGS) $(TESTDIR)/terrainTest.cpp -o $(BUILDDIR)/terrainTest.o
+
+$(BUILDDIR)/Color.o: $(SRCDIR)/Color/Color.cpp include/Color/Color.hpp
+	$(CXX) $(CFLAGS) $(SRCDIR)/Color/Color.cpp -o $(BUILDDIR)/Color.o
+
+$(BUILDDIR)/ColorPalette.o: $(SRCDIR)/Color/ColorPalette.cpp include/Color/ColorPalette.hpp
+	$(CXX) $(CFLAGS) $(SRCDIR)/Color/ColorPalette.cpp -o $(BUILDDIR)/ColorPalette.o
 
 clean:
 	rm $(OBJS) $(TESTOBJS) $(TESTDIR)/noiseTest

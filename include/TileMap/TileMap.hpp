@@ -127,7 +127,7 @@ namespace StealthWorldGenerator {
     }
 
     template <>
-    std::string to_string(const std::string& tile) {
+    inline std::string to_string(const std::string& tile) {
         return tile;
     }
 

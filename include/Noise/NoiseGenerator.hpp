@@ -3,6 +3,7 @@
 #define CURRENT_TIME std::chrono::system_clock::now().time_since_epoch().count()
 #include "Noise/InterpolationKernel.hpp"
 #include "TileMap/TileMap.hpp"
+#include "Utility.hpp"
 #include <chrono>
 #include <random>
 #include <any>
@@ -41,8 +42,8 @@ namespace StealthWorldGenerator {
         float nx1 = n10 * (1.0f - attenuation.x) + n11 * (attenuation.x);
         // Interpolate vertically
         float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
-        // Return a random value in the range (0, 1) instead of (-0.5, 0.5)
-        return nxy + 0.5f;
+        // Return a random value in the range (0, 1) instead of (-0.75, 0.75)
+        return (nxy + 0.75f) / 1.5f;
     }
 
     // Scale maps one pixel of the generated noise to n pixels of the output.
@@ -50,11 +51,12 @@ namespace StealthWorldGenerator {
         public:
             // Create octaved noise
             template <int rows, int cols, int scale, int numOctaves, typename Distribution = std::uniform_real_distribution<float>,
-            typename Generator = std::default_random_engine>
+                typename Generator = std::default_random_engine>
             constexpr NoiseMap<rows, cols> generateOctaves(float multiplier = 0.5f, float decayFactor = 0.5f, Distribution distribution
                 = std::uniform_real_distribution(0.0f, TAU), Generator generator = std::default_random_engine(CURRENT_TIME)) {
                 if constexpr (numOctaves == 1) {
-                    return multiplier * generate<rows, cols, scale>(distribution, generator);
+                    // This multiplier should equal the last one if this is the final octave.
+                    return (multiplier / decayFactor) * generate<rows, cols, scale>(distribution, generator);
                 } else {
                     return multiplier * generate<rows, cols, scale>(distribution, generator)
                     + generateOctaves<rows, cols, ceilDivide(scale, 2), numOctaves - 1>(multiplier * decayFactor, decayFactor, distribution, generator);

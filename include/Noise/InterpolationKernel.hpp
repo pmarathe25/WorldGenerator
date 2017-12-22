@@ -36,8 +36,8 @@ namespace StealthWorldGenerator {
 
             constexpr Vector2f calculatePoint(int row, int col) const {
                 // Compute a relative location.
-                float interpolationOffsetX = (col / (float) scale) + 0.5f * 1.0f / scale;
-                float interpolationOffsetY = (row / (float) scale) + 0.5f * 1.0f / scale;
+                float interpolationOffsetX = (col / (float) scale) + 0.5f / scale;
+                float interpolationOffsetY = (row / (float) scale) + 0.5f / scale;
                 return Vector2f(interpolationOffsetX, interpolationOffsetY);
             }
 

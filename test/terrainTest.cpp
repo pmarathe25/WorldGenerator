@@ -23,13 +23,21 @@ constexpr sf::Image imageFromColorMap(const StealthWorldGenerator::ColorMap<rows
     return im;
 }
 
+template <int rowsAtCompileTime, int colsAtCompileTime, int scale, int numOctaves = 8>
+StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generateTerrain() {
+    StealthWorldGenerator::NoiseGenerator noiseGenerator;
+    // auto&& elevation = noiseGenerator.generateOctaves<rowsAtCompileTime, colsAtCompileTime, scale, numOctaves>();
+    auto&& elevation = noiseGenerator.generate<rowsAtCompileTime, colsAtCompileTime, scale>();
+    return StealthWorldGenerator::TerrainMap{elevation};
+}
+
 int main() {
     // sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
-    auto terrain = StealthWorldGenerator::generateTerrain<WINDOW_Y, WINDOW_X, 200>();
+    // auto terrain = StealthWorldGenerator::generateTerrain<WINDOW_Y, WINDOW_X, 200>();
 
     float min = 1.0f, max, current;
-    while (min >= 0.0f && max <= 1.0f) {
-        auto terrain = StealthWorldGenerator::generateTerrain<WINDOW_Y, WINDOW_X, 200>();
+    while (min >= -0.0f && max <= 1.0f) {
+        auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 200>();
         current = *std::min_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
         min = (current < min) ? current : min;
         current = *std::max_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
