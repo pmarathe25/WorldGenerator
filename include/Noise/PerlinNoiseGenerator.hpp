@@ -11,74 +11,10 @@
 #include <cmath>
 
 namespace StealthWorldGenerator {
-    namespace {
-        template <int rows, int cols>
-        using NoiseMap = TileMap<float, rows, cols>;
-
-        template <int rows, int cols>
-        using InternalNoiseMap = TileMap<Vector2f, rows, cols>;
-
-        constexpr float noiseRangeInvDoubled = 1.0f / sqrt(2.0f);
-
-        // Initialize with random values according to provided distribution
-        template <int internalRows, int internalCols, typename Distribution, typename Generator>
-        constexpr InternalNoiseMap<internalRows, internalCols> generateInternalNoiseMap(Distribution& distribution, Generator& generator) {
-            // Internal noise map should be large enough to fit tiles of size (scale, scale).
-            InternalNoiseMap<internalRows, internalCols> internalNoiseMap{};
-            for (int i = 0; i < internalRows; ++i) {
-                for (int j = 0; j < internalCols; ++j) {
-                    float angle = distribution(generator);
-                    internalNoiseMap.at(i, j) = Vector2f{(float) cos(angle), (float) sin(angle)};
-                }
-            }
-            return internalNoiseMap;
-        }
-
-        constexpr float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
-            const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) noexcept {
-            // Compute dot products.
-            float n00 = topLeft.y * point.y + topLeft.x * point.x;
-            float n01 = topRight.y * point.y + topRight.x * (point.x - 1.0f);
-            float n10 = bottomLeft.y * (point.y - 1.0f) + bottomLeft.x * point.x;
-            float n11 = bottomRight.y * (point.y - 1.0f) + bottomRight.x * (point.x - 1.0f);
-            // Interpolate horizontally
-            float nx0 = n00 * (1.0f - attenuation.x) + n01 * (attenuation.x);
-            float nx1 = n10 * (1.0f - attenuation.x) + n11 * (attenuation.x);
-            // Interpolate vertically
-            float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
-            // Return a random value in the range (0, 1) instead of (-sqrt(2) / 2, sqrt(2) / 2)
-            return nxy * noiseRangeInvDoubled + 0.5f;
-        }
-
-
-        template <int scale, int internalRows, int internalCols, int rows, int cols>
-        constexpr void fillTile(int internalRow, int internalCol, int scaledRow, int scaledCol,
-            const InternalNoiseMap<internalRows, internalCols>* internalNoise,
-            NoiseMap<rows, cols>* generatedNoise, const InterpolationKernel<scale>* kernel) {
-            // Only fill the part of the tile that is valid.
-            const int maxValidRow = std::min(rows - scaledRow, scale);
-            const int maxValidCol = std::min(cols - scaledCol, scale);
-            // Cache local gradient vectors
-            const Vector2f& topLeft = internalNoise -> at(internalRow, internalCol);
-            const Vector2f& topRight = internalNoise -> at(internalRow, internalCol + 1);
-            const Vector2f& bottomLeft = internalNoise -> at(internalRow + 1, internalCol);
-            const Vector2f& bottomRight = internalNoise -> at(internalRow + 1, internalCol + 1);
-            // Cache points and attenuations TileMaps
-            const auto& points = kernel -> getPoints();
-            const auto& attenuations = kernel -> getAttenuations();
-            // Loop over one interpolation kernel tile.
-            for (int row = 0; row < maxValidRow; ++row) {
-                for (int col = 0; col < maxValidCol; ++col) {
-                    // Interpolate based on the 4 surrounding internal noise points.
-                    generatedNoise -> at(scaledRow + row, scaledCol + col) = interpolatePerlin(topLeft,
-                        topRight, bottomLeft, bottomRight, points.at(row, col), attenuations.at(row, col));
-                }
-            }
-        }
-    } /* namespace */
-
-    // Scale maps one pixel of the generated noise to n pixels of the output.
     class PerlinNoiseGenerator : public NoiseGenerator {
+        private:
+            template <int rows, int cols>
+            using InternalNoiseMap = TileMap<Vector2f, rows, cols>;
         public:
             // Create octaved noise
             template <int rows, int cols, int scale, int numOctaves, typename Distribution = std::uniform_real_distribution<float>,
@@ -123,6 +59,63 @@ namespace StealthWorldGenerator {
                 return generatedNoise;
             }
         private:
+            static constexpr float noiseRangeInvDoubled = 1.0f / sqrt(2.0f);
+
+            constexpr float interpolatePerlin(const Vector2f& topLeft, const Vector2f& topRight, const Vector2f& bottomLeft,
+                const Vector2f& bottomRight, const Vector2f& point, const Vector2f& attenuation) noexcept {
+                // Compute dot products.
+                float n00 = topLeft.y * point.y + topLeft.x * point.x;
+                float n01 = topRight.y * point.y + topRight.x * (point.x - 1.0f);
+                float n10 = bottomLeft.y * (point.y - 1.0f) + bottomLeft.x * point.x;
+                float n11 = bottomRight.y * (point.y - 1.0f) + bottomRight.x * (point.x - 1.0f);
+                // Interpolate horizontally
+                float nx0 = n00 * (1.0f - attenuation.x) + n01 * (attenuation.x);
+                float nx1 = n10 * (1.0f - attenuation.x) + n11 * (attenuation.x);
+                // Interpolate vertically
+                float nxy = nx0 * (1.0f - attenuation.y) + nx1 * (attenuation.y);
+                // Return a random value in the range (0, 1) instead of (-sqrt(2) / 2, sqrt(2) / 2)
+                return nxy * noiseRangeInvDoubled + 0.5f;
+            }
+
+            // Initialize with random values according to provided distribution
+            template <int internalRows, int internalCols, typename Distribution, typename Generator>
+            constexpr InternalNoiseMap<internalRows, internalCols> generateInternalNoiseMap(Distribution& distribution, Generator& generator) {
+                // Internal noise map should be large enough to fit tiles of size (scale, scale).
+                InternalNoiseMap<internalRows, internalCols> internalNoiseMap{};
+                for (int i = 0; i < internalRows; ++i) {
+                    for (int j = 0; j < internalCols; ++j) {
+                        float angle = distribution(generator);
+                        internalNoiseMap.at(i, j) = Vector2f{(float) cos(angle), (float) sin(angle)};
+                    }
+                }
+                return internalNoiseMap;
+            }
+
+            template <int scale, int internalRows, int internalCols, int rows, int cols>
+            constexpr void fillTile(int internalRow, int internalCol, int scaledRow, int scaledCol,
+                const InternalNoiseMap<internalRows, internalCols>* internalNoise,
+                NoiseMap<rows, cols>* generatedNoise, const InterpolationKernel<scale>* kernel) {
+                // Only fill the part of the tile that is valid.
+                const int maxValidRow = std::min(rows - scaledRow, scale);
+                const int maxValidCol = std::min(cols - scaledCol, scale);
+                // Cache local gradient vectors
+                const Vector2f& topLeft = internalNoise -> at(internalRow, internalCol);
+                const Vector2f& topRight = internalNoise -> at(internalRow, internalCol + 1);
+                const Vector2f& bottomLeft = internalNoise -> at(internalRow + 1, internalCol);
+                const Vector2f& bottomRight = internalNoise -> at(internalRow + 1, internalCol + 1);
+                // Cache points and attenuations TileMaps
+                const auto& points = kernel -> getPoints();
+                const auto& attenuations = kernel -> getAttenuations();
+                // Loop over one interpolation kernel tile.
+                for (int row = 0; row < maxValidRow; ++row) {
+                    for (int col = 0; col < maxValidCol; ++col) {
+                        // Interpolate based on the 4 surrounding internal noise points.
+                        generatedNoise -> at(scaledRow + row, scaledCol + col) = interpolatePerlin(topLeft,
+                            topRight, bottomLeft, bottomRight, points.at(row, col), attenuations.at(row, col));
+                    }
+                }
+            }
+
             template <int internalRows, int internalCols, int rows, int cols, int scale>
             constexpr void fillRows(int id, InternalNoiseMap<internalRows, internalCols>* internalNoiseMap,
                 NoiseMap<rows, cols>* generatedNoise, const InterpolationKernel<scale>* kernel) {

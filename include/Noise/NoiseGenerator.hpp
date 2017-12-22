@@ -7,6 +7,8 @@
 namespace StealthWorldGenerator {
     class NoiseGenerator {
         public:
+            template <int rows, int cols>
+            using NoiseMap = TileMap<float, rows, cols>;
         protected:
             std::array<std::thread, NUM_THREADS> noiseThreads;
             // Maintain a cache of interpolation kernels of different sizes
