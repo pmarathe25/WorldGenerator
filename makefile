@@ -19,7 +19,6 @@ LFLAGS = -shared -flto
 TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto
 EXECLFLAGS = -flto
 
-
 $(TESTDIR)/noiseTest: $(BUILDDIR)/noiseTest.o $(HEADERS) $(OBJS)
 	$(CXX) $(BUILDDIR)/noiseTest.o $(OBJS) $(TESTLFLAGS) -o $(TESTDIR)/noiseTest
 
@@ -50,4 +49,4 @@ noisetest: $(TESTDIR)/noiseTest
 testall:
 	$(TESTDIR)/noiseTest & $(TESTDIR)/terrainTest
 
-test: testTerrain
+test: terraintest
