@@ -10,12 +10,12 @@
 #include <chrono>
 #include <thread>
 
-using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
+using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::spriteFromColorMap;
 
-const StealthWorldGenerator::DiscreteColorPalette elevationDiscrete{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
+const StealthWorldGenerator::DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
 
-const StealthWorldGenerator::GradientColorPalette elevationGradient{Color(0, 0, 0), Color(255, 255, 255)};
+const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0, 0, 0, 0), Color(0, 0, 255, 127)};
 
 template <int rowsAtCompileTime, int colsAtCompileTime, int scale, int numOctaves = 8>
 StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generateTerrain() {
@@ -47,12 +47,12 @@ int main() {
     while (window.isOpen()) {
         auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 100>();
         // Show terrain on-screen.
-        sf::Texture terrainTexture;
-        terrainTexture.loadFromImage(imageFromColorMap(applyPalette(elevationDiscrete, terrain.getElevationMap())));
-        sf::Sprite terrainSprite;
-        terrainSprite.setTexture(terrainTexture);
+        sf::Texture elevationTexture, waterTableTexture;
+        sf::Sprite elevationSprite = spriteFromColorMap(applyPalette(elevationPalette, terrain.getElevationMap()), elevationTexture);
+        sf::Sprite waterTableSprite = spriteFromColorMap(applyPalette(waterLevelPalette, terrain.getWaterTable()), waterTableTexture);
         // Draw
-        window.draw(terrainSprite);
+        window.draw(elevationSprite);
+        window.draw(waterTableSprite);
         // Display.
         window.display();
         // Handle events.

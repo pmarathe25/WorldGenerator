@@ -1,6 +1,6 @@
 #ifndef STEALTH_TERRAIN_MAP_H
 #define STEALTH_TERRAIN_MAP_H
-#include "Noise/NoiseGenerator.hpp"
+#include "Noise/NoiseMap.hpp"
 #include "TileMap/TileMap.hpp"
 #include "Color/Color.hpp"
 #include "Color/ColorPalette.hpp"
@@ -10,20 +10,32 @@ namespace StealthWorldGenerator {
     class TerrainMap {
         // Simple container for terrain related data.
         public:
-            typedef TileMapF<rowsAtCompileTime, colsAtCompileTime> NoiseMap;
+            typedef NoiseMap<rowsAtCompileTime, colsAtCompileTime> TerrainNoiseMap;
+            typedef TileMap<bool, rowsAtCompileTime, colsAtCompileTime> WaterLevelMap;
 
-            TerrainMap(NoiseMap elevation) noexcept : elevation{std::move(elevation)} { }
+            TerrainMap(TerrainNoiseMap elevation, float waterLevel = 0.5f) noexcept : elevation{std::move(elevation)} {
+                setWaterLevel(waterLevel);
+            }
 
-            const NoiseMap& getElevationMap() const noexcept {
+            const TerrainNoiseMap& getElevationMap() const noexcept {
                 return elevation;
             }
 
-            TerrainMap& setElevationMap(NoiseMap elevation) noexcept {
+            const WaterLevelMap& getWaterTable() const noexcept {
+                return waterTable;
+            }
+
+            TerrainMap& setElevationMap(TerrainNoiseMap elevation) noexcept {
                 elevation = std::move(elevation);
                 return *this;
             }
+
+            TerrainMap& setWaterLevel(float newLevel) noexcept {
+                waterTable = elevation < newLevel;
+            }
         private:
-            NoiseMap elevation;
+            TerrainNoiseMap elevation;
+            WaterLevelMap waterTable;
     };
 } /* StealthWorldGenerator */
 

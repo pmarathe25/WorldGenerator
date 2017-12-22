@@ -13,7 +13,7 @@ namespace StealthWorldGenerator {
     class StealthNoiseGenerator : public NoiseGenerator {
         private:
             template <int rows, int cols>
-            using InternalNoiseMap = TileMap<float, rows, cols>;
+            using InternalNoiseMap = NoiseMap<rows, cols>;
         public:
             // Create octaved noise
             template <int rows, int cols, int scale, int numOctaves, typename Distribution = std::uniform_real_distribution<float>,

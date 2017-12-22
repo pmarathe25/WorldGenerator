@@ -1,15 +1,13 @@
 #ifndef NOISE_GENERATOR_H
 #define NOISE_GENERATOR_H
 #include "config.hpp"
+#include "Noise/NoiseMap.hpp"
 #include <unordered_map>
 #include <thread>
 #include <any>
 
 namespace StealthWorldGenerator {
     class NoiseGenerator {
-        public:
-            template <int rows, int cols>
-            using NoiseMap = TileMap<float, rows, cols>;
         protected:
             std::array<std::thread, NUM_THREADS> noiseThreads;
             // Maintain a cache of interpolation kernels of different sizes

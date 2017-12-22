@@ -120,6 +120,93 @@ namespace StealthWorldGenerator {
             }
     };
 
+    // Specialization for boolean map
+    template <int rowsAtCompileTime, int colsAtCompileTime, int sizeAtCompileTime>
+    class TileMap<bool, rowsAtCompileTime, colsAtCompileTime, sizeAtCompileTime>
+        : public TileMapBase<TileMap<bool, rowsAtCompileTime, colsAtCompileTime>> {
+        public:
+            static constexpr int rows = rowsAtCompileTime, cols = colsAtCompileTime, size = sizeAtCompileTime;
+
+            constexpr TileMap() : tiles(sizeAtCompileTime) { }
+
+            // Copy
+            template <typename OtherDerived>
+            constexpr TileMap(const TileMapBase<OtherDerived>& other) : tiles(sizeAtCompileTime) {
+                copyMultithreaded(other);
+            }
+
+            constexpr TileMap(const TileMap& other)  : tiles(sizeAtCompileTime){
+                copyMultithreaded(other);
+            }
+
+            // Move
+            constexpr TileMap(TileMap&& other) noexcept = default;
+
+            // Assignment
+            constexpr void operator=(const TileMap& other) noexcept {
+                copyMultithreaded(other);
+            }
+
+            template <typename OtherDerived>
+            constexpr void operator=(const TileMapBase<OtherDerived>& other) noexcept {
+                copyMultithreaded(other);
+            }
+
+            constexpr bool at(int row, int col) const {
+                return tiles[row * cols + col];
+            }
+
+            constexpr bool operator[](int index) const {
+                return tiles[index];
+            }
+
+            constexpr typename std::vector<bool>::iterator begin() noexcept {
+                return tiles.begin();
+            }
+
+            constexpr typename std::vector<bool>::const_iterator cbegin() const noexcept {
+                return tiles.cbegin();
+            }
+
+            constexpr typename std::vector<bool>::iterator end() noexcept {
+                return tiles.end();
+            }
+
+            constexpr typename std::vector<bool>::const_iterator cend() const noexcept {
+                return tiles.cend();
+            }
+
+        private:
+            std::vector<bool> tiles;
+            std::array<std::thread, NUM_THREADS> copyThreads;
+
+            template <typename Derived>
+            constexpr void copyPortion(const TileMapBase<Derived>* other, int id) {
+                // Copy elements for a single portion of the TileMap.
+                constexpr int portionSize = ceilDivide(size, NUM_THREADS);
+                const int start = id * portionSize;
+                const int end = std::min(start + portionSize, size);
+                for (int i = start; i < end; ++i) {
+                    tiles[i] = other -> operator[](i);
+                }
+            }
+
+            template <typename Derived>
+            constexpr void copyMultithreaded(const TileMapBase<Derived>& other) {
+                // Make sure dimensions are compatible
+                static_assert(internal::traits<Derived>::rows == rows && internal::traits<Derived>::cols == cols,
+                    "Cannot copy incompatible TileMaps");
+                // Create threads
+                for (int i = 0; i < NUM_THREADS; ++i) {
+                    copyThreads[i] = std::thread{&TileMap::copyPortion<Derived>, this, &other, i};
+                }
+                // Wait for all threads to finish
+                for (auto& thread : copyThreads) {
+                    thread.join();
+                }
+            }
+    };
+
     template <typename T>
     constexpr std::string to_string(const T& i) {
         return std::to_string(i);

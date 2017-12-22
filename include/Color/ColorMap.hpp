@@ -9,10 +9,13 @@ namespace StealthWorldGenerator {
     using ColorMap = TileMap<Color, rowsAtCompileTime, colsAtCompileTime>;
 
     template <int rows, int cols>
-    constexpr sf::Image imageFromColorMap(const ColorMap<rows, cols>& colors) {
+    constexpr sf::Sprite spriteFromColorMap(const ColorMap<rows, cols>& colors, sf::Texture& texture) {
         sf::Image im;
+        sf::Sprite sprite;
         im.create(rows, cols, (uint8_t*) colors.data());
-        return im;
+        texture.loadFromImage(im);
+        sprite.setTexture(texture);
+        return sprite;
     }
 } /* StealthWorldGenerator */
 

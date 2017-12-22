@@ -9,7 +9,7 @@
 #include <chrono>
 #include <thread>
 
-using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::imageFromColorMap;
+using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::spriteFromColorMap;
 
 const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
 
@@ -63,9 +63,7 @@ int main() {
 
         // Show noise on-screen.
         sf::Texture noiseTexture;
-        noiseTexture.loadFromImage(imageFromColorMap(applyPalette(noisePalette, noise)));
-        sf::Sprite noiseSprite;
-        noiseSprite.setTexture(noiseTexture);
+        sf::Sprite noiseSprite = spriteFromColorMap(applyPalette(noisePalette, noise), noiseTexture);
         // Draw
         window.draw(noiseSprite);
         // Display.
