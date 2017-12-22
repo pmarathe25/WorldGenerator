@@ -4,6 +4,7 @@
 #include "TileMap/TileMapBase.hpp"
 #include "TileMap/Operations/BinaryOperations.hpp"
 #include "TileMap/Operations/UnaryOperations.hpp"
+#include "TileMap/Operations/ApplyOperations.hpp"
 #include "Utility.hpp"
 #include <vector>
 #include <iostream>

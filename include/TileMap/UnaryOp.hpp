@@ -4,9 +4,9 @@
 
 namespace StealthWorldGenerator {
     namespace internal {
-        template <typename LHS, typename UnaryOperation>
-        struct traits<UnaryOp<LHS, UnaryOperation>> {
-            typedef typename std::invoke_result<UnaryOperation, typename internal::traits<LHS>::ScalarType>::type ScalarType;
+        template <typename LHS, UnaryOperation<typename internal::traits<LHS>::ScalarType> op>
+        struct traits<UnaryOp<LHS, op>> {
+            typedef typename internal::traits<LHS>::ScalarType ScalarType;
             // Dimensions
             static constexpr int rows = internal::traits<LHS>::rows,
                 cols = internal::traits<LHS>::cols,
@@ -14,16 +14,16 @@ namespace StealthWorldGenerator {
         };
     } /* internal */
 
-    template <typename LHS, typename UnaryOperation>
-    class UnaryOp : public TileMapBase<UnaryOp<LHS, UnaryOperation>> {
+    template <typename LHS, UnaryOperation<typename internal::traits<LHS>::ScalarType> op>
+    class UnaryOp : public TileMapBase<UnaryOp<LHS, op>> {
         public:
             typedef typename internal::traits<UnaryOp>::ScalarType ScalarType;
             // Dimensions
             static constexpr int rows = internal::traits<UnaryOp>::rows, cols = internal::traits<UnaryOp>::cols,
                 size = internal::traits<UnaryOp>::size;
 
-            constexpr UnaryOp(const UnaryOperation& op, const LHS& lhs) noexcept
-                : op(op), lhs(lhs) { }
+            constexpr UnaryOp(const LHS& lhs) noexcept
+                : lhs(lhs) { }
 
             constexpr ScalarType operator[](int index) const {
                 return op(lhs[index]);
@@ -38,7 +38,6 @@ namespace StealthWorldGenerator {
             }
         private:
             const LHS& lhs;
-            const UnaryOperation& op;
     };
 } /* StealthWorldGenerator */
 

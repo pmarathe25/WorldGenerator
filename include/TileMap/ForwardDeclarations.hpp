@@ -25,8 +25,14 @@ namespace StealthWorldGenerator {
     class BinaryOp;
 
     // Unary Op
-    template <typename LHS, typename UnaryOperation>
+    template <typename LHS>
+    using UnaryOperation = LHS (*)(const LHS&);
+    template <typename LHS, UnaryOperation<typename internal::traits<LHS>::ScalarType> op>
     class UnaryOp;
+
+    // Apply Op
+    template <typename LHS, typename ApplyOperation>
+    class ApplyOp;
 } /* StealthWorldGenerator */
 
 #endif

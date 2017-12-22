@@ -7,35 +7,48 @@
 
 namespace StealthWorldGenerator {
     template <int rowsAtCompileTime, int colsAtCompileTime>
+    using TerrainNoiseMap = NoiseMap<rowsAtCompileTime, colsAtCompileTime>;
+
+    template <int rowsAtCompileTime, int colsAtCompileTime>
     class TerrainMap {
         // Simple container for terrain related data.
         public:
-            typedef NoiseMap<rowsAtCompileTime, colsAtCompileTime> TerrainNoiseMap;
-            typedef TileMap<bool, rowsAtCompileTime, colsAtCompileTime> WaterLevelMap;
+            typedef TerrainNoiseMap<rowsAtCompileTime, colsAtCompileTime> InternalTerrainNoiseMap;
 
-            TerrainMap(TerrainNoiseMap elevation, float waterLevel = 0.5f) noexcept : elevation{std::move(elevation)} {
-                setWaterLevel(waterLevel);
+            TerrainMap() noexcept = default;
+
+            TerrainMap(InternalTerrainNoiseMap elevation, InternalTerrainNoiseMap waterTable, InternalTerrainNoiseMap foliage)
+                noexcept : elevation{std::move(elevation)}, waterTable{std::move(waterTable)}, foliage{std::move(foliage)} {
             }
 
-            const TerrainNoiseMap& getElevationMap() const noexcept {
+            const InternalTerrainNoiseMap& getElevationMap() const noexcept {
                 return elevation;
             }
 
-            const WaterLevelMap& getWaterTable() const noexcept {
-                return waterTable;
-            }
-
-            TerrainMap& setElevationMap(TerrainNoiseMap elevation) noexcept {
-                elevation = std::move(elevation);
+            TerrainMap& setElevationMap(InternalTerrainNoiseMap elevation) noexcept {
+                this -> elevation = std::move(elevation);
                 return *this;
             }
 
-            TerrainMap& setWaterLevel(float newLevel) noexcept {
-                waterTable = elevation < newLevel;
+            const InternalTerrainNoiseMap& getFoliageMap() const noexcept {
+                return foliage;
+            }
+
+            TerrainMap& setFoliageMap(InternalTerrainNoiseMap foliage) noexcept {
+                this -> foliage = std::move(foliage);
+                return *this;
+            }
+
+            const InternalTerrainNoiseMap& getWaterTable() const noexcept {
+                return waterTable;
+            }
+
+            TerrainMap& setWaterTable(InternalTerrainNoiseMap waterTable) noexcept {
+                this -> waterTable = std::move(waterTable);
+                return *this;
             }
         private:
-            TerrainNoiseMap elevation;
-            WaterLevelMap waterTable;
+            InternalTerrainNoiseMap elevation, foliage, waterTable;
     };
 } /* StealthWorldGenerator */
 

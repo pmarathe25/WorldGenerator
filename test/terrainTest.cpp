@@ -15,16 +15,20 @@ using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, Stealth
 const StealthWorldGenerator::DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
 
-const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0, 0, 0, 0), Color(0, 0, 255, 127)};
+const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0, 0, 255, 0), Color(0, 0, 255, 255)};
 
-template <int rowsAtCompileTime, int colsAtCompileTime, int scale, int numOctaves = 8>
-StealthWorldGenerator::TerrainMap<rowsAtCompileTime, colsAtCompileTime> generateTerrain() {
+const StealthWorldGenerator::GradientColorPalette foliagePalette{Color(0, 255, 0, 0), Color(0, 255, 0, 255)};
+
+template <int rows, int cols, int scale, int numOctaves = 8>
+StealthWorldGenerator::TerrainMap<rows, cols> generateTerrain(float waterLevel = 0.5f) {
     StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
-    auto&& elevation = noiseGenerator.generateOctaves<rowsAtCompileTime, colsAtCompileTime, scale, numOctaves>();
-
-    // StealthWorldGenerator::StealthNoiseGenerator perlinNoiseGenerator;
-    // auto&& elevation = perlinNoiseGenerator.generateOctaves<rowsAtCompileTime, colsAtCompileTime, scale, numOctaves>();
-    return StealthWorldGenerator::TerrainMap{elevation};
+    // Create land
+    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& elevation = noiseGenerator.generateOctaves<rows, cols, scale, numOctaves>();
+    // Create water
+    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& waterTable = StealthWorldGenerator::max(waterLevel - elevation, 0.0f);
+    // Create foliage
+    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& foliage = noiseGenerator.generateOctaves<rows, cols, scale, numOctaves>() * (waterTable == 0);
+    return StealthWorldGenerator::TerrainMap{elevation, waterTable, foliage};
 }
 
 int testTerrainValueRange() {
@@ -47,12 +51,14 @@ int main() {
     while (window.isOpen()) {
         auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 100>();
         // Show terrain on-screen.
-        sf::Texture elevationTexture, waterTableTexture;
+        sf::Texture elevationTexture, waterTableTexture, foliageTexture;
         sf::Sprite elevationSprite = spriteFromColorMap(applyPalette(elevationPalette, terrain.getElevationMap()), elevationTexture);
         sf::Sprite waterTableSprite = spriteFromColorMap(applyPalette(waterLevelPalette, terrain.getWaterTable()), waterTableTexture);
+        sf::Sprite foliageSprite = spriteFromColorMap(applyPalette(foliagePalette, terrain.getFoliageMap()), foliageTexture);
         // Draw
         window.draw(elevationSprite);
         window.draw(waterTableSprite);
+        window.draw(foliageSprite);
         // Display.
         window.display();
         // Handle events.

@@ -26,6 +26,12 @@ namespace StealthWorldGenerator {
     }
 
     template <typename Derived, typename OtherDerived>
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs) noexcept {
+        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
+        return BinaryOp<Derived, OtherDerived, internal::ops::divide>{lhs, rhs};
+    }
+
+    template <typename Derived, typename OtherDerived>
     constexpr BinaryOp<Derived, OtherDerived, internal::ops::eq> operator==(const Derived& lhs, const OtherDerived& rhs) noexcept {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
         return BinaryOp<Derived, OtherDerived, internal::ops::eq>{lhs, rhs};
@@ -68,9 +74,15 @@ namespace StealthWorldGenerator {
     }
 
     template <typename Derived, typename OtherDerived>
-    constexpr BinaryOp<Derived, OtherDerived, internal::ops::divide> operator/(const Derived& lhs, const OtherDerived& rhs) noexcept {
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::min> min(const Derived& lhs, const OtherDerived& rhs) noexcept {
         CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
-        return BinaryOp<Derived, OtherDerived, internal::ops::divide>{lhs, rhs};
+        return BinaryOp<Derived, OtherDerived, internal::ops::min>{lhs, rhs};
+    }
+
+    template <typename Derived, typename OtherDerived>
+    constexpr BinaryOp<Derived, OtherDerived, internal::ops::max> max(const Derived& lhs, const OtherDerived& rhs) noexcept {
+        CHECK_TILEMAP_COMPAT(Derived, OtherDerived);
+        return BinaryOp<Derived, OtherDerived, internal::ops::max>{lhs, rhs};
     }
 } /* StealthWorldGenerator */
 

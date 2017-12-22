@@ -1,10 +1,11 @@
 #ifndef INTERNAL_OPERATIONS_H
 #define INTERNAL_OPERATIONS_H
+#include <algorithm>
 #include <type_traits>
 
 namespace StealthWorldGenerator::internal::ops {
     template <typename LHS, typename RHS>
-    constexpr typename std::common_type<LHS, RHS>::type add(const LHS& lhs, const RHS& rhs) {
+    constexpr auto add(const LHS& lhs, const RHS& rhs) {
         return lhs + rhs;
     }
 
@@ -57,6 +58,22 @@ namespace StealthWorldGenerator::internal::ops {
     constexpr typename std::common_type<LHS, RHS>::type orOp(const LHS& lhs, const RHS& rhs) {
         return lhs || rhs;
     }
+
+    template <typename LHS, typename RHS>
+    constexpr typename std::common_type<LHS, RHS>::type min(const LHS& lhs, const RHS& rhs) {
+        return std::min(lhs, rhs);
+    }
+
+    template <typename LHS, typename RHS>
+    constexpr typename std::common_type<LHS, RHS>::type max(const LHS& lhs, const RHS& rhs) {
+        return std::max(lhs, rhs);
+    }
+
+    template <typename LHS>
+    constexpr LHS notOp(const LHS& lhs) {
+        return !lhs;
+    }
+
 } /* StealthWorldGenerator::internal::ops */
 
 #endif

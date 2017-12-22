@@ -3,10 +3,10 @@
 #include "TileMap/UnaryOp.hpp"
 
 namespace StealthWorldGenerator {
-    template <typename Derived, typename UnaryOperation>
-    constexpr UnaryOp<Derived, UnaryOperation> apply(const UnaryOperation& op, const Derived& lhs) noexcept {
-        return UnaryOp<Derived, UnaryOperation>(op, lhs);
+    template <typename Derived>
+    constexpr UnaryOp<Derived, internal::ops::notOp> operator!(const Derived& lhs) noexcept {
+        return UnaryOp<Derived, internal::ops::notOp>{lhs};
     }
 } /* StealthWorldGenerator */
 
-#endif
+#endif /* end of include guard: UNARY_OPERATIONS_H */
