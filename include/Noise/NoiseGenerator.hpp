@@ -1,5 +1,6 @@
 #ifndef NOISE_GENERATOR_H
 #define NOISE_GENERATOR_H
+#include "config.hpp"
 #include <unordered_map>
 #include <thread>
 #include <any>

@@ -8,7 +8,8 @@ TESTOBJS = $(addprefix $(BUILDDIR)/, noiseTest.o terrainTest.o)
 # Headers
 INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
-HEADERS = $(addprefix $(INCLUDEPATH)/, TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp \
+HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
+	TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp \
 	TileMap/Operations/InternalOperations.hpp TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp\
 	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
 	Utility.hpp Vector2.hpp \
@@ -21,6 +22,8 @@ CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3
 LFLAGS = -shared -flto
 TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto
 EXECLFLAGS = -flto
+
+all: $(TESTOBJS)
 
 $(TESTDIR)/noiseTest: $(BUILDDIR)/noiseTest.o $(HEADERS) $(OBJS)
 	$(CXX) $(BUILDDIR)/noiseTest.o $(OBJS) $(TESTLFLAGS) -o $(TESTDIR)/noiseTest
@@ -51,5 +54,3 @@ noisetest: $(TESTDIR)/noiseTest
 
 testall:
 	$(TESTDIR)/noiseTest & $(TESTDIR)/terrainTest
-
-test: terraintest
