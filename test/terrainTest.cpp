@@ -15,7 +15,7 @@ using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, Stealth
 const StealthWorldGenerator::DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
 
-const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0, 0, 255, 0), Color(0, 0, 255, 255)};
+const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0, 0, 255, 0), Color(0, 0, 255, 127)};
 
 const StealthWorldGenerator::GradientColorPalette foliagePalette{Color(0, 255, 0, 0), Color(0, 255, 0, 255)};
 
@@ -25,7 +25,8 @@ StealthWorldGenerator::TerrainMap<rows, cols> generateTerrain(float waterLevel =
     // Create land
     StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& elevation = noiseGenerator.generateOctaves<rows, cols, scale, numOctaves>();
     // Create water
-    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& waterTable = StealthWorldGenerator::max(waterLevel - elevation, 0.0f);
+    // StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& waterTable = StealthWorldGenerator::max(waterLevel - elevation, 0.0f);
+    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& waterTable = elevation < waterLevel;
     // Create foliage
     StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& foliage = noiseGenerator.generateOctaves<rows, cols, scale, numOctaves>() * (waterTable == 0);
     return StealthWorldGenerator::TerrainMap{elevation, waterTable, foliage};
