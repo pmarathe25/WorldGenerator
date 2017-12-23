@@ -2,6 +2,8 @@
 #include "Noise/StealthNoiseGenerator.hpp"
 #include "Noise/PerlinNoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
+#include "Terrain/TerrainConfig.hpp"
+#include "Terrain/TerrainGenerator.hpp"
 #include "Color/ColorPalette.hpp"
 #include "config.hpp"
 #include <SFML/Window.hpp>
@@ -19,38 +21,31 @@ const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0, 0, 
 
 const StealthWorldGenerator::GradientColorPalette foliagePalette{Color(0, 255, 0, 0), Color(0, 255, 0, 255)};
 
-template <int rows, int cols, int scale, int numOctaves = 8>
-StealthWorldGenerator::TerrainMap<rows, cols> generateTerrain(float waterLevel = 0.5f) {
-    StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
-    // Create land
-    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& elevation = noiseGenerator.generateOctaves<rows, cols, scale, numOctaves>();
-    // Create water
-    // StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& waterTable = StealthWorldGenerator::max(waterLevel - elevation, 0.0f);
-    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& waterTable = elevation < waterLevel;
-    // Create foliage
-    StealthWorldGenerator::TerrainNoiseMap<rows, cols>&& foliage = noiseGenerator.generateOctaves<rows, cols, scale, numOctaves>() * (waterTable == 0);
-    return StealthWorldGenerator::TerrainMap{elevation, waterTable, foliage};
-}
-
-int testTerrainValueRange() {
-    // Try to find the minimum and maximum possible outputs from terrain generation.
-    float min = 1.0f, max, current;
-    while (min >= 0.0f && max <= 1.0f) {
-        auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 800>();
-        current = *std::min_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
-        min = (current < min) ? current : min;
-        current = *std::max_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
-        max = (current > max) ? current : max;
-        std::cout << "Min: " << min << "\tMax: " << max << '\r';
-    }
-    std::cout << "\nMin: " << min << "\tMax: " << max << '\n';
-    return 0;
-}
+// int testTerrainValueRange() {
+//     // Try to find the minimum and maximum possible outputs from terrain generation.
+//     float min = 1.0f, max, current;
+//     while (min >= 0.0f && max <= 1.0f) {
+//         auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 800>();
+//         current = *std::min_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
+//         min = (current < min) ? current : min;
+//         current = *std::max_element(terrain.getElevationMap().cbegin(), terrain.getElevationMap().cend());
+//         max = (current > max) ? current : max;
+//         std::cout << "Min: " << min << "\tMax: " << max << '\r';
+//     }
+//     std::cout << "\nMin: " << min << "\tMax: " << max << '\n';
+//     return 0;
+// }
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
+
+    StealthWorldGenerator::TerrainConfig<WINDOW_Y, WINDOW_X, 100> config{};
+    config.setElevationBounds(0.0f, 1.0f).setWaterLevel(0.40f).setFoliageElevationBounds(0.45f, 0.65f);
+
+    StealthWorldGenerator::TerrainGenerator terrainGenerator{};
     while (window.isOpen()) {
-        auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 100>();
+        // auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 100>();
+        auto terrain = terrainGenerator.generate(config);
         // Show terrain on-screen.
         sf::Texture elevationTexture, waterTableTexture, foliageTexture;
         sf::Sprite elevationSprite = spriteFromColorMap(applyPalette(elevationPalette, terrain.getElevationMap()), elevationTexture);
