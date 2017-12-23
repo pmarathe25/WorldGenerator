@@ -7,6 +7,12 @@
 namespace StealthWorldGenerator {
     class DiscreteColorPalette : public std::vector<Color> {
         public:
+            DiscreteColorPalette(const DiscreteColorPalette& other) = default;
+
+            DiscreteColorPalette(DiscreteColorPalette&& other) noexcept = default;
+
+            DiscreteColorPalette& operator=(DiscreteColorPalette&& other) noexcept = default;
+
             template <typename ScalarType>
             const Color& operator()(ScalarType val) const {
                 return (val >= ScalarType(1)) ? (*this)[this -> size() - 1] : (*this)[(int) (this -> size() * val)];
