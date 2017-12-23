@@ -1,13 +1,9 @@
-#include "TileMap/TileMap.hpp"
-#include "Noise/NoiseGenerator.hpp"
-#include "Terrain/TerrainMap.hpp"
 #include "Terrain/TerrainGenerator.hpp"
 #include "Terrain/TerrainMapSpriteManager.hpp"
 #include "Color/ColorPalette.hpp"
 #include "config.hpp"
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <functional>
 #include <chrono>
 #include <thread>
 

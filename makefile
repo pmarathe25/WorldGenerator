@@ -9,9 +9,8 @@ TESTOBJS = $(addprefix $(BUILDDIR)/, noiseTest.o terrainTest.o)
 INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
 HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
-	TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp \
-	TileMap/Operations/InternalOperations.hpp TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp\
-	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
+	TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp TileMap/Operations/InternalOperations.hpp \
+ 	TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
 	Utility.hpp Vector2.hpp \
 	Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp\
 	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp \

@@ -4,13 +4,11 @@
 #include "config.hpp"
 #include "Noise/InterpolationKernel.hpp"
 #include "Noise/NoiseMap.hpp"
-#include "TileMap/TileMap.hpp"
 #include "Utility.hpp"
 #include <unordered_map>
 #include <chrono>
 #include <random>
 #include <thread>
-#include <any>
 
 namespace StealthWorldGenerator {
     class NoiseGenerator {

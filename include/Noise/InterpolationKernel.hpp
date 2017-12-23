@@ -5,9 +5,7 @@
 #include "Vector2.hpp"
 
 namespace StealthWorldGenerator {
-    class InterpolationKernelBase {
-
-    };
+    class InterpolationKernelBase { };
 
     // Maintains a cache of points and attenuations to use for each possible location of a pixel.
     template <int scale = 1>
@@ -44,8 +42,8 @@ namespace StealthWorldGenerator {
 
             constexpr Vector2f calculatePoint(int row, int col) const noexcept {
                 // Compute a relative location.
-                float&& interpolationOffsetX = (col / (float) scale) + 0.5f / scale;
-                float&& interpolationOffsetY = (row / (float) scale) + 0.5f / scale;
+                float interpolationOffsetX = (col / (float) scale) + 0.5f / scale;
+                float interpolationOffsetY = (row / (float) scale) + 0.5f / scale;
                 return Vector2f(interpolationOffsetX, interpolationOffsetY);
             }
 
