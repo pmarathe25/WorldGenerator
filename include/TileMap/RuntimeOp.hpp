@@ -1,12 +1,12 @@
-#ifndef APPLY_OP_H
-#define APPLY_OP_H
+#ifndef RUNTIME_OP_H
+#define RUNTIME_OP_H
 #include "TileMap/TileMapBase.hpp"
 
 namespace StealthWorldGenerator {
     namespace internal {
-        template <typename LHS, typename ApplyOperation>
-        struct traits<ApplyOp<LHS, ApplyOperation>> {
-            typedef typename std::invoke_result<ApplyOperation, typename internal::traits<LHS>::ScalarType>::type ScalarType;
+        template <typename LHS, typename RuntimeOperation>
+        struct traits<RuntimeOp<LHS, RuntimeOperation>> {
+            typedef typename std::invoke_result<RuntimeOperation, typename internal::traits<LHS>::ScalarType>::type ScalarType;
             // Dimensions
             static constexpr int rows = internal::traits<LHS>::rows,
                 cols = internal::traits<LHS>::cols,
@@ -14,15 +14,15 @@ namespace StealthWorldGenerator {
         };
     } /* internal */
 
-    template <typename LHS, typename ApplyOperation>
-    class ApplyOp : public TileMapBase<ApplyOp<LHS, ApplyOperation>> {
+    template <typename LHS, typename RuntimeOperation>
+    class RuntimeOp : public TileMapBase<RuntimeOp<LHS, RuntimeOperation>> {
         public:
-            typedef typename internal::traits<ApplyOp>::ScalarType ScalarType;
+            typedef typename internal::traits<RuntimeOp>::ScalarType ScalarType;
             // Dimensions
-            static constexpr int rows = internal::traits<ApplyOp>::rows, cols = internal::traits<ApplyOp>::cols,
-                size = internal::traits<ApplyOp>::size;
+            static constexpr int rows = internal::traits<RuntimeOp>::rows, cols = internal::traits<RuntimeOp>::cols,
+                size = internal::traits<RuntimeOp>::size;
 
-            constexpr ApplyOp(const ApplyOperation& op, const LHS& lhs) noexcept
+            constexpr RuntimeOp(const RuntimeOperation& op, const LHS& lhs) noexcept
                 : op(op), lhs(lhs) { }
 
             constexpr ScalarType operator[](int index) const {
@@ -38,7 +38,7 @@ namespace StealthWorldGenerator {
             }
         private:
             const LHS& lhs;
-            const ApplyOperation& op;
+            const RuntimeOperation& op;
     };
 } /* StealthWorldGenerator */
 

@@ -30,9 +30,9 @@ namespace StealthWorldGenerator {
     template <typename LHS, UnaryOperation<typename internal::traits<LHS>::ScalarType> op>
     class UnaryOp;
 
-    // Apply Op
-    template <typename LHS, typename ApplyOperation>
-    class ApplyOp;
+    // Runtime Op
+    template <typename LHS, typename RuntimeOperation>
+    class RuntimeOp;
 } /* StealthWorldGenerator */
 
 #endif
