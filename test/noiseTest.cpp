@@ -36,16 +36,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
     StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
     StealthWorldGenerator::PerlinNoiseGenerator perlinNoiseGenerator;
-    // auto octave1 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 400>();
-    // auto octave2 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 200>();
-    // auto octave3 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
-    // auto octave4 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 50>();
-    // auto octave5 = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 25>();
 
-    // StealthWorldGenerator::TileMapF<WINDOW_Y, WINDOW_X> noise = 0.5f * octave1 + 0.25f
-    //     * octave2 + 0.125f * octave3 + 0.0625f * octave4 + 0.03125f * octave5;
-
-    unsigned long long int totalTime = 0;
+    double totalTime = 0;
     int numFrames = 0;
 
     while (window.isOpen()) {
@@ -68,8 +60,9 @@ int main() {
         // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
 
         auto end = std::chrono::steady_clock::now();
+        
         totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "Average Time:  " << (totalTime / (float) ++numFrames) << " milliseconds" << '\r';
+        std::cout << "Average Time:  " << (totalTime / ++numFrames) << " milliseconds" << '\r';
 
         // Show noise on-screen.
         sf::Texture noiseTexture;

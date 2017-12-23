@@ -24,13 +24,13 @@ const StealthWorldGenerator::GradientColorPalette foliagePalette{Color(0x3366000
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     // Configure the terrain generator
-    TerrainGenerator<WINDOW_Y, WINDOW_X, 100> terrainGenerator{};
+    TerrainGenerator terrainGenerator{};
     terrainGenerator.setElevationBounds(0.0f, 1.0f).setWaterLevel(0.40f).setFoliageElevationBounds(0.45f, 0.65f);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{elevationPalette, waterLevelPalette, foliagePalette};
     while (window.isOpen()) {
         // Generate!
-        auto terrain = terrainGenerator.generate();
+        auto terrain = terrainGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
         // Show terrain on-screen.
         spriteManager.setTerrainMap(terrain);
         // Clear

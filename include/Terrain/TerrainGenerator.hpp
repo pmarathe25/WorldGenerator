@@ -6,7 +6,6 @@
 #include <random>
 
 namespace StealthWorldGenerator {
-    template <int rows, int cols, int scale, int numOctaves = 8, typename NoiseGen = StealthNoiseGenerator>
     class TerrainGenerator {
         public:
             constexpr TerrainGenerator() noexcept = default;
@@ -36,7 +35,8 @@ namespace StealthWorldGenerator {
                 return *this;
             }
 
-            constexpr TerrainMap<rows, cols> generate() noexcept {
+            template <int rows, int cols, int scale, int numOctaves = 8, typename NoiseGen = StealthNoiseGenerator>
+            constexpr TerrainMap<rows, cols> generate() const noexcept {
                 NoiseGen noiseGenerator;
                 // Create land
                 TerrainNoiseMap<rows, cols>&& elevation = noiseGenerator.template generateOctaves<rows, cols, scale, numOctaves>
@@ -49,7 +49,7 @@ namespace StealthWorldGenerator {
                 return TerrainMap{elevation, waterTable, foliage};
             }
         private:
-            float waterLevel;
+            float waterLevel = 0.0f;
             Vector2f elevationBounds = {0.0f, 1.0f}, foliageElevationBounds = {0.0f, 1.0f};
     };
 } /* StealthWorldGenerator */
