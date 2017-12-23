@@ -26,15 +26,15 @@ namespace StealthWorldGenerator {
             // Dimensions
             static constexpr int rows = rowsAtCompileTime, cols = colsAtCompileTime, size = sizeAtCompileTime;
 
-            constexpr TileMap() : tiles(sizeAtCompileTime) { }
+            constexpr TileMap() noexcept : tiles(sizeAtCompileTime) { }
 
             // Copy
             template <typename OtherDerived>
-            constexpr TileMap(const TileMapBase<OtherDerived>& other) : tiles(sizeAtCompileTime) {
+            constexpr TileMap(const TileMapBase<OtherDerived>& other) noexcept : tiles(sizeAtCompileTime) {
                 copyMultithreaded(other);
             }
 
-            constexpr TileMap(const TileMap& other) {
+            constexpr TileMap(const TileMap& other) noexcept {
                 tiles = other.tiles;
             }
 

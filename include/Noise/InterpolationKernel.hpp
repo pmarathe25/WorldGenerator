@@ -13,11 +13,15 @@ namespace StealthWorldGenerator {
                 initializeKernel();
             }
 
-            const TileMap<Vector2f, scale, scale>& getPoints() const noexcept {
+            constexpr InterpolationKernel(const InterpolationKernel& other) noexcept = default;
+
+            constexpr InterpolationKernel(InterpolationKernel&& other) noexcept = default;
+
+            constexpr const TileMap<Vector2f, scale, scale>& getPoints() const noexcept {
                 return points;
             }
 
-            const TileMap<Vector2f, scale, scale>& getAttenuations() const noexcept {
+            constexpr const TileMap<Vector2f, scale, scale>& getAttenuations() const noexcept {
                 return attenuations;
             }
 
