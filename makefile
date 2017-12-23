@@ -13,7 +13,7 @@ HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
 	TileMap/Operations/InternalOperations.hpp TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp\
 	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
 	Utility.hpp Vector2.hpp \
-	Noise/NoiseGenerator.hpp Noise/StealthNoiseGenerator.hpp Noise/PerlinNoiseGenerator.hpp Noise/InterpolationKernel.hpp\
+	Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp\
 	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp \
 	Color/Color.hpp Color/ColorPalette.hpp Color/ColorMap.hpp)
 # Compiler settings

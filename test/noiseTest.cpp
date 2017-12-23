@@ -1,6 +1,5 @@
 #include "TileMap/TileMap.hpp"
-#include "Noise/StealthNoiseGenerator.hpp"
-#include "Noise/PerlinNoiseGenerator.hpp"
+#include "Noise/NoiseGenerator.hpp"
 #include "Color/ColorPalette.hpp"
 #include "config.hpp"
 #include <SFML/Window.hpp>
@@ -34,8 +33,7 @@ constexpr float threshold(float in, float threshold) {
 int main() {
     // Window
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Noise Test");
-    StealthWorldGenerator::StealthNoiseGenerator noiseGenerator;
-    StealthWorldGenerator::PerlinNoiseGenerator perlinNoiseGenerator;
+    StealthWorldGenerator::NoiseGenerator noiseGenerator;
 
     double totalTime = 0;
     int numFrames = 0;
@@ -44,10 +42,8 @@ int main() {
         auto start = std::chrono::steady_clock::now();
 
         // auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
-        // auto noise = perlinNoiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
 
         auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
-        // auto noise = perlinNoiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
 
         // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
         // noise = noise && (noise < noise2);
@@ -60,7 +56,7 @@ int main() {
         // noiseTest = StealthWorldGenerator::apply(std::bind(threshold, std::placeholders::_1, 0.25f), noise);
 
         auto end = std::chrono::steady_clock::now();
-        
+
         totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         std::cout << "Average Time:  " << (totalTime / ++numFrames) << " milliseconds" << '\r';
 

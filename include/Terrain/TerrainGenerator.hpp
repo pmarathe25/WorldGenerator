@@ -1,6 +1,6 @@
 #ifndef TERRAIN_GENERATOR_H
 #define TERRAIN_GENERATOR_H
-#include "Noise/StealthNoiseGenerator.hpp"
+#include "Noise/NoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
 #include "Vector2.hpp"
 #include <random>
@@ -35,7 +35,7 @@ namespace StealthWorldGenerator {
                 return *this;
             }
 
-            template <int rows, int cols, int scale, int numOctaves = 8, typename NoiseGen = StealthNoiseGenerator>
+            template <int rows, int cols, int scale, int numOctaves = 8, typename NoiseGen = NoiseGenerator>
             constexpr TerrainMap<rows, cols> generate() const noexcept {
                 NoiseGen noiseGenerator;
                 // Create land
