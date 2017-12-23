@@ -15,35 +15,35 @@ namespace StealthWorldGenerator {
         public:
             typedef TerrainNoiseMap<rowsAtCompileTime, colsAtCompileTime> InternalTerrainNoiseMap;
 
-            TerrainMap() noexcept = default;
+            constexpr TerrainMap() noexcept = default;
 
-            TerrainMap(InternalTerrainNoiseMap elevation, InternalTerrainNoiseMap waterTable, InternalTerrainNoiseMap foliage)
+            constexpr TerrainMap(InternalTerrainNoiseMap elevation, InternalTerrainNoiseMap waterTable, InternalTerrainNoiseMap foliage)
                 noexcept : elevation{std::move(elevation)}, waterTable{std::move(waterTable)}, foliage{std::move(foliage)} {
             }
 
-            const InternalTerrainNoiseMap& getElevationMap() const noexcept {
+            constexpr const InternalTerrainNoiseMap& getElevationMap() const noexcept {
                 return elevation;
             }
 
-            TerrainMap& setElevationMap(InternalTerrainNoiseMap elevation) noexcept {
+            constexpr TerrainMap& setElevationMap(InternalTerrainNoiseMap elevation) noexcept {
                 this -> elevation = std::move(elevation);
                 return *this;
             }
 
-            const InternalTerrainNoiseMap& getFoliageMap() const noexcept {
+            constexpr const InternalTerrainNoiseMap& getFoliageMap() const noexcept {
                 return foliage;
             }
 
-            TerrainMap& setFoliageMap(InternalTerrainNoiseMap foliage) noexcept {
+            constexpr TerrainMap& setFoliageMap(InternalTerrainNoiseMap foliage) noexcept {
                 this -> foliage = std::move(foliage);
                 return *this;
             }
 
-            const InternalTerrainNoiseMap& getWaterTable() const noexcept {
+            constexpr const InternalTerrainNoiseMap& getWaterTable() const noexcept {
                 return waterTable;
             }
 
-            TerrainMap& setWaterTable(InternalTerrainNoiseMap waterTable) noexcept {
+            constexpr TerrainMap& setWaterTable(InternalTerrainNoiseMap waterTable) noexcept {
                 this -> waterTable = std::move(waterTable);
                 return *this;
             }

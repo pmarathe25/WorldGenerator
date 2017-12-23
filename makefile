@@ -14,7 +14,7 @@ HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
 	TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
 	Utility.hpp Vector2.hpp \
 	Noise/NoiseGenerator.hpp Noise/StealthNoiseGenerator.hpp Noise/PerlinNoiseGenerator.hpp Noise/InterpolationKernel.hpp\
-	Terrain/TerrainMap.hpp Terrain/TerrainConfig.hpp Terrain/TerrainGenerator.hpp \
+	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp \
 	Color/Color.hpp Color/ColorPalette.hpp Color/ColorMap.hpp)
 # Compiler settings
 CXX = g++

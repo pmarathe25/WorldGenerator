@@ -2,7 +2,6 @@
 #include "Noise/StealthNoiseGenerator.hpp"
 #include "Noise/PerlinNoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
-#include "Terrain/TerrainConfig.hpp"
 #include "Terrain/TerrainGenerator.hpp"
 #include "Color/ColorPalette.hpp"
 #include "config.hpp"
@@ -38,14 +37,12 @@ const StealthWorldGenerator::GradientColorPalette foliagePalette{Color(0, 255, 0
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
-
-    StealthWorldGenerator::TerrainConfig<WINDOW_Y, WINDOW_X, 100> config{};
-    config.setElevationBounds(0.0f, 1.0f).setWaterLevel(0.40f).setFoliageElevationBounds(0.45f, 0.65f);
-
-    StealthWorldGenerator::TerrainGenerator terrainGenerator{};
+    // Configure the terrain generator
+    StealthWorldGenerator::TerrainGenerator<WINDOW_Y, WINDOW_X, 100> terrainGenerator{};
+    terrainGenerator.setElevationBounds(0.0f, 1.0f).setWaterLevel(0.40f).setFoliageElevationBounds(0.45f, 0.65f);
     while (window.isOpen()) {
-        // auto terrain = generateTerrain<WINDOW_Y, WINDOW_X, 100>();
-        auto terrain = terrainGenerator.generate(config);
+        // Generate!
+        auto terrain = terrainGenerator.generate();
         // Show terrain on-screen.
         sf::Texture elevationTexture, waterTableTexture, foliageTexture;
         sf::Sprite elevationSprite = spriteFromColorMap(applyPalette(elevationPalette, terrain.getElevationMap()), elevationTexture);
