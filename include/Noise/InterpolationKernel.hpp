@@ -5,9 +5,13 @@
 #include "Vector2.hpp"
 
 namespace StealthWorldGenerator {
+    class InterpolationKernelBase {
+
+    };
+
     // Maintains a cache of points and attenuations to use for each possible location of a pixel.
     template <int scale = 1>
-    class InterpolationKernel {
+    class InterpolationKernel : public InterpolationKernelBase {
         public:
             constexpr InterpolationKernel() {
                 initializeKernel();

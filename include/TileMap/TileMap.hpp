@@ -42,13 +42,17 @@ namespace StealthWorldGenerator {
             constexpr TileMap(TileMap&& other) noexcept = default;
 
             // Assignment
-            constexpr void operator=(const TileMap& other) noexcept {
+            constexpr TileMap& operator=(TileMap&& other) noexcept = default;
+
+            constexpr TileMap& operator=(const TileMap& other) noexcept {
                 tiles = other.tiles;
+                return *this;
             }
 
             template <typename OtherDerived>
-            constexpr void operator=(const TileMapBase<OtherDerived>& other) noexcept {
+            constexpr TileMap& operator=(const TileMapBase<OtherDerived>& other) noexcept {
                 copyMultithreaded(other);
+                return *this;
             }
 
             constexpr ScalarType& at(int row, int col) {

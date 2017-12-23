@@ -41,9 +41,9 @@ namespace StealthWorldGenerator {
                 Generator generator = std::default_random_engine(CURRENT_TIME)) {
                 // Generate a new interpolation kernel if one does not exist.
                 if (kernels.count(scale) < 1) {
-                    kernels.emplace(scale, InterpolationKernel<scale>{});
+                    kernels.emplace(scale, std::make_unique<InterpolationKernel<scale>>());
                 }
-                const InterpolationKernel<scale>& kernel = std::any_cast<const InterpolationKernel<scale>>(kernels[scale]);
+                const InterpolationKernel<scale>& kernel = *static_cast<const InterpolationKernel<scale>*>(kernels[scale].get());
                 // Generate a new internal noise map.
                 constexpr int internalRows = ceilDivide(rows, scale) + 1;
                 constexpr int internalCols = ceilDivide(cols, scale) + 1;

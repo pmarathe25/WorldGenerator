@@ -9,9 +9,19 @@
 #include <chrono>
 #include <thread>
 
-using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette, StealthWorldGenerator::spriteFromColorMap;
+using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette;
 
 const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
+
+template <int rows, int cols>
+constexpr sf::Sprite spriteFromColorMap(const StealthWorldGenerator::ColorMap<rows, cols>& colors, sf::Texture& texture) {
+    sf::Image im;
+    sf::Sprite sprite;
+    im.create(rows, cols, (uint8_t*) colors.data());
+    texture.loadFromImage(im);
+    sprite.setTexture(texture);
+    return sprite;
+}
 
 constexpr float doubleUp(float in) {
     return in * 2.0;
