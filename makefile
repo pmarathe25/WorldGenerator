@@ -9,18 +9,16 @@ TESTOBJS = $(addprefix $(BUILDDIR)/, noiseTest.o terrainTest.o)
 INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
 HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
-	TileMap/TileMap.hpp TileMap/TileMapBase.hpp TileMap/ForwardDeclarations.hpp TileMap/Operations/InternalOperations.hpp \
- 	TileMap/Operations/BinaryOperations.hpp TileMap/Operations/UnaryOperations.hpp TileMap/BinaryOp.hpp TileMap/UnaryOp.hpp \
 	Utility.hpp Vector2.hpp \
 	Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp\
 	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp \
-	Color/Color.hpp Color/ColorPalette.hpp Color/ColorMap.hpp)
+	Color/Color.hpp Color/ColorPalette.hpp)
 # Compiler settings
 CXX = g++
-CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3 -Wpedantic
-LFLAGS = -shared -flto
-TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto
-EXECLFLAGS = -flto
+CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3 -Wpedantic -march=native
+LFLAGS = -shared -flto -march=native
+TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto -march=native
+EXECLFLAGS = -flto -march=native
 
 all: $(TESTOBJS)
 

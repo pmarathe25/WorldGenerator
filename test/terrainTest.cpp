@@ -20,13 +20,13 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     // Configure the terrain generator
     TerrainGenerator terrainGenerator{};
-    terrainGenerator.setElevationBounds(0.0f, 1.0f).setWaterLevel(0.40f).setFoliageElevationBounds(0.45f, 0.65f);
+    terrainGenerator.setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{elevationPalette, waterLevelPalette, foliagePalette};
     while (window.isOpen()) {
         // Generate!
-        auto terrain = terrainGenerator.generate<WINDOW_Y, WINDOW_X, 100, 8>();
-        // Show terrain on-screen.
+        auto terrain = terrainGenerator.generate<WINDOW_Y, WINDOW_X, 100>();
+        // Create sprites from this terrain.
         spriteManager.setTerrainMap(terrain);
         // Clear
         window.clear();

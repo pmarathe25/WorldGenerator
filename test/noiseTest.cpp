@@ -12,7 +12,7 @@ using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette;
 const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
 
 template <int rows, int cols>
-constexpr sf::Sprite spriteFromColorMap(const StealthWorldGenerator::ColorMap<rows, cols>& colors, sf::Texture& texture) {
+constexpr sf::Sprite spriteFromColorMap(const StealthWorldGenerator::TileMap<Color, rows, cols>& colors, sf::Texture& texture) {
     sf::Image im;
     sf::Sprite sprite;
     im.create(rows, cols, (uint8_t*) colors.data());
@@ -40,7 +40,7 @@ int main() {
     while (window.isOpen()) {
         auto start = std::chrono::steady_clock::now();
 
-        // auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 80>();
+        // auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 4>();
 
         auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
 

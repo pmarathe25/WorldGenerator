@@ -1,16 +1,13 @@
 #ifndef STEALTH_TERRAIN_MAP_H
 #define STEALTH_TERRAIN_MAP_H
-#include "Noise/NoiseMap.hpp"
+#include "TileMap/TileMap.hpp"
 
 namespace StealthWorldGenerator {
-    template <int rowsAtCompileTime, int colsAtCompileTime>
-    using TerrainNoiseMap = NoiseMap<rowsAtCompileTime, colsAtCompileTime>;
-
     template <int rowsAtCompileTime, int colsAtCompileTime>
     class TerrainMap {
         // Simple container for terrain related data.
         public:
-            typedef TerrainNoiseMap<rowsAtCompileTime, colsAtCompileTime> InternalTerrainNoiseMap;
+            typedef TileMapF<rowsAtCompileTime, colsAtCompileTime> InternalTerrainNoiseMap;
 
             constexpr TerrainMap() noexcept = default;
 
