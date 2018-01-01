@@ -6,11 +6,11 @@
 
 namespace StealthWorldGenerator {
     namespace {
-        template <int rows, int cols>
-        constexpr sf::Sprite spriteFromColorMap(const TileMap<Color, rows, cols>& colors, sf::Texture& texture) {
+        template <int width, int length>
+        constexpr sf::Sprite spriteFromColorMap(const StealthTileMap::TileMap<Color, width, length>& colors, sf::Texture& texture) {
             sf::Image im;
             sf::Sprite sprite;
-            im.create(rows, cols, (uint8_t*) colors.data());
+            im.create(width, length, (uint8_t*) colors.data());
             texture.loadFromImage(im);
             sprite.setTexture(texture);
             return sprite;
@@ -24,8 +24,8 @@ namespace StealthWorldGenerator {
                 FoliagePalette foliagePalette) : elevationPalette{std::move(elevationPalette)},
                 waterLevelPalette{std::move(waterLevelPalette)}, foliagePalette{std::move(foliagePalette)} { }
 
-            template <int rows, int cols>
-            constexpr TerrainMapSpriteManager& setTerrainMap(const TerrainMap<rows, cols>& terrainMap) {
+            template <int width, int length>
+            constexpr TerrainMapSpriteManager& setTerrainMap(const TerrainMap<width, length>& terrainMap) {
                 elevationSprite = spriteFromColorMap(applyPalette(elevationPalette, terrainMap.getElevationMap()), elevationTexture);
                 waterTableSprite = spriteFromColorMap(applyPalette(waterLevelPalette, terrainMap.getWaterTable()), waterTableTexture);
                 foliageSprite = spriteFromColorMap(applyPalette(foliagePalette, terrainMap.getFoliageMap()), foliageTexture);

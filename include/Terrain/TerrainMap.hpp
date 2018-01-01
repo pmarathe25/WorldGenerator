@@ -3,11 +3,11 @@
 #include "TileMap/TileMap.hpp"
 
 namespace StealthWorldGenerator {
-    template <int rowsAtCompileTime, int colsAtCompileTime>
+    template <int widthAtCompileTime, int lengthAtCompileTime>
     class TerrainMap {
         // Simple container for terrain related data.
         public:
-            typedef TileMapF<rowsAtCompileTime, colsAtCompileTime> InternalTerrainNoiseMap;
+            typedef TileMapF<widthAtCompileTime, lengthAtCompileTime> InternalTerrainNoiseMap;
 
             constexpr TerrainMap() noexcept = default;
 

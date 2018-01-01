@@ -18,17 +18,17 @@ namespace StealthWorldGenerator {
 
             constexpr InterpolationKernel(InterpolationKernel&& other) noexcept = default;
 
-            constexpr const TileMap<float, 1, scale>& getPoints() const noexcept {
+            constexpr const auto& getPoints() const noexcept {
                 return points;
             }
 
-            constexpr const TileMap<float, 1, scale>& getAttenuations() const noexcept {
+            constexpr const auto& getAttenuations() const noexcept {
                 return attenuations;
             }
 
         private:
-            TileMap<float, 1, scale> points{};
-            TileMap<float, 1, scale> attenuations{};
+            StealthTileMap::TileMap<float, scale> points{};
+            StealthTileMap::TileMap<float, scale> attenuations{};
 
             constexpr void initializeKernel() noexcept {
                 // Optimally initialize kernel. Only need to compute 1/8th of the kernel.
@@ -45,16 +45,16 @@ namespace StealthWorldGenerator {
             constexpr void initializeHalf(int halfBound) {
                 for (int i = 0; i < halfBound; ++i) {
                     float point = calculatePoint(i);
-                    points.at(0, i) = point;
-                    attenuations.at(0, i) = attenuationPolynomial(point);
+                    points(i) = point;
+                    attenuations(i) = attenuationPolynomial(point);
                 }
             }
 
             constexpr void reflectHalf(int halfBound) {
                 for (int i = scale - 1, index = 0; i >= halfBound; --i, ++index) {
-                    float point = 1.0f - points[index];
-                    points.at(0, i) = point;
-                    attenuations.at(0, i) = attenuationPolynomial(point);
+                    float point = 1.0f - points(index);
+                    points(i) = point;
+                    attenuations(i) = attenuationPolynomial(point);
                 }
             }
     };
