@@ -7,7 +7,7 @@ namespace StealthWorldGenerator {
     class TerrainMap {
         // Simple container for terrain related data.
         public:
-            typedef TileMapF<widthAtCompileTime, lengthAtCompileTime> InternalTerrainNoiseMap;
+            typedef StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime> InternalTerrainNoiseMap;
 
             constexpr TerrainMap() noexcept = default;
 
