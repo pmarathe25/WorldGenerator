@@ -60,15 +60,30 @@ namespace StealthWorldGenerator {
             // Maintain a cache of interpolation kernels of different sizes
             static std::unordered_map<int, std::unique_ptr<const InterpolationKernelBase>> kernels;
 
-            constexpr float interpolate(float topLeft, float topRight, float bottomLeft,
+            constexpr float interpolate1D(float left, float right, float attenuation) noexcept {
+                // Interpolate between two points
+                return left * (1.0f - attenuation) + right * attenuation;
+            }
+
+            constexpr float interpolate2D(float topLeft, float topRight, float bottomLeft,
                 float bottomRight, float attenuationX, float attenuationY) noexcept {
                 // Interpolate horizontally
-                float nx0 = topLeft * (1.0f - attenuationX) + topRight * (attenuationX);
-                float nx1 = bottomLeft * (1.0f - attenuationX) + bottomRight * (attenuationX);
+                float nx0 = interpolate1D(topLeft, topRight, attenuationX);
+                float nx1 = interpolate1D(bottomLeft, bottomRight, attenuationX);
                 // Interpolate vertically
-                float nxy = nx0 * (1.0f - attenuationY) + nx1 * (attenuationY);
-                // Return a random value in the range (0, 1) instead of (-sqrt(2) / 2, sqrt(2) / 2)
+                float nxy = interpolate1D(nx0, nx1, attenuationY);
                 return nxy;
+            }
+
+            constexpr float interpolate3D(float topLeft0, float topRight0, float bottomLeft0, float bottomRight0,
+                float topLeft1, float topRight1, float bottomLeft1, float bottomRight1,
+                float attenuationX, float attenuationY, float attenuationZ) noexcept {
+                // Interpolate bottom layer
+                float nz0 = interpolate2D(topLeft0, topRight0, bottomLeft0, bottomRight0, attenuationX, attenuationY);
+                float nz1 = interpolate2D(topLeft1, topRight1, bottomLeft1, bottomRight1, attenuationX, attenuationY);
+                // Interpolate between two layers
+                float nxyz = interpolate1D(nz0, nz1, attenuationZ);
+                return nxyz;
             }
 
             // Initialize with random values according to provided distribution
@@ -103,7 +118,7 @@ namespace StealthWorldGenerator {
                 for (int row = 0; row < maxValidRow; ++row) {
                     for (int col = 0; col < maxValidCol; ++col) {
                         // Interpolate based on the 4 surrounding internal noise points.
-                        generatedNoise -> operator()(scaledRow + row, scaledCol + col) = interpolate(topLeft,
+                        generatedNoise -> operator()(scaledRow + row, scaledCol + col) = interpolate2D(topLeft,
                             topRight, bottomLeft, bottomRight, attenuations(col), attenuations(row));
                     }
                 }
