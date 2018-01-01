@@ -62,7 +62,8 @@ namespace StealthWorldGenerator {
 
             constexpr float interpolate1D(float left, float right, float attenuation) noexcept {
                 // Interpolate between two points
-                return left * (1.0f - attenuation) + right * attenuation;
+                float nx = left * (1.0f - attenuation) + right * attenuation;
+                return nx;
             }
 
             constexpr float interpolate2D(float topLeft, float topRight, float bottomLeft,
