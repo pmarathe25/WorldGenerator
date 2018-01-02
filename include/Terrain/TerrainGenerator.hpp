@@ -35,16 +35,16 @@ namespace StealthWorldGenerator {
                 return *this;
             }
 
-            template <int width, int length, int scale, int numOctaves = 8>
+            template <int scale, int numOctaves = 8, int width = 1, int length = 1>
             constexpr TerrainMap<width, length> generate() const noexcept {
                 NoiseGenerator noiseGenerator;
                 // Create land
-                StealthTileMap::TileMapF<width, length>&& elevation = noiseGenerator.template generateOctaves<width, length, 1, scale, numOctaves>
+                StealthTileMap::TileMapF<width, length>&& elevation = noiseGenerator.template generateOctaves<scale, numOctaves, width, length>
                     (std::uniform_real_distribution(elevationBounds.x, elevationBounds.y));
                 // Create water
                 StealthTileMap::TileMapF<width, length>&& waterTable = elevation <= waterLevel;
                 // Create foliage where there's no water and the elevation is appropriate
-                StealthTileMap::TileMapF<width, length>&& foliage = noiseGenerator.template generateOctaves<width, length, 1, scale, numOctaves>()
+                StealthTileMap::TileMapF<width, length>&& foliage = noiseGenerator.template generateOctaves<scale, numOctaves, width, length>()
                     * !waterTable * ((elevation >= foliageElevationBounds.x) && (elevation <= foliageElevationBounds.y));
                 return TerrainMap{std::move(elevation), std::move(waterTable), std::move(foliage)};
             }

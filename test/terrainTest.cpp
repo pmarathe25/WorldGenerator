@@ -26,7 +26,7 @@ int main() {
     TerrainMapSpriteManager spriteManager{elevationPalette, waterLevelPalette, foliagePalette};
     while (window.isOpen()) {
         // Generate!
-        auto terrain = terrainGenerator.generate<WINDOW_X, WINDOW_Y, 100>();
+        auto terrain = terrainGenerator.generate<100, 8, WINDOW_X, WINDOW_Y>();
         // Create sprites from this terrain.
         spriteManager.setTerrainMap(terrain);
         // Clear
