@@ -33,9 +33,10 @@ namespace StealthWorldGenerator {
             Color colorA, colorB;
     };
 
-    template <int width, int length, typename ScalarType, typename ColorPalette>
-    StealthTileMap::TileMap<Color, width, length> applyPalette(const ColorPalette& palette, const StealthTileMap::TileMap<ScalarType, width, length>& map) {
-        return apply(palette, map);
+    template <int width, int length, int height, typename ScalarType, typename ColorPalette>
+    auto applyPalette(const ColorPalette& palette,
+        const StealthTileMap::TileMap<ScalarType, width, length, height>& map) {
+        return apply(palette, map).eval();
     }
 } /* StealthWorldGenerator */
 

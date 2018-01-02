@@ -11,8 +11,8 @@ using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette;
 
 const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
 
-template <int width, int length>
-constexpr sf::Sprite spriteFromColorMap(const StealthTileMap::TileMap<Color, width, length>& colors, sf::Texture& texture) {
+template <int width, int length, int height>
+constexpr sf::Sprite spriteFromColorMap(const StealthTileMap::TileMap<Color, width, length, height>& colors, sf::Texture& texture) {
     sf::Image im;
     sf::Sprite sprite;
     im.create(width, length, (uint8_t*) colors.data());
@@ -40,9 +40,8 @@ int main() {
     while (window.isOpen()) {
         auto start = std::chrono::steady_clock::now();
 
-        // auto noise = noiseGenerator.generate<WINDOW_Y, WINDOW_X, 4>();
-
-        auto noise = noiseGenerator.generateOctaves<WINDOW_Y, WINDOW_X, 400, 8>();
+        // auto noise = noiseGenerator.generateOctaves<WINDOW_X, WINDOW_Y, 1, 400, 8>();
+        auto noise = noiseGenerator.generateOctaves<WINDOW_X, 1, 1, 400, 8>();
 
         // noise = (noise < noise2) + (noise > noise2); // Should be all 1s (white)
         // noise = noise && (noise < noise2);
@@ -57,7 +56,7 @@ int main() {
         auto end = std::chrono::steady_clock::now();
 
         totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "Average Time:  " << (totalTime / ++numFrames) << " milliseconds" << '\r';
+        // std::cout << "Average Time:  " << (totalTime / ++numFrames) << " milliseconds" << '\r';
 
         // Show noise on-screen.
         sf::Texture noiseTexture;
@@ -74,6 +73,6 @@ int main() {
             }
         }
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
 }
