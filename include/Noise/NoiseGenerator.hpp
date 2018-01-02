@@ -11,6 +11,10 @@
 #include <thread>
 
 namespace StealthWorldGenerator {
+    namespace {
+        // Maintain a cache of interpolation kernels of different sizes
+        std::unordered_map<int, std::unique_ptr<const InterpolationKernelBase>> kernels{};
+    }
     class NoiseGenerator {
         public:
             // Create octaved noise
@@ -51,9 +55,6 @@ namespace StealthWorldGenerator {
                 return generatedNoise;
             }
         private:
-            // Maintain a cache of interpolation kernels of different sizes
-            static std::unordered_map<int, std::unique_ptr<const InterpolationKernelBase>> kernels;
-
             constexpr float interpolate1D(float left, float right, float attenuation) noexcept {
                 // Interpolate between two points
                 float nx = left * (1.0f - attenuation) + right * attenuation;
@@ -106,7 +107,7 @@ namespace StealthWorldGenerator {
                     int scaledX = 0;
                     for (int i = 0; i < internalWidth - 1; ++i) {
                         // 1D noise
-                        fillLength(i, scaledX, &internalNoise, &generatedNoise, &kernel);
+                        fillLine(i, scaledX, &internalNoise, &generatedNoise, &kernel);
                         scaledX += scale;
                     }
                 } else if constexpr (internalHeight == 1) {
@@ -116,16 +117,18 @@ namespace StealthWorldGenerator {
                         scaledX = 0;
                         for (int i = 0; i < internalWidth - 1; ++i) {
                             // 2D noise
-                            fillTile(i, j, scaledX, scaledY, &internalNoise, &generatedNoise, &kernel);
+                            fillSquare(i, j, scaledX, scaledY, &internalNoise, &generatedNoise, &kernel);
                             scaledX += scale;
                         }
                         scaledY += scale;
                     }
+                } else {
+                    // 3D noise map
                 }
             }
 
             template <int scale, int internalWidth, int width>
-            constexpr void fillLength(int internalX, int scaledX, const StealthTileMap::TileMapF<internalWidth>* internalNoise,
+            constexpr void fillLine(int internalX, int scaledX, const StealthTileMap::TileMapF<internalWidth>* internalNoise,
                 StealthTileMap::TileMapF<width>* generatedNoise, const InterpolationKernel<scale>* kernel) {
                 // Only fill the part of the length that is valid.
                 const int maxValidX = std::min(width - scaledX, scale);
@@ -142,7 +145,7 @@ namespace StealthWorldGenerator {
             }
 
             template <int scale, int internalWidth, int internalLength, int width, int length>
-            constexpr void fillTile(int internalX, int internalY, int scaledX, int scaledY,
+            constexpr void fillSquare(int internalX, int internalY, int scaledX, int scaledY,
                 const StealthTileMap::TileMapF<internalWidth, internalLength>* internalNoise,
                 StealthTileMap::TileMapF<width, length>* generatedNoise, const InterpolationKernel<scale>* kernel) {
                 // Only fill the part of the tile that is valid.
@@ -165,8 +168,6 @@ namespace StealthWorldGenerator {
                 }
             }
     };
-
-    std::unordered_map<int, std::unique_ptr<const InterpolationKernelBase>> NoiseGenerator::kernels{};
 } /* StealthWorldGenerator */
 
 #endif
