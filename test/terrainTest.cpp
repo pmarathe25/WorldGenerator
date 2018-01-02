@@ -7,14 +7,15 @@
 #include <chrono>
 #include <thread>
 
-using StealthWorldGenerator::Color, StealthWorldGenerator::TerrainGenerator, StealthWorldGenerator::TerrainMapSpriteManager;
+using StealthColor::Color, StealthWorldGenerator::TerrainGenerator, StealthWorldGenerator::TerrainMapSpriteManager,
+    StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
-const StealthWorldGenerator::DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
+const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
 
-const StealthWorldGenerator::GradientColorPalette waterLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
+const GradientColorPalette waterLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
 
-const StealthWorldGenerator::GradientColorPalette foliagePalette{Color(0x33660000), Color(0x336600FF)};
+const GradientColorPalette foliagePalette{Color(0x33660000), Color(0x336600FF)};
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");

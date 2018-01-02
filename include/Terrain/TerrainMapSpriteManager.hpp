@@ -5,6 +5,8 @@
 #include <SFML/Graphics.hpp>
 
 namespace StealthWorldGenerator {
+    using StealthColor::Color;
+    
     namespace {
         template <int width, int length>
         constexpr sf::Sprite spriteFromColorMap(const StealthTileMap::TileMap<Color, width, length>& colors, sf::Texture& texture) {

@@ -1,6 +1,6 @@
 #ifndef TERRAIN_GENERATOR_H
 #define TERRAIN_GENERATOR_H
-#include "Noise/NoiseGenerator.hpp"
+#include "NoiseGenerator/NoiseGenerator.hpp"
 #include "Terrain/TerrainMap.hpp"
 #include "Vector2.hpp"
 #include <random>

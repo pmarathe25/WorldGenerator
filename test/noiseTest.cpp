@@ -1,4 +1,4 @@
-#include "Noise/NoiseGenerator.hpp"
+#include "NoiseGenerator/NoiseGenerator.hpp"
 #include "Color/ColorPalette.hpp"
 #include "config.hpp"
 #include <SFML/Window.hpp>
@@ -7,9 +7,9 @@
 #include <chrono>
 #include <thread>
 
-using StealthWorldGenerator::Color, StealthWorldGenerator::applyPalette;
+using StealthColor::Color, StealthColor::applyPalette, StealthColor::GradientColorPalette;
 
-const StealthWorldGenerator::GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
+const GradientColorPalette noisePalette{Color(0, 0, 0), Color(255, 255, 255)};
 
 template <int width, int length, int height>
 constexpr sf::Sprite spriteFromColorMap(const StealthTileMap::TileMap<Color, width, length, height>& colors, sf::Texture& texture) {

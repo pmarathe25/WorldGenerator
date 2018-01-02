@@ -3,21 +3,17 @@ BINDIR = ~/bin/
 TESTDIR = test/
 SRCDIR = src/
 # Objects
-OBJS = $(addprefix $(BUILDDIR)/, Color.o ColorPalette.o)
 TESTOBJS = $(addprefix $(BUILDDIR)/, noiseTest.o terrainTest.o)
 # Headers
 INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
-HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
-	Utility.hpp Vector2.hpp \
-	Noise/NoiseGenerator.hpp Noise/InterpolationKernel.hpp\
-	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp \
-	Color/Color.hpp Color/ColorPalette.hpp)
+HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp Vector2.hpp \
+	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp)
 # Compiler settings
 CXX = g++
 CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3 -Wpedantic -march=native
 LFLAGS = -shared -flto -march=native
-TESTLFLAGS = -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto -march=native
+TESTLFLAGS = -lstealthcolor -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto -march=native
 EXECLFLAGS = -flto -march=native
 
 all: $(TESTOBJS)
@@ -33,12 +29,6 @@ $(TESTDIR)/terrainTest: $(BUILDDIR)/terrainTest.o $(HEADERS) $(OBJS)
 
 $(BUILDDIR)/terrainTest.o: $(TESTDIR)/terrainTest.cpp $(HEADERS)
 	$(CXX) $(CFLAGS) $(TESTDIR)/terrainTest.cpp -o $(BUILDDIR)/terrainTest.o
-
-$(BUILDDIR)/Color.o: $(SRCDIR)/Color/Color.cpp include/Color/Color.hpp
-	$(CXX) $(CFLAGS) $(SRCDIR)/Color/Color.cpp -o $(BUILDDIR)/Color.o
-
-$(BUILDDIR)/ColorPalette.o: $(SRCDIR)/Color/ColorPalette.cpp include/Color/ColorPalette.hpp
-	$(CXX) $(CFLAGS) $(SRCDIR)/Color/ColorPalette.cpp -o $(BUILDDIR)/ColorPalette.o
 
 clean:
 	rm $(OBJS) $(TESTOBJS) $(TESTDIR)/noiseTest
