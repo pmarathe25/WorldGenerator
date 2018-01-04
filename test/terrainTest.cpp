@@ -2,15 +2,17 @@
 #include "Terrain/TerrainMapSpriteManager.hpp"
 #include "Color/ColorPalette.hpp"
 #include "config.hpp"
+#include <stealthutil>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <chrono>
-#include <thread>
+#include <string>
 
 class Benchmark {
     public:
-        Benchmark() {
-            std::cout << '\n';
+        Benchmark() = default;
+
+        ~Benchmark() {
+            std::cout << std::endl;
         }
 
         void startFrame() {
@@ -24,8 +26,10 @@ class Benchmark {
         }
 
         void display() const {
+            // Clear the line
+            std::cout << std::string(100, ' ') << '\r';
             std::cout << "Average FrameTime:  " << (totalTime / (float) numFrames) << " milliseconds" << '\t';
-            std::cout << "Average Framerate: " << (numFrames / (float) totalTime) << " fps" << '\r' << std::endl;
+            std::cout << "Average Framerate: " << (numFrames / (float) totalTime) << " fps" << '\r' << std::flush;
         }
     private:
         std::chrono::time_point<std::chrono::steady_clock> start, end;
@@ -33,18 +37,13 @@ class Benchmark {
         int numFrames = 0;
 } benchmark;
 
-inline void sleepMS(long ms) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-}
-
 using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::createTerrainConfig,
     StealthWorldGenerator::TerrainMapSpriteManager, StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
+// Palettes
 const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
-
 const GradientColorPalette waterLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
-
 const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 int main() {
