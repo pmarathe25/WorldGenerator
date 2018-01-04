@@ -7,11 +7,37 @@
 #include <chrono>
 #include <thread>
 
+class Benchmark {
+    public:
+        Benchmark() {
+            std::cout << '\n';
+        }
+
+        void startFrame() {
+            start = std::chrono::steady_clock::now();
+        }
+
+        void endFrame() {
+            end = std::chrono::steady_clock::now();
+            totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            ++numFrames;
+        }
+
+        void display() const {
+            std::cout << "Average FrameTime:  " << (totalTime / (float) numFrames) << " milliseconds" << '\t';
+            std::cout << "Average Framerate: " << (numFrames / (float) totalTime) << " fps" << '\r' << std::endl;
+        }
+    private:
+        std::chrono::time_point<std::chrono::steady_clock> start, end;
+        long long totalTime = 0;
+        int numFrames = 0;
+} benchmark;
+
 inline void sleepMS(long ms) {
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGenerator::TerrainMap,
+using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::createTerrainConfig,
     StealthWorldGenerator::TerrainMapSpriteManager, StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
 const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
@@ -19,21 +45,27 @@ const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), 
 
 const GradientColorPalette waterLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
 
-const GradientColorPalette foliagePalette{Color(0x33660000), Color(0x336600FF)};
+const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     // Configure the terrain generator
-    TerrainConfig temperateGrasslands = TerrainConfig::create().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
+    auto temperateGrasslands = createTerrainConfig().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Sprite manager
     TerrainMapSpriteManager<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> spriteManager{};
     while (window.isOpen()) {
-        // Generate!
-        auto terrain = StealthWorldGenerator::generateTerrain<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS, 100, 100, 400>(temperateGrasslands);
-        // Create sprites from this terrain.
-        spriteManager.createColorMap<StealthWorldGenerator::Elevation>(terrain, elevationPalette);
-        spriteManager.createColorMap<StealthWorldGenerator::WaterTable>(terrain, waterLevelPalette);
-        spriteManager.createColorMap<StealthWorldGenerator::Foliage>(terrain, foliagePalette);
+        // Begin benchmark
+        benchmark.startFrame();
+        // Generate! Erosion should be much slower (larger scale) than foliage growth
+        auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
+            SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
+        // Finish benchmark
+        benchmark.endFrame();
+        benchmark.display();
+        // Create sprites from this terrainMap.
+        spriteManager.createColorMap<StealthWorldGenerator::Elevation>(terrainMap, elevationPalette);
+        spriteManager.createColorMap<StealthWorldGenerator::WaterTable>(terrainMap, waterLevelPalette);
+        spriteManager.createColorMap<StealthWorldGenerator::Foliage>(terrainMap, foliagePalette);
         for (int i = 0; i < NUM_TERRAIN_LAYERS; ++i) {
             // Clear
             window.clear();
@@ -50,7 +82,7 @@ int main() {
                   window.close();
                 }
             }
-            sleepMS((long) 1000.0f / FRAMERATE);
+            // sleepMS((long) 1000.0f / FRAMERATE);
         }
     }
 }

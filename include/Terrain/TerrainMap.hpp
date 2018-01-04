@@ -7,11 +7,11 @@ namespace StealthWorldGenerator {
         Elevation = 0,
         WaterTable,
         Foliage,
-        NUM_MAP_TYPES
+        numTerrainMapTypes
     };
 
     template <int widthAtCompileTime, int lengthAtCompileTime, int heightAtCompileTime = 1>
-    class TerrainMap : public std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>, NUM_MAP_TYPES> {
+    class TerrainMap : public std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>, numTerrainMapTypes> {
         // Simple container for terrain related data.
         public:
             typedef typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime> InternalTerrainNoiseMap;

@@ -20,7 +20,7 @@ namespace StealthWorldGenerator {
         }
     }
 
-    template <int width, int length, int numLayers>
+    template <int width, int length, int numLayers = 1>
     class TerrainMapSpriteManager {
         public:
             constexpr TerrainMapSpriteManager() = default;
@@ -43,9 +43,9 @@ namespace StealthWorldGenerator {
             }
         private:
             // Textures
-            std::array<sf::Texture, NUM_MAP_TYPES> textures;
+            std::array<sf::Texture, numTerrainMapTypes> textures;
             // Color Maps
-            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, NUM_MAP_TYPES> colorMaps;
+            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, numTerrainMapTypes> colorMaps;
     };
 } /* StealthWorldGenerator */
 
