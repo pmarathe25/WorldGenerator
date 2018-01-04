@@ -47,27 +47,27 @@ namespace StealthWorldGenerator {
     template <int width, int length, int scaleX, int scaleY, int numOctaves = 8>
     constexpr TerrainMap<width, length> generateTerrain(const TerrainConfig& config) noexcept {
         // Create land
-        StealthTileMap::TileMapF<width, length> elevation = StealthNoiseGenerator::generateOctaves<width, length, scaleX, scaleY, numOctaves>
+        StealthTileMap::TileMapF<width, length>&& elevation = StealthNoiseGenerator::generateOctaves<width, length, scaleX, scaleY, numOctaves>
             (std::uniform_real_distribution(config.elevationBounds.x, config.elevationBounds.y));
         // Create water
-        StealthTileMap::TileMapF<width, length> waterTable = elevation <= config.waterLevel;
+        StealthTileMap::TileMapF<width, length>&& waterTable = elevation <= config.waterLevel;
         // Create foliage where there's no water and the elevation is appropriate
-        StealthTileMap::TileMapF<width, length> foliage = StealthNoiseGenerator::generateOctaves<width, length, scaleX, scaleY, numOctaves>()
+        StealthTileMap::TileMapF<width, length>&& foliage = StealthNoiseGenerator::generateOctaves<width, length, scaleX, scaleY, numOctaves>()
             * !waterTable * ((elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
-        return TerrainMap<width, length>{elevation, waterTable, foliage};
+        return TerrainMap<width, length>{std::move(elevation), std::move(waterTable), std::move(foliage)};
     }
 
     template <int width, int length, int layers, int scaleX, int scaleY, int layerScale, int numOctaves = 8>
     constexpr TerrainMap<width, length, layers> generateTerrain(const TerrainConfig& config) noexcept {
         // Create land
-        StealthTileMap::TileMapF<width, length, layers> elevation = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, layerScale, numOctaves>
+        StealthTileMap::TileMapF<width, length, layers>&& elevation = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, layerScale, numOctaves>
             (std::uniform_real_distribution(config.elevationBounds.x, config.elevationBounds.y));
         // Create water
-        StealthTileMap::TileMapF<width, length, layers> waterTable = elevation <= config.waterLevel;
+        StealthTileMap::TileMapF<width, length, layers>&& waterTable = elevation <= config.waterLevel;
         // Create foliage where there's no water and the elevation is appropriate
-        StealthTileMap::TileMapF<width, length, layers> foliage = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, layerScale, numOctaves>()
+        StealthTileMap::TileMapF<width, length, layers>&& foliage = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, layerScale, numOctaves>()
             * !waterTable * ((elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
-        return TerrainMap<width, length, layers>{elevation, waterTable, foliage};
+        return TerrainMap<width, length, layers>{std::move(elevation), std::move(waterTable), std::move(foliage)};
     }
 } /* StealthWorldGenerator */
 
