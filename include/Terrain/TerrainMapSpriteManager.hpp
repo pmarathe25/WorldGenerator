@@ -1,59 +1,51 @@
 #ifndef TERRAIN_MAP_SPRITE_MANAGER_H
 #define TERRAIN_MAP_SPRITE_MANAGER_H
+#include "TileMap/TileMap.hpp"
 #include "Terrain/TerrainMap.hpp"
 #include "Color/ColorPalette.hpp"
 #include <SFML/Graphics.hpp>
 
 namespace StealthWorldGenerator {
-    using StealthColor::Color;
-    
+    using StealthColor::Color, StealthColor::GradientColorPalette;
+
     namespace {
-        template <int width, int length>
-        constexpr sf::Sprite spriteFromColorMap(const StealthTileMap::TileMap<Color, width, length>& colors, sf::Texture& texture) {
+        template <typename TileMapType>
+        constexpr sf::Sprite spriteFromColorMap(const TileMapType& colors, sf::Texture& texture) {
             sf::Image im;
             sf::Sprite sprite;
-            im.create(width, length, (uint8_t*) colors.data());
+            im.create(colors.width(), colors.length(), (uint8_t*) colors.data());
             texture.loadFromImage(im);
             sprite.setTexture(texture);
             return sprite;
         }
     }
 
-    template <typename ElevationPalette, typename WaterLevelPalette, typename FoliagePalette>
+    template <int width, int length, int numLayers>
     class TerrainMapSpriteManager {
         public:
-            TerrainMapSpriteManager(ElevationPalette elevationPalette, WaterLevelPalette waterLevelPalette,
-                FoliagePalette foliagePalette) : elevationPalette{std::move(elevationPalette)},
-                waterLevelPalette{std::move(waterLevelPalette)}, foliagePalette{std::move(foliagePalette)} { }
+            constexpr TerrainMapSpriteManager() = default;
 
-            template <int width, int length>
-            constexpr TerrainMapSpriteManager& setTerrainMap(const TerrainMap<width, length>& terrainMap) {
-                elevationSprite = spriteFromColorMap(applyPalette(elevationPalette, terrainMap.getElevationMap()), elevationTexture);
-                waterTableSprite = spriteFromColorMap(applyPalette(waterLevelPalette, terrainMap.getWaterTable()), waterTableTexture);
-                foliageSprite = spriteFromColorMap(applyPalette(foliagePalette, terrainMap.getFoliageMap()), foliageTexture);
+            template <int index = 0, typename Palette>
+            constexpr TerrainMapSpriteManager& createColorMap(const TerrainMap<width, length, numLayers>& terrainMap, const Palette& palette) {
+                colorMaps[index] = applyPalette(palette, terrainMap.template get<index>());
                 return *this;
             }
 
-            constexpr const sf::Sprite getElevationSprite() const noexcept {
-                return elevationSprite;
+            template <int index = 0, typename Palette>
+            constexpr TerrainMapSpriteManager& createColorMap(const StealthTileMap::TileMapF<width, length, numLayers>& tileMap, const Palette& palette) {
+                colorMaps[index] = applyPalette(palette, tileMap);
+                return *this;
             }
 
-            constexpr const sf::Sprite getWaterTableSprite() const noexcept {
-                return waterTableSprite;
-            }
-
-            constexpr const sf::Sprite getFoliageSprite() const noexcept {
-                return foliageSprite;
+            template <int index>
+            constexpr sf::Sprite getSpriteFromLayer(int layer = 0) noexcept {
+                return spriteFromColorMap(StealthTileMap::layer(colorMaps[index], layer), textures[index]);
             }
         private:
             // Textures
-            sf::Texture elevationTexture, waterTableTexture, foliageTexture;
-            // Sprites
-            sf::Sprite elevationSprite, waterTableSprite, foliageSprite;
-            // Color palettes
-            ElevationPalette elevationPalette;
-            WaterLevelPalette waterLevelPalette;
-            FoliagePalette foliagePalette;
+            std::array<sf::Texture, NUM_MAP_TYPES> textures;
+            // Color Maps
+            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, NUM_MAP_TYPES> colorMaps;
     };
 } /* StealthWorldGenerator */
 

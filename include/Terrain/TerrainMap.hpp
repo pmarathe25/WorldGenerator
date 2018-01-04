@@ -3,46 +3,43 @@
 #include "TileMap/TileMap.hpp"
 
 namespace StealthWorldGenerator {
-    template <int widthAtCompileTime, int lengthAtCompileTime>
-    class TerrainMap {
+    enum TerrainMapType {
+        Elevation = 0,
+        WaterTable,
+        Foliage,
+        NUM_MAP_TYPES
+    };
+
+    template <int widthAtCompileTime, int lengthAtCompileTime, int heightAtCompileTime = 1>
+    class TerrainMap : public std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>, NUM_MAP_TYPES> {
         // Simple container for terrain related data.
         public:
-            typedef StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime> InternalTerrainNoiseMap;
+            typedef typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime> InternalTerrainNoiseMap;
 
             constexpr TerrainMap() noexcept = default;
 
-            constexpr TerrainMap(InternalTerrainNoiseMap elevation, InternalTerrainNoiseMap waterTable, InternalTerrainNoiseMap foliage)
-                noexcept : elevation{std::move(elevation)}, waterTable{std::move(waterTable)}, foliage{std::move(foliage)} {
+            template <typename... Args>
+            constexpr TerrainMap(Args&&... args) noexcept {
+                setMaps(std::forward<Args&&>(args)...);
             }
 
-            constexpr const InternalTerrainNoiseMap& getElevationMap() const noexcept {
-                return elevation;
+            template <int mapNum = 0, typename Map, typename... Args>
+            constexpr TerrainMap& setMaps(Map map, Args&&... args) {
+                this -> operator[](mapNum) = std::move(map);
+                if constexpr (sizeof...(args) != 0) return setMaps<mapNum + 1>(std::forward<Args&&>(args)...);
+                else return *this;
             }
 
-            constexpr TerrainMap& setElevationMap(InternalTerrainNoiseMap elevation) noexcept {
-                this -> elevation = std::move(elevation);
+            template <int mapNum>
+            constexpr const InternalTerrainNoiseMap& get() const noexcept {
+                return this -> operator[](mapNum);
+            }
+
+            template <int mapNum>
+            constexpr TerrainMap& set(InternalTerrainNoiseMap terrainMap) noexcept {
+                this -> operator[](mapNum) = std::move(terrainMap);
                 return *this;
             }
-
-            constexpr const InternalTerrainNoiseMap& getFoliageMap() const noexcept {
-                return foliage;
-            }
-
-            constexpr TerrainMap& setFoliageMap(InternalTerrainNoiseMap foliage) noexcept {
-                this -> foliage = std::move(foliage);
-                return *this;
-            }
-
-            constexpr const InternalTerrainNoiseMap& getWaterTable() const noexcept {
-                return waterTable;
-            }
-
-            constexpr TerrainMap& setWaterTable(InternalTerrainNoiseMap waterTable) noexcept {
-                this -> waterTable = std::move(waterTable);
-                return *this;
-            }
-        private:
-            InternalTerrainNoiseMap elevation, foliage, waterTable;
     };
 } /* StealthWorldGenerator */
 
