@@ -29,7 +29,7 @@ class Benchmark {
             // Clear the line
             std::cout << std::string(100, ' ') << '\r';
             std::cout << "Average FrameTime:  " << (totalTime / (float) numFrames) << " milliseconds" << '\t';
-            std::cout << "Average Framerate: " << (numFrames / (float) totalTime) << " fps" << '\r' << std::flush;
+            std::cout << "Average Framerate: " << (numFrames * 1000 / (float) totalTime) << " fps" << '\r' << std::flush;
         }
     private:
         std::chrono::time_point<std::chrono::steady_clock> start, end;
@@ -46,7 +46,7 @@ const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
     {sf::Keyboard::F, StealthWorldGenerator::Foliage}
 };
 
-std::array<bool, StealthWorldGenerator::NumTerrainMapTypes> visibleLayers = {true, StealthWorldGenerator::NumTerrainMapTypes};
+std::array<bool, StealthWorldGenerator::NumTerrainMapTypes> visibleLayers = {};
 
 // Palettes
 const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
@@ -56,6 +56,7 @@ const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
+    sf::Clock clock;
     // Configure the terrain generator
     auto temperateGrasslands = createTerrainConfig().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Sprite manager
@@ -64,6 +65,7 @@ int main() {
     auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
     SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
     while (window.isOpen()) {
+        auto currentFrameTime = clock.restart();
         // Begin benchmark
         benchmark.startFrame();
         // Create sprites from this terrainMap.
@@ -93,7 +95,7 @@ int main() {
                     }
                 }
             }
-            sleepMS((long) 1000.0f / FRAMERATE);
+            sleepMS((long) 1000.0f / FRAMERATE - currentFrameTime.asMilliseconds());
         }
     }
 }
