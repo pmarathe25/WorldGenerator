@@ -37,15 +37,14 @@ namespace StealthWorldGenerator {
                 return *this;
             }
 
-            template <int index>
-            constexpr sf::Sprite getSpriteFromLayer(int layer = 0) noexcept {
+            constexpr sf::Sprite getSpriteFromLayer(int index, int layer = 0) noexcept {
                 return spriteFromColorMap(StealthTileMap::layer(colorMaps[index], layer), textures[index]);
             }
         private:
             // Textures
-            std::array<sf::Texture, numTerrainMapTypes> textures;
+            std::array<sf::Texture, NumTerrainMapTypes> textures;
             // Color Maps
-            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, numTerrainMapTypes> colorMaps;
+            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, NumTerrainMapTypes> colorMaps;
     };
 } /* StealthWorldGenerator */
 

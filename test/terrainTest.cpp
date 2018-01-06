@@ -40,6 +40,14 @@ class Benchmark {
 using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::createTerrainConfig,
     StealthWorldGenerator::TerrainMapSpriteManager, StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
+const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
+    {sf::Keyboard::E, StealthWorldGenerator::Elevation},
+    {sf::Keyboard::W, StealthWorldGenerator::WaterTable},
+    {sf::Keyboard::F, StealthWorldGenerator::Foliage}
+};
+
+std::array<bool, StealthWorldGenerator::NumTerrainMapTypes> visibleLayers = {true, StealthWorldGenerator::NumTerrainMapTypes};
+
 // Palettes
 const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
     Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
@@ -52,26 +60,26 @@ int main() {
     auto temperateGrasslands = createTerrainConfig().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Sprite manager
     TerrainMapSpriteManager<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> spriteManager{};
+    // Generate! Erosion should be much slower (larger scale) than foliage growth
+    auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
+    SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
     while (window.isOpen()) {
         // Begin benchmark
         benchmark.startFrame();
-        // Generate! Erosion should be much slower (larger scale) than foliage growth
-        auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
-            SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
-        // Finish benchmark
-        benchmark.endFrame();
-        benchmark.display();
         // Create sprites from this terrainMap.
         spriteManager.createColorMap<StealthWorldGenerator::Elevation>(terrainMap, elevationPalette);
         spriteManager.createColorMap<StealthWorldGenerator::WaterTable>(terrainMap, waterLevelPalette);
         spriteManager.createColorMap<StealthWorldGenerator::Foliage>(terrainMap, foliagePalette);
+        // Finish benchmark
+        benchmark.endFrame();
+        benchmark.display();
         for (int i = 0; i < NUM_TERRAIN_LAYERS; ++i) {
             // Clear
             window.clear();
             // Draw
-            window.draw(spriteManager.getSpriteFromLayer<StealthWorldGenerator::Elevation>(i));
-            window.draw(spriteManager.getSpriteFromLayer<StealthWorldGenerator::WaterTable>(i));
-            window.draw(spriteManager.getSpriteFromLayer<StealthWorldGenerator::Foliage>(i));
+            for (int mapType = 0; mapType < StealthWorldGenerator::NumTerrainMapTypes; ++mapType) {
+                if (visibleLayers[mapType]) window.draw(spriteManager.getSpriteFromLayer(mapType, i));
+            }
             // Display.
             window.display();
             // Handle events.
@@ -79,9 +87,13 @@ int main() {
             while (window.pollEvent(event)) {
                 if(event.type == sf::Event::Closed) {
                   window.close();
+                } else if (event.type == sf::Event::KeyPressed) {
+                    if (keyBindings.count(event.key.code) > 0) {
+                        visibleLayers[keyBindings.at(event.key.code)] ^= true;
+                    }
                 }
             }
-            // sleepMS((long) 1000.0f / FRAMERATE);
+            sleepMS((long) 1000.0f / FRAMERATE);
         }
     }
 }
