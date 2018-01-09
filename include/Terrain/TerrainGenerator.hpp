@@ -55,7 +55,10 @@ namespace StealthWorldGenerator {
         // Create foliage where there's no water and the elevation is appropriate
         StealthTileMap::TileMapF<width, length>&& foliage = StealthNoiseGenerator::generateOctaves<width, length, scaleX, scaleY, numOctaves>()
             * !waterTable * ((elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
-        return TerrainMap<width, length>{std::move(elevation), std::move(waterTable), std::move(foliage)};
+        return TerrainMap<width, length>{}
+            .set(Elevation, std::move(elevation))
+            .set(WaterTable, std::move(waterTable))
+            .set(Foliage, std::move(foliage));
     }
 
     // 3D Terrain Maps
@@ -69,7 +72,10 @@ namespace StealthWorldGenerator {
         // Create foliage where there's no water and the elevation is appropriate
         StealthTileMap::TileMapF<width, length, layers>&& foliage = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>()
             * (!waterTable && (elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
-        return TerrainMap<width, length, layers>{std::move(elevation), std::move(waterTable), std::move(foliage)};
+        return TerrainMap<width, length>{}
+            .set(Elevation, std::move(elevation))
+            .set(WaterTable, std::move(waterTable))
+            .set(Foliage, std::move(foliage));
     }
 } /* StealthWorldGenerator */
 

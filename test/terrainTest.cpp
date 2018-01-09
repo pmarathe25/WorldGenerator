@@ -58,20 +58,20 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     sf::Clock clock;
     // Configure the terrain generator
-    auto temperateGrasslands = createTerrainConfig().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
-    // Sprite manager
-    TerrainMapSpriteManager<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> spriteManager{};
+    auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Generate! Erosion should be much slower (larger scale) than foliage growth
     auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
-    SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
+        SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
+    // Sprite manager
+    TerrainMapSpriteManager spriteManager{terrainMap};
     while (window.isOpen()) {
         auto currentFrameTime = clock.restart();
         // Begin benchmark
         benchmark.startFrame();
         // Create sprites from this terrainMap.
-        spriteManager.createColorMap<StealthWorldGenerator::Elevation>(terrainMap, elevationPalette);
-        spriteManager.createColorMap<StealthWorldGenerator::WaterTable>(terrainMap, waterLevelPalette);
-        spriteManager.createColorMap<StealthWorldGenerator::Foliage>(terrainMap, foliagePalette);
+        spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette);
+        spriteManager.createColorMap(StealthWorldGenerator::WaterTable, terrainMap, waterLevelPalette);
+        spriteManager.createColorMap(StealthWorldGenerator::Foliage, terrainMap, foliagePalette);
         // Finish benchmark
         benchmark.endFrame();
         benchmark.display();
@@ -90,6 +90,7 @@ int main() {
                 if(event.type == sf::Event::Closed) {
                   window.close();
                 } else if (event.type == sf::Event::KeyPressed) {
+                    // Enable/disable layers based on key presses.
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
                     }

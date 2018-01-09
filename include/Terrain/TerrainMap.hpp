@@ -20,24 +20,18 @@ namespace StealthWorldGenerator {
             constexpr TerrainMap() noexcept = default;
 
             template <typename... Args>
-            constexpr TerrainMap(Args&&... args) noexcept {
-                setMaps(std::forward<Args&&>(args)...);
+            constexpr TerrainMap(InternalTerrainNoiseMap&& map, Args&&... args) noexcept {
+                setMaps(std::forward<InternalTerrainNoiseMap&&>(map), std::forward<Args&&>(args)...);
             }
 
-            template <int mapNum = 0, typename Map, typename... Args>
-            constexpr TerrainMap& setMaps(Map map, Args&&... args) {
+            template <int mapNum = 0, typename... Args>
+            constexpr TerrainMap& setMaps(InternalTerrainNoiseMap&& map, Args&&... args) {
                 this -> operator[](mapNum) = std::move(map);
                 if constexpr (sizeof...(args) != 0) return setMaps<mapNum + 1>(std::forward<Args&&>(args)...);
                 else return *this;
             }
 
-            template <int mapNum>
-            constexpr const InternalTerrainNoiseMap& get() const noexcept {
-                return this -> operator[](mapNum);
-            }
-
-            template <int mapNum>
-            constexpr TerrainMap& set(InternalTerrainNoiseMap terrainMap) noexcept {
+            constexpr TerrainMap& set(int mapNum, InternalTerrainNoiseMap terrainMap) noexcept {
                 this -> operator[](mapNum) = std::move(terrainMap);
                 return *this;
             }

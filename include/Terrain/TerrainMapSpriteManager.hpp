@@ -25,14 +25,18 @@ namespace StealthWorldGenerator {
         public:
             constexpr TerrainMapSpriteManager() = default;
 
-            template <int index = 0, typename Palette>
-            constexpr TerrainMapSpriteManager& createColorMap(const TerrainMap<width, length, numLayers>& terrainMap, const Palette& palette) {
-                colorMaps[index] = applyPalette(palette, terrainMap.template get<index>());
+            constexpr TerrainMapSpriteManager(const TerrainMap<width, length, numLayers>& terrainMap) { }
+
+            constexpr TerrainMapSpriteManager(const StealthTileMap::TileMapF<width, length, numLayers>& tileMap) { }
+
+            template <typename Palette>
+            constexpr TerrainMapSpriteManager& createColorMap(int index, const TerrainMap<width, length, numLayers>& terrainMap, const Palette& palette) {
+                colorMaps[index] = applyPalette(palette, terrainMap[index]);
                 return *this;
             }
 
-            template <int index = 0, typename Palette>
-            constexpr TerrainMapSpriteManager& createColorMap(const StealthTileMap::TileMapF<width, length, numLayers>& tileMap, const Palette& palette) {
+            template <typename Palette>
+            constexpr TerrainMapSpriteManager& createColorMap(int index, const StealthTileMap::TileMapF<width, length, numLayers>& tileMap, const Palette& palette) {
                 colorMaps[index] = applyPalette(palette, tileMap);
                 return *this;
             }
