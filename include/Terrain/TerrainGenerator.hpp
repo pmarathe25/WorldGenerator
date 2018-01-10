@@ -10,8 +10,8 @@ namespace StealthWorldGenerator {
         public:
             constexpr TerrainConfig() noexcept = default;
 
-            constexpr TerrainConfig& setWaterLevel(float waterLevel) noexcept {
-                this -> waterLevel = waterLevel;
+            constexpr TerrainConfig& setSeaLevel(float seaLevel) noexcept {
+                this -> seaLevel = seaLevel;
                 return *this;
             }
 
@@ -36,7 +36,7 @@ namespace StealthWorldGenerator {
                 return *this;
             }
 
-            float waterLevel = 0.0f;
+            float seaLevel = 0.0f;
             Vector2f elevationBounds = {0.0f, 1.0f}, foliageElevationBounds = {0.0f, 1.0f};
     };
 
@@ -53,7 +53,7 @@ namespace StealthWorldGenerator {
         StealthTileMap::TileMapF<width, length, layers>&& temperature
             = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>();
         // Create water
-        StealthTileMap::TileMapF<width, length, layers>&& waterTable = elevation <= config.waterLevel;
+        StealthTileMap::TileMapF<width, length, layers>&& waterTable = elevation <= config.seaLevel;
         // Create foliage where there's no water and the elevation is appropriate
         StealthTileMap::TileMapF<width, length, layers>&& foliage = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>()
             * (!waterTable && (elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));

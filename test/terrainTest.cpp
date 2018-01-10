@@ -64,14 +64,14 @@ const DiscreteColorPalette elevationPalette{
     Color(0xD8D8D8FF), Color(0xFFFFFFFF)}
 };
 const GradientColorPalette temperaturePalette{Color(0x1530FFA0), Color(0xFF3015A0)};
-const GradientColorPalette waterLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
+const GradientColorPalette seaLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
 const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     sf::Clock clock;
     // Configure the terrain generator
-    auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
+    auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setSeaLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Generate! Erosion should be much slower (larger scale) than foliage growth
     auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
         SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
@@ -80,7 +80,7 @@ int main() {
     // Create sprites from this terrainMap.
     spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette)
         .createColorMap(StealthWorldGenerator::Temperature, terrainMap, temperaturePalette)
-        .createColorMap(StealthWorldGenerator::WaterTable, terrainMap, waterLevelPalette)
+        .createColorMap(StealthWorldGenerator::WaterTable, terrainMap, seaLevelPalette)
         .createColorMap(StealthWorldGenerator::Foliage, terrainMap, foliagePalette);
 
     long currentFrameTime = 0;
