@@ -7,6 +7,7 @@ namespace StealthWorldGenerator {
         Elevation = 0,
         WaterTable,
         Foliage,
+        Temperature,
         Moisture,
         NumTerrainMapTypes
     };

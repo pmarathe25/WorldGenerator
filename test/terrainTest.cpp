@@ -15,14 +15,21 @@ class Benchmark {
             std::cout << std::endl;
         }
 
-        void startFrame() {
+        Benchmark& startFrame() {
             start = std::chrono::steady_clock::now();
+            return *this;
         }
 
-        void endFrame() {
+        Benchmark& endFrame() {
             end = std::chrono::steady_clock::now();
-            totalTime += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            currentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+            totalTime += currentFrameTime;
             ++numFrames;
+            return *this;
+        }
+
+        long getCurrentFrameTimeMS() {
+            return currentFrameTime;
         }
 
         void display() const {
@@ -33,6 +40,7 @@ class Benchmark {
         }
     private:
         std::chrono::time_point<std::chrono::steady_clock> start, end;
+        long currentFrameTime = 0;
         long long totalTime = 0;
         int numFrames = 0;
 } benchmark;
@@ -42,6 +50,7 @@ using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGen
 
 const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
     {sf::Keyboard::E, StealthWorldGenerator::Elevation},
+    {sf::Keyboard::T, StealthWorldGenerator::Temperature},
     {sf::Keyboard::W, StealthWorldGenerator::WaterTable},
     {sf::Keyboard::F, StealthWorldGenerator::Foliage}
 };
@@ -49,8 +58,12 @@ const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
 std::array<bool, StealthWorldGenerator::NumTerrainMapTypes> visibleLayers = {};
 
 // Palettes
-const DiscreteColorPalette elevationPalette{{Color(0, 0, 0), Color(36, 36, 36), Color(72, 72, 72),
-    Color(98, 98, 98), Color(134, 134, 134), Color(170, 170, 170), Color(206, 206, 206), Color(255, 255, 255)}};
+const DiscreteColorPalette elevationPalette{
+    {Color(0x000000FF), Color(0x242424FF), Color(0x484848FF),
+    Color(0x6C6C6CFF), Color(0x909090FF), Color(0xB4B4B4FF),
+    Color(0xD8D8D8FF), Color(0xFFFFFFFF)}
+};
+const GradientColorPalette temperaturePalette{Color(0x1530FFA0), Color(0xFF3015A0)};
 const GradientColorPalette waterLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
 const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
@@ -58,26 +71,25 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     sf::Clock clock;
     // Configure the terrain generator
-    auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.75f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
+    auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setWaterLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
     // Generate! Erosion should be much slower (larger scale) than foliage growth
     auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
-        SCALE_X, SCALE_X, EROSION_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
+        SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{terrainMap};
+    // Create sprites from this terrainMap.
+    spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette)
+        .createColorMap(StealthWorldGenerator::Temperature, terrainMap, temperaturePalette)
+        .createColorMap(StealthWorldGenerator::WaterTable, terrainMap, waterLevelPalette)
+        .createColorMap(StealthWorldGenerator::Foliage, terrainMap, foliagePalette);
+
+    long currentFrameTime = 0;
     while (window.isOpen()) {
-        auto currentFrameTime = clock.restart();
-        // Begin benchmark
-        benchmark.startFrame();
-        // Create sprites from this terrainMap.
-        spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette);
-        spriteManager.createColorMap(StealthWorldGenerator::WaterTable, terrainMap, waterLevelPalette);
-        spriteManager.createColorMap(StealthWorldGenerator::Foliage, terrainMap, foliagePalette);
-        // Finish benchmark
-        benchmark.endFrame();
-        benchmark.display();
         for (int i = 0; i < NUM_TERRAIN_LAYERS; ++i) {
+            // Begin benchmark
+            benchmark.startFrame();
             // Clear
-            window.clear();
+            window.clear(sf::Color(0x808080FF));
             // Draw
             for (int mapType = 0; mapType < StealthWorldGenerator::NumTerrainMapTypes; ++mapType) {
                 if (visibleLayers[mapType]) window.draw(spriteManager.getSpriteFromLayer(mapType, i));
@@ -96,7 +108,10 @@ int main() {
                     }
                 }
             }
-            sleepMS((long) 1000.0f / FRAMERATE - currentFrameTime.asMilliseconds());
+            sleepMS((long) 1000.0f / FRAMERATE - currentFrameTime);
+            currentFrameTime = benchmark.endFrame().getCurrentFrameTimeMS();
         }
+        // Finish benchmark
+        benchmark.display();
     }
 }
