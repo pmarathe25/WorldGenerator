@@ -67,27 +67,37 @@ const GradientColorPalette temperaturePalette{Color(0x1530FFA0), Color(0xFF3015A
 const GradientColorPalette seaLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
 const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
-int main() {
-    sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
-    sf::Clock clock;
-    // Configure the terrain generator
-    auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setSeaLevel(0.45f).setFoliageElevationBounds(0.45f, 0.60f);
-    // Generate! Erosion should be much slower (larger scale) than foliage growth
-    auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
+// Configure the terrain generator
+constexpr auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setSeaLevel(0.45f).setFoliageElevationBounds(0.25f, 0.60f);
+
+auto doGenerateTerrainMap() {
+    return StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
         SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
-    // Sprite manager
-    TerrainMapSpriteManager spriteManager{terrainMap};
-    // Create sprites from this terrainMap.
+}
+
+template <typename TerrainMapType, typename SpriteManagerType>
+constexpr void updateColorMaps(const TerrainMapType& terrainMap, SpriteManagerType& spriteManager) {
     spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette)
         .createColorMap(StealthWorldGenerator::Temperature, terrainMap, temperaturePalette)
         .createColorMap(StealthWorldGenerator::WaterTable, terrainMap, seaLevelPalette)
         .createColorMap(StealthWorldGenerator::Foliage, terrainMap, foliagePalette);
+}
 
+int main() {
+    sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
+    sf::Clock clock;
+    // Generate! Erosion should be much slower (larger scale) than foliage growth
+    auto terrainMap = doGenerateTerrainMap();
+    // Sprite manager
+    TerrainMapSpriteManager spriteManager{terrainMap};
+    // Create sprites from this terrainMap.
+    updateColorMaps(terrainMap, spriteManager);
     long currentFrameTime = 0;
     while (window.isOpen()) {
         for (int i = 0; i < NUM_TERRAIN_LAYERS; ++i) {
             // Begin benchmark
             benchmark.startFrame();
+            auto frameStart = std::chrono::steady_clock::now();
             // Clear
             window.clear(sf::Color(0x808080FF));
             // Draw
@@ -105,11 +115,15 @@ int main() {
                     // Enable/disable layers based on key presses.
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
+                    } else if (event.key.code == sf::Keyboard::Right) {
+                        terrainMap = doGenerateTerrainMap();
+                        updateColorMaps(terrainMap, spriteManager);
                     }
                 }
             }
-            sleepMS((long) 1000.0f / FRAMERATE - currentFrameTime);
-            currentFrameTime = benchmark.endFrame().getCurrentFrameTimeMS();
+            auto frameEnd = std::chrono::steady_clock::now();
+            sleepMS((long) 1000.0f / FRAMERATE - (std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count()));
+            benchmark.endFrame();
         }
         // Finish benchmark
         benchmark.display();
