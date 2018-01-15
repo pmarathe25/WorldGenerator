@@ -6,7 +6,7 @@ namespace StealthWorldGenerator {
     class Vector2 {
         public:
             constexpr Vector2() noexcept = default;
-            constexpr Vector2(ScalarType x, ScalarType y) noexcept : x(x), y(y) { }
+            constexpr Vector2(ScalarType x, ScalarType y) noexcept : x{std::move(x)}, y{std::move(y)} { }
             ScalarType x, y;
     };
 

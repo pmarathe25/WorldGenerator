@@ -6,6 +6,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <string>
+#include <unordered_map>
+#include <iostream>
 
 class Benchmark {
     public:
@@ -122,10 +124,11 @@ int main() {
                 }
             }
             auto frameEnd = std::chrono::steady_clock::now();
-            sleepMS((long) 1000.0f / FRAMERATE - (std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count()));
+            if constexpr (FRAMERATE > 0) sleepMS((long) 1000.0f / FRAMERATE - (std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count()));
             benchmark.endFrame();
         }
         // Finish benchmark
         benchmark.display();
     }
+    std::cout << std::endl;
 }
