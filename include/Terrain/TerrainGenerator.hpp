@@ -53,7 +53,7 @@ namespace StealthWorldGenerator {
         terrainMap[WaterTable] = terrainMap[Elevation] <= config[WaterTable].x;
         // Create foliage where there's no water and the elevation is appropriate
         terrainMap[Foliage] = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY,
-            foliageGrowthScale, numOctaves>(terrainMap[Foliage]) *= (!terrainMap[WaterTable] 
+            foliageGrowthScale, numOctaves>(terrainMap[Foliage]) *= (!terrainMap[WaterTable]
             && (terrainMap[Elevation] >= config[Foliage].x) && (terrainMap[Elevation] <= config[Foliage].y));
         // Give it back!
         return terrainMap;
