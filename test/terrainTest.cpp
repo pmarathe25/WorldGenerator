@@ -59,7 +59,10 @@ const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
     {sf::Keyboard::F, TerrainMapMembers::Foliage}
 };
 
-std::array<bool, TerrainMapMembers::NumTerrainMapMembers> visibleLayers = {};
+std::array<bool, TerrainMapMembers::NumTerrainMapMembers> visibleLayers;
+
+std::vector<long> seedStore;
+int currentSeed = 0;
 
 // Palettes
 const DiscreteColorPalette elevationPalette{
@@ -89,7 +92,9 @@ int main() {
     // Generate! Erosion should be much slower (larger scale) than foliage growth
     TerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> terrainMap;
     TerrainScaleConfig<SCALE_X, SCALE_Y, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD> terrainScaleConfig;
-    StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, StealthNoiseGenerator::getCurrentTime());
+    // Store seeds
+    seedStore.push_back(StealthNoiseGenerator::getCurrentTime());
+    StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{terrainMap};
     // Create sprites from this terrainMap.
@@ -118,7 +123,12 @@ int main() {
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
                     } else if (event.key.code == sf::Keyboard::Right) {
-                        StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, StealthNoiseGenerator::getCurrentTime());
+                        if (++currentSeed >= seedStore.size()) seedStore.push_back(StealthNoiseGenerator::getCurrentTime());
+                        StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
+                        updateColorMaps(terrainMap, spriteManager);
+                    } else if (event.key.code == sf::Keyboard::Left) {
+                        currentSeed = (currentSeed == 0) ? 0 : currentSeed - 1;
+                        StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
                         updateColorMaps(terrainMap, spriteManager);
                     }
                 }

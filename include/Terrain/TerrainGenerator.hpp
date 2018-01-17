@@ -5,6 +5,8 @@
 #include "Vector2.hpp"
 #include <random>
 
+#include <iostream>
+
 namespace StealthWorldGenerator {
     struct TerrainMapSettings {
         enum {
@@ -15,6 +17,10 @@ namespace StealthWorldGenerator {
             NumTerrainMapSettings
         };
     };
+
+    namespace {
+        static std::default_random_engine SeedGenerator{};
+    }
 
     class TerrainConfig : public std::array<Vector2f, TerrainMapSettings::NumTerrainMapSettings> {
         public:
@@ -44,19 +50,21 @@ namespace StealthWorldGenerator {
     constexpr TerrainMap<width, length, layers>& generateTerrainMap(TerrainMap<width, length, layers>& terrainMap,
         const TerrainConfig& config, const TerrainScaleConfig<scaleX, scaleY, erosionScale, temperatureScale,
         foliageGrowthScale, numOctaves>& dim, long seed = 0) noexcept {
+        // Generate seeds
+        SeedGenerator.seed(seed);
         // Create land
         StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, erosionScale, numOctaves>
             (terrainMap[TerrainMapMembers::Elevation], std::uniform_real_distribution(config[TerrainMapSettings::Elevation].x,
-            config[TerrainMapSettings::Elevation].y), seed);
+            config[TerrainMapSettings::Elevation].y), SeedGenerator());
         // Temperature
         StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>
             (terrainMap[TerrainMapMembers::Temperature], std::normal_distribution(config[TerrainMapSettings::Temperature].x,
-            config[TerrainMapSettings::Temperature].y), seed);
+            config[TerrainMapSettings::Temperature].y), SeedGenerator());
         // Create water
         terrainMap[TerrainMapMembers::WaterTable] = terrainMap[TerrainMapMembers::Elevation] <= config[TerrainMapSettings::WaterTable].x;
         // Create plant life
         StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>
-            (terrainMap[TerrainMapMembers::Foliage], StealthNoiseGenerator::DefaultDistribution, seed);
+            (terrainMap[TerrainMapMembers::Foliage], StealthNoiseGenerator::DefaultDistribution, SeedGenerator());
         // Filter out foliage where there's water or the elevation is out of bounds
         terrainMap[TerrainMapMembers::Foliage] *= (!terrainMap[TerrainMapMembers::WaterTable])
             && (terrainMap[TerrainMapMembers::Elevation] >= config[TerrainMapSettings::Foliage].x)
