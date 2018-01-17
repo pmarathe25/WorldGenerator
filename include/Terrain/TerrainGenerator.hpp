@@ -6,70 +6,62 @@
 #include <random>
 
 namespace StealthWorldGenerator {
-    class TerrainConfig {
+    class TerrainConfig : public std::array<Vector2f, NumTerrainMapMembers> {
         public:
-            constexpr TerrainConfig() noexcept = default;
+            typedef typename std::array<Vector2f, NumTerrainMapMembers> super;
 
-            constexpr TerrainConfig& setSeaLevel(float seaLevel) noexcept {
-                this -> seaLevel = seaLevel;
-                return *this;
+            TerrainConfig(long sd = StealthNoiseGenerator::getCurrentTime()) noexcept : sd{sd}, super{} {
+                // Set default values.
+                set(Temperature, 0.5f, 0.167f);
             }
 
-            constexpr TerrainConfig& setElevationBounds(float lower, float upper) noexcept {
-                this -> elevationBounds = {lower, upper};
-                return *this;
-            }
-
-            constexpr TerrainConfig& setFoliageElevationBounds(float lower, float upper) noexcept {
-                this -> foliageElevationBounds = {lower, upper};
+            constexpr TerrainConfig& set(int mapNum, float lower = 0.0f, float upper = 1.0f) noexcept {
+                this -> operator[](mapNum) = {lower, upper};
                 return *this;
             }
 
             // Vector2f setters
-            constexpr TerrainConfig& setElevationBounds(Vector2f elevationBounds) noexcept {
-                this -> elevationBounds = std::move(elevationBounds);
+            constexpr TerrainConfig& set(int mapNum, Vector2f input = {0.0f, 1.0f}) noexcept {
+                this -> operator[](mapNum) = std::move(input);
                 return *this;
             }
 
-            constexpr TerrainConfig& setFoliageElevationBounds(Vector2f foliageElevationBounds) noexcept {
-                this -> foliageElevationBounds = std::move(foliageElevationBounds);
-                return *this;
+            constexpr void seed(long sd) {
+                this -> sd = sd;
             }
 
-            float seaLevel = 0.0f;
-            Vector2f elevationBounds = {0.0f, 1.0f}, foliageElevationBounds = {0.0f, 1.0f};
+            constexpr const long& seed() const {
+                return sd;
+            }
+
+            constexpr long& seed() {
+                return sd;
+            }
+        private:
+            long sd;
     };
 
-    constexpr TerrainConfig createTerrainConfig() {
-        return TerrainConfig{};
-    }
-
-    template <int width, int length, int layers, int scaleX, int scaleY, int erosionScale, int temperatureScale, int foliageGrowthScale, int numOctaves = 8>
-    constexpr TerrainMap<width, length, layers> generateTerrainMap(const TerrainConfig& config) noexcept {
+    template <int scaleX, int scaleY, int erosionScale, int temperatureScale, int foliageGrowthScale, int numOctaves = 8, int width, int length, int layers>
+    constexpr TerrainMap<width, length, layers>& generateTerrainMap(TerrainMap<width, length, layers>& terrainMap, const TerrainConfig& config) noexcept {
         // Create land
-        StealthTileMap::TileMapF<width, length, layers> elevation;
         StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, erosionScale, numOctaves>
-            (elevation, std::uniform_real_distribution(config.elevationBounds.x, config.elevationBounds.y));
+            (terrainMap[Elevation], std::uniform_real_distribution(config[Elevation].x, config[Elevation].y));
         // Temperature
-        StealthTileMap::TileMapF<width, length, layers> temperature;
         StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>
-            (temperature);
+            (terrainMap[Temperature], std::normal_distribution(config[Temperature].x, config[Temperature].y));
         // Create water
-        StealthTileMap::TileMapF<width, length, layers> waterTable = elevation <= config.seaLevel;
+        terrainMap[WaterTable] = terrainMap[Elevation] <= config[WaterTable].x;
         // Create foliage where there's no water and the elevation is appropriate
-        StealthTileMap::TileMapF<width, length, layers> foliage;
-        StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>(foliage);
-        foliage *= (!waterTable && (elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
-        return TerrainMap<width, length, layers>{}
-            .set(Elevation, std::move(elevation))
-            .set(Temperature, std::move(temperature))
-            .set(WaterTable, std::move(waterTable))
-            .set(Foliage, std::move(foliage));
+        terrainMap[Foliage] = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY,
+            foliageGrowthScale, numOctaves>(terrainMap[Foliage]) *= (!terrainMap[WaterTable] 
+            && (terrainMap[Elevation] >= config[Foliage].x) && (terrainMap[Elevation] <= config[Foliage].y));
+        // Give it back!
+        return terrainMap;
     }
 
-    template <int width, int length, int scaleX, int scaleY, int numOctaves = 8>
-    constexpr TerrainMap<width, length> generateTerrainMap(const TerrainConfig& config) noexcept {
-        return generateTerrainMap<width, length, 1, scaleX, scaleY, 1, 1, 1, numOctaves>(config);
+    template <int scaleX, int scaleY, int numOctaves = 8, int width, int length>
+    constexpr TerrainMap<width, length>& generateTerrainMap(TerrainMap<width, length>& terrainMap, const TerrainConfig& config) noexcept {
+        return generateTerrainMap<scaleX, scaleY, 1, 1, 1, numOctaves>(config);
     }
 } /* StealthWorldGenerator */
 

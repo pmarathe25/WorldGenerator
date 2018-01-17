@@ -46,9 +46,9 @@ namespace StealthWorldGenerator {
             }
         private:
             // Textures
-            std::array<sf::Texture, NumTerrainMapTypes> textures;
+            std::array<sf::Texture, NumTerrainMapMembers> textures;
             // Color Maps
-            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, NumTerrainMapTypes> colorMaps;
+            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, NumTerrainMapMembers> colorMaps;
     };
 } /* StealthWorldGenerator */
 

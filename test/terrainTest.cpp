@@ -47,17 +47,17 @@ class Benchmark {
         int numFrames = 0;
 } benchmark;
 
-using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::createTerrainConfig,
+using StealthColor::Color, StealthWorldGenerator::TerrainConfig, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::TerrainMapMember,
     StealthWorldGenerator::TerrainMapSpriteManager, StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
 const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
-    {sf::Keyboard::E, StealthWorldGenerator::Elevation},
-    {sf::Keyboard::T, StealthWorldGenerator::Temperature},
-    {sf::Keyboard::W, StealthWorldGenerator::WaterTable},
-    {sf::Keyboard::F, StealthWorldGenerator::Foliage}
+    {sf::Keyboard::E, TerrainMapMember::Elevation},
+    {sf::Keyboard::T, TerrainMapMember::Temperature},
+    {sf::Keyboard::W, TerrainMapMember::WaterTable},
+    {sf::Keyboard::F, TerrainMapMember::Foliage}
 };
 
-std::array<bool, StealthWorldGenerator::NumTerrainMapTypes> visibleLayers = {};
+std::array<bool, StealthWorldGenerator::NumTerrainMapMembers> visibleLayers = {};
 
 // Palettes
 const DiscreteColorPalette elevationPalette{
@@ -70,10 +70,11 @@ const GradientColorPalette seaLevelPalette{Color(0x0000FF00), Color(0x0000FF80)}
 const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 // Configure the terrain generator
-constexpr auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setSeaLevel(0.45f).setFoliageElevationBounds(0.25f, 0.60f);
+const auto temperateGrasslands = TerrainConfig().set(TerrainMapMember::Elevation, 0.20f, 0.80f)
+    .set(TerrainMapMember::WaterTable, 0.45f).set(TerrainMapMember::Foliage, 0.25f, 0.60f);
 
-template <typename TerrainMapType, typename SpriteManagerType>
-constexpr void updateColorMaps(const TerrainMapType& terrainMap, SpriteManagerType& spriteManager) {
+template <typename TerrainMapMember, typename SpriteManagerType>
+constexpr void updateColorMaps(const TerrainMapMember& terrainMap, SpriteManagerType& spriteManager) {
     spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette)
         .createColorMap(StealthWorldGenerator::Temperature, terrainMap, temperaturePalette)
         .createColorMap(StealthWorldGenerator::WaterTable, terrainMap, seaLevelPalette)
@@ -84,8 +85,9 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     sf::Clock clock;
     // Generate! Erosion should be much slower (larger scale) than foliage growth
-    auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
-        SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
+    TerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> terrainMap{};
+    StealthWorldGenerator::generateTerrainMap<SCALE_X, SCALE_Y, EROSION_SCALE,
+        TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(terrainMap, temperateGrasslands);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{terrainMap};
     // Create sprites from this terrainMap.
@@ -99,7 +101,7 @@ int main() {
             // Clear
             window.clear(sf::Color(0x808080FF));
             // Draw
-            for (int mapType = 0; mapType < StealthWorldGenerator::NumTerrainMapTypes; ++mapType) {
+            for (int mapType = 0; mapType < TerrainMapMember::NumTerrainMapMembers; ++mapType) {
                 if (visibleLayers[mapType]) window.draw(spriteManager.getSpriteFromLayer(mapType, i));
             }
             // Display.
@@ -114,8 +116,8 @@ int main() {
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
                     } else if (event.key.code == sf::Keyboard::Right) {
-                        terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
-                            SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
+                        StealthWorldGenerator::generateTerrainMap<SCALE_X, SCALE_Y, EROSION_SCALE,
+                            TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(terrainMap, temperateGrasslands);
                         updateColorMaps(terrainMap, spriteManager);
                     }
                 }
