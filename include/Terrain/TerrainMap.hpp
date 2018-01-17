@@ -3,21 +3,25 @@
 #include "TileMap/TileMap.hpp"
 
 namespace StealthWorldGenerator {
-    enum TerrainMapMember {
-        Elevation = 0,
-        WaterTable,
-        Foliage,
-        Temperature,
-        Moisture,
-        NumTerrainMapMembers
+    struct TerrainMapMembers {
+        enum {
+            Elevation = 0,
+            WaterTable,
+            Foliage,
+            Temperature,
+            Moisture,
+            NumTerrainMapMembers
+        };
     };
 
     template <int widthAtCompileTime, int lengthAtCompileTime, int heightAtCompileTime = 1>
-    class TerrainMap : public std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>, NumTerrainMapMembers> {
+    class TerrainMap : public std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>,
+        TerrainMapMembers::NumTerrainMapMembers> {
         // Simple container for terrain related data.
         public:
             typedef typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime> InternalTerrainNoiseMap;
-            typedef typename std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>, NumTerrainMapMembers> super;
+            typedef typename std::array<typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>,
+                TerrainMapMembers::NumTerrainMapMembers> super;
 
             constexpr TerrainMap() noexcept : super{} { }
 
