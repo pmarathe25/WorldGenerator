@@ -72,11 +72,6 @@ const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 // Configure the terrain generator
 constexpr auto temperateGrasslands = TerrainConfig().setElevationBounds(0.20f, 0.80f).setSeaLevel(0.45f).setFoliageElevationBounds(0.25f, 0.60f);
 
-auto doGenerateTerrainMap() {
-    return StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
-        SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
-}
-
 template <typename TerrainMapType, typename SpriteManagerType>
 constexpr void updateColorMaps(const TerrainMapType& terrainMap, SpriteManagerType& spriteManager) {
     spriteManager.createColorMap(StealthWorldGenerator::Elevation, terrainMap, elevationPalette)
@@ -89,7 +84,8 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     sf::Clock clock;
     // Generate! Erosion should be much slower (larger scale) than foliage growth
-    auto terrainMap = doGenerateTerrainMap();
+    auto terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
+        SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{terrainMap};
     // Create sprites from this terrainMap.
@@ -118,7 +114,8 @@ int main() {
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
                     } else if (event.key.code == sf::Keyboard::Right) {
-                        terrainMap = doGenerateTerrainMap();
+                        terrainMap = StealthWorldGenerator::generateTerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS,
+                            SCALE_X, SCALE_X, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD>(temperateGrasslands);
                         updateColorMaps(terrainMap, spriteManager);
                     }
                 }

@@ -47,16 +47,19 @@ namespace StealthWorldGenerator {
     template <int width, int length, int layers, int scaleX, int scaleY, int erosionScale, int temperatureScale, int foliageGrowthScale, int numOctaves = 8>
     constexpr TerrainMap<width, length, layers> generateTerrainMap(const TerrainConfig& config) noexcept {
         // Create land
-        StealthTileMap::TileMapF<width, length, layers>&& elevation = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, erosionScale, numOctaves>
-            (std::uniform_real_distribution(config.elevationBounds.x, config.elevationBounds.y));
+        StealthTileMap::TileMapF<width, length, layers> elevation;
+        StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, erosionScale, numOctaves>
+            (elevation, std::uniform_real_distribution(config.elevationBounds.x, config.elevationBounds.y));
         // Temperature
-        StealthTileMap::TileMapF<width, length, layers>&& temperature
-            = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>();
+        StealthTileMap::TileMapF<width, length, layers> temperature;
+        StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>
+            (temperature);
         // Create water
-        StealthTileMap::TileMapF<width, length, layers>&& waterTable = elevation <= config.seaLevel;
+        StealthTileMap::TileMapF<width, length, layers> waterTable = elevation <= config.seaLevel;
         // Create foliage where there's no water and the elevation is appropriate
-        StealthTileMap::TileMapF<width, length, layers>&& foliage = StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>()
-            * (!waterTable && (elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
+        StealthTileMap::TileMapF<width, length, layers> foliage;
+        StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>(foliage);
+        foliage *= (!waterTable && (elevation >= config.foliageElevationBounds.x) && (elevation <= config.foliageElevationBounds.y));
         return TerrainMap<width, length, layers>{}
             .set(Elevation, std::move(elevation))
             .set(Temperature, std::move(temperature))

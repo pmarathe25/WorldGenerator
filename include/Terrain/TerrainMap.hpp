@@ -18,8 +18,6 @@ namespace StealthWorldGenerator {
         public:
             typedef typename StealthTileMap::TileMapF<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime> InternalTerrainNoiseMap;
 
-            constexpr TerrainMap() noexcept = default;
-
             template <typename... Args>
             constexpr TerrainMap(InternalTerrainNoiseMap&& map, Args&&... args) noexcept {
                 setMaps(std::forward<InternalTerrainNoiseMap&&>(map), std::forward<Args&&>(args)...);
