@@ -4,6 +4,7 @@
 #include "Terrain/TerrainMap.hpp"
 #include "Color/ColorPalette.hpp"
 #include <SFML/Graphics.hpp>
+#include <unordered_map>
 
 namespace StealthWorldGenerator {
     using StealthColor::Color, StealthColor::GradientColorPalette;
@@ -46,9 +47,9 @@ namespace StealthWorldGenerator {
             }
         private:
             // Textures
-            std::array<sf::Texture, TerrainMapMembers::NumTerrainMapMembers> textures;
+            std::unordered_map<int, sf::Texture> textures;
             // Color Maps
-            std::array<typename StealthTileMap::TileMap<Color, width, length, numLayers>, TerrainMapMembers::NumTerrainMapMembers> colorMaps;
+            std::unordered_map<int, typename StealthTileMap::TileMap<Color, width, length, numLayers>> colorMaps;
     };
 } /* StealthWorldGenerator */
 

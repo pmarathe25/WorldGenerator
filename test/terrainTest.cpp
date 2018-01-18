@@ -48,7 +48,7 @@ class Benchmark {
 } benchmark;
 
 using StealthColor::Color, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::TerrainConfig,
-    StealthWorldGenerator::TerrainScaleConfig, StealthWorldGenerator::TerrainMapSettings,
+    StealthWorldGenerator::TerrainScaleConfig, StealthWorldGenerator::TerrainSetting,
     StealthWorldGenerator::TerrainMapMembers, StealthWorldGenerator::TerrainMapSpriteManager,
     StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
@@ -75,8 +75,8 @@ const GradientColorPalette seaLevelPalette{Color(0x0000FF00), Color(0x0000FF80)}
 const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 // Configure the terrain generator
-constexpr auto temperateGrasslands = TerrainConfig().set(TerrainMapSettings::Elevation, 0.20f, 0.80f)
-    .set(TerrainMapSettings::WaterTable, 0.45f).set(TerrainMapSettings::Foliage, 0.25f, 0.60f);
+constexpr auto temperateGrasslands = TerrainConfig().set(TerrainSetting::Elevation, 0.20f, 0.80f)
+    .set(TerrainSetting::WaterTable, 0.45f).set(TerrainSetting::Foliage, 0.25f, 0.60f);
 
 template <typename TerrainMapMember, typename SpriteManagerType>
 constexpr void updateColorMaps(const TerrainMapMember& terrainMap, SpriteManagerType& spriteManager) {
@@ -108,7 +108,7 @@ int main() {
             // Clear
             window.clear(sf::Color(0x808080FF));
             // Draw
-            for (int mapType = 0; mapType < TerrainMapMembers::NumTerrainMapMembers; ++mapType) {
+            for (int mapType = 0; mapType < terrainMap.numMapLayers(); ++mapType) {
                 if (visibleLayers[mapType]) window.draw(spriteManager.getSpriteFromLayer(mapType, i));
             }
             // Display.

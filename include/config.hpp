@@ -2,8 +2,8 @@
 #define CONFIG_H
 
 // Viewing window
-constexpr int WINDOW_X = 800;
-constexpr int WINDOW_Y = 800;
+constexpr int WINDOW_X = 1600;
+constexpr int WINDOW_Y = 900;
 // Zoom level
 constexpr int SCALE_X = 100;
 constexpr int SCALE_Y = 100;
