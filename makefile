@@ -11,10 +11,10 @@ HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp Vector2.hpp \
 	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp)
 # Compiler settings
 CXX = g++
-CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -O3 -Wpedantic -march=native
-LFLAGS = -shared -flto -march=native
-TESTLFLAGS = -lstealthcolor -lsfml-graphics -lsfml-window -lsfml-system -pthread -flto -march=native
-EXECLFLAGS = -flto -march=native
+CFLAGS = -fPIC -c -std=c++17 $(INCLUDE) -flto -O3 -Wpedantic -march=native
+LFLAGS = -shared -flto -O3 -march=native
+TESTLFLAGS = -lstealthcolor -lsfml-graphics -lsfml-window -lsfml-system -flto -O3 -march=native
+EXECLFLAGS = -flto -O3 -march=native
 
 $(TESTDIR)/terrainTest: $(BUILDDIR)/terrainTest.o $(HEADERS) $(OBJS)
 	$(CXX) $(BUILDDIR)/terrainTest.o $(OBJS) $(TESTLFLAGS) -o $(TESTDIR)/terrainTest
