@@ -108,7 +108,7 @@ int main() {
             // Clear
             window.clear(sf::Color(0x808080FF));
             // Draw
-            for (int mapType = 0; mapType < terrainMap.numMapLayers(); ++mapType) {
+            for (int mapType = 0; mapType < terrainMap.numMapTypes(); ++mapType) {
                 if (visibleLayers[mapType]) window.draw(spriteManager.getSpriteFromLayer(mapType, i));
             }
             // Display.

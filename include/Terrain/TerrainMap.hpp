@@ -49,7 +49,7 @@ namespace StealthWorldGenerator {
                 return super::operator[](index);
             }
 
-            int numMapLayers() const {
+            int numMapTypes() const {
                 return super::size();
             }
     };
