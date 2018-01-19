@@ -49,17 +49,17 @@ class Benchmark {
 
 using StealthColor::Color, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::TerrainConfig,
     StealthWorldGenerator::TerrainScaleConfig, StealthWorldGenerator::TerrainSetting,
-    StealthWorldGenerator::TerrainMapMembers, StealthWorldGenerator::TerrainMapSpriteManager,
+    StealthWorldGenerator::TerrainMember, StealthWorldGenerator::TerrainMapSpriteManager,
     StealthColor::DiscreteColorPalette, StealthColor::GradientColorPalette;
 
 const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
-    {sf::Keyboard::E, TerrainMapMembers::Elevation},
-    {sf::Keyboard::T, TerrainMapMembers::Temperature},
-    {sf::Keyboard::W, TerrainMapMembers::WaterTable},
-    {sf::Keyboard::F, TerrainMapMembers::Foliage}
+    {sf::Keyboard::E, TerrainMember::Elevation},
+    {sf::Keyboard::T, TerrainMember::Temperature},
+    {sf::Keyboard::W, TerrainMember::WaterTable},
+    {sf::Keyboard::F, TerrainMember::Foliage}
 };
 
-std::array<bool, TerrainMapMembers::NumTerrainMapMembers> visibleLayers;
+std::array<bool, TerrainMember::TerrainMemberSize> visibleLayers;
 
 std::vector<long> seedStore;
 int currentSeed = 0;
@@ -80,10 +80,10 @@ constexpr auto temperateGrasslands = TerrainConfig().set(TerrainSetting::Elevati
 
 template <typename TerrainMapMember, typename SpriteManagerType>
 constexpr void updateColorMaps(const TerrainMapMember& terrainMap, SpriteManagerType& spriteManager) {
-    spriteManager.createColorMap(TerrainMapMembers::Elevation, terrainMap, elevationPalette)
-        .createColorMap(TerrainMapMembers::Temperature, terrainMap, temperaturePalette)
-        .createColorMap(TerrainMapMembers::WaterTable, terrainMap, seaLevelPalette)
-        .createColorMap(TerrainMapMembers::Foliage, terrainMap, foliagePalette);
+    spriteManager.createColorMap(TerrainMember::Elevation, terrainMap, elevationPalette)
+        .createColorMap(TerrainMember::Temperature, terrainMap, temperaturePalette)
+        .createColorMap(TerrainMember::WaterTable, terrainMap, seaLevelPalette)
+        .createColorMap(TerrainMember::Foliage, terrainMap, foliagePalette);
 }
 
 int main() {
@@ -108,7 +108,7 @@ int main() {
             // Clear
             window.clear(sf::Color(0x808080FF));
             // Draw
-            for (int mapType = 0; mapType < terrainMap.numMapTypes(); ++mapType) {
+            for (int mapType = 0; mapType < terrainMap.numMembers(); ++mapType) {
                 if (visibleLayers[mapType]) window.draw(spriteManager.getSpriteFromLayer(mapType, i));
             }
             // Display.

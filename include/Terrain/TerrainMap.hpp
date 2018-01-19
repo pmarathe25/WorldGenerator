@@ -4,14 +4,14 @@
 #include <unordered_map>
 
 namespace StealthWorldGenerator {
-    struct TerrainMapMembers {
+    struct TerrainMember {
         enum {
             Elevation = 0,
             WaterTable,
             Foliage,
             Temperature,
             Moisture,
-            NumTerrainMapMembers
+            TerrainMemberSize
         };
     };
 
@@ -49,7 +49,7 @@ namespace StealthWorldGenerator {
                 return super::operator[](index);
             }
 
-            int numMapTypes() const {
+            int numMembers() const {
                 return super::size();
             }
     };
