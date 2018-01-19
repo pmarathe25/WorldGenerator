@@ -76,7 +76,7 @@ const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
 
 // Configure the terrain generator
 constexpr auto temperateGrasslands = TerrainConfig().set(TerrainSetting::Elevation, 0.20f, 0.80f)
-    .set(TerrainSetting::WaterTable, 0.45f).set(TerrainSetting::Foliage, 0.25f, 0.60f);
+    .set(TerrainSetting::WaterTable, 0.45f).set(TerrainSetting::Foliage, 0.25f, 0.60f).set(TerrainSetting::Temperature, 0.5f, 0.167f);
 
 template <typename TerrainMapMember, typename SpriteManagerType>
 constexpr void updateColorMaps(const TerrainMapMember& terrainMap, SpriteManagerType& spriteManager) {

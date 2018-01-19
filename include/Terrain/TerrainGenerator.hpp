@@ -24,10 +24,7 @@ namespace StealthWorldGenerator {
         public:
             typedef typename std::array<Vector2f, TerrainSetting::TerrainSettingSize> super;
 
-            constexpr TerrainConfig() noexcept : super{} {
-                // Set default values.
-                set(TerrainSetting::Temperature, 0.5f, 0.167f);
-            }
+            constexpr TerrainConfig() noexcept : super{} { }
 
             constexpr TerrainConfig& set(int mapNum, float lower = 0.0f, float upper = 1.0f) noexcept {
                 this -> operator[](mapNum) = {lower, upper};
