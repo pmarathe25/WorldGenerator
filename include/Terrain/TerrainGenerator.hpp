@@ -17,7 +17,7 @@ namespace StealthWorldGenerator {
     };
 
     namespace {
-        static std::default_random_engine SeedGenerator{};
+        static std::mt19937 SeedGenerator{};
     }
 
     class TerrainConfig : public std::array<Vector2f, TerrainSetting::TerrainSettingSize> {

@@ -49,7 +49,7 @@ namespace StealthWorldGenerator {
                 return super::operator[](index);
             }
 
-            int numMembers() const {
+            constexpr int numMembers() const {
                 return super::size();
             }
     };
