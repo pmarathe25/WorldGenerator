@@ -1,52 +1,14 @@
 #include "Terrain/TerrainGenerator.hpp"
 #include "Terrain/TerrainMapSpriteManager.hpp"
-#include "Color/ColorPalette.hpp"
 #include "config.hpp"
-#include <stealthutil>
+#include <Stealth/Color>
+#include <Stealth/Benchmark>
+#include <Stealth/util>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <unordered_map>
 #include <iostream>
-
-class Benchmark {
-    public:
-        Benchmark() = default;
-
-        ~Benchmark() {
-            std::cout << std::endl;
-        }
-
-        Benchmark& startFrame() {
-            start = std::chrono::steady_clock::now();
-            return *this;
-        }
-
-        Benchmark& endFrame() {
-            end = std::chrono::steady_clock::now();
-            currentFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            totalTime += currentFrameTime;
-            ++numFrames;
-            return *this;
-        }
-
-        long getCurrentFrameTimeMS() {
-            return currentFrameTime;
-        }
-
-        void display() const {
-            // Clear the line
-            std::cout << std::string(100, ' ') << '\r';
-            std::cout << "Total Frames measured: " << numFrames << '\t';
-            std::cout << "Average Frametime:  " << (totalTime / (float) numFrames) << " milliseconds" << '\t';
-            std::cout << "Average Framerate: " << (numFrames * 1000 / (float) totalTime) << " fps" << '\r' << std::flush;
-        }
-    private:
-        std::chrono::time_point<std::chrono::steady_clock> start, end;
-        long currentFrameTime = 0;
-        long long totalTime = 0;
-        int numFrames = 0;
-} benchmark;
+#include <string>
 
 using StealthColor::Color, StealthWorldGenerator::TerrainMap, StealthWorldGenerator::TerrainConfig,
     StealthWorldGenerator::TerrainScaleConfig, StealthWorldGenerator::TerrainSetting,
@@ -92,7 +54,7 @@ int main() {
     TerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> terrainMap;
     TerrainScaleConfig<SCALE_X, SCALE_Y, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD> terrainScaleConfig;
     // Store seeds
-    seedStore.push_back(stealth::getCurrentTime());
+    seedStore.push_back(Stealth::getCurrentTime());
     StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
     // Sprite manager
     TerrainMapSpriteManager spriteManager{terrainMap};
@@ -102,10 +64,9 @@ int main() {
 
     sf::RenderWindow window(sf::VideoMode(WINDOW_X, WINDOW_Y), "Terrain Test");
     while (window.isOpen()) {
+        decltype(std::chrono::steady_clock::now()) frameStart, frameEnd;
         for (int i = 0; i < NUM_TERRAIN_LAYERS; ++i) {
-            // Begin benchmark
-            benchmark.startFrame();
-            auto frameStart = std::chrono::steady_clock::now();
+            frameStart = std::chrono::steady_clock::now();
             // Clear
             window.clear(sf::Color(0x808080FF));
             // Draw
@@ -124,7 +85,7 @@ int main() {
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
                     } else if (event.key.code == sf::Keyboard::Right) {
-                        if (++currentSeed >= seedStore.size()) seedStore.push_back(stealth::getCurrentTime());
+                        if (++currentSeed >= seedStore.size()) seedStore.push_back(Stealth::getCurrentTime());
                         StealthWorldGenerator::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
                         updateColorMaps(terrainMap, spriteManager);
                     } else if (event.key.code == sf::Keyboard::Left) {
@@ -134,12 +95,10 @@ int main() {
                     }
                 }
             }
-            auto frameEnd = std::chrono::steady_clock::now();
-            if constexpr (FRAMERATE > 0) stealth::sleepMS((long) 1000.0f / FRAMERATE - (std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count()));
-            benchmark.endFrame();
+            frameEnd = std::chrono::steady_clock::now();
+            if constexpr (FRAMERATE > 0) Stealth::sleepMS((long) 1000.0f / FRAMERATE - (std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count()));
         }
-        // Finish benchmark
-        benchmark.display();
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count() << '\r' << std::flush;
     }
     std::cout << std::endl;
 }

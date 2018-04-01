@@ -1,8 +1,8 @@
 #ifndef TERRAIN_MAP_SPRITE_MANAGER_H
 #define TERRAIN_MAP_SPRITE_MANAGER_H
-#include "TileMap/TileMap.hpp"
+#include <Stealth/Tensor3>
+#include <Stealth/Color>
 #include "Terrain/TerrainMap.hpp"
-#include "Color/ColorPalette.hpp"
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
 
@@ -28,7 +28,7 @@ namespace StealthWorldGenerator {
 
             constexpr TerrainMapSpriteManager(const TerrainMap<width, length, numLayers>& terrainMap) { }
 
-            constexpr TerrainMapSpriteManager(const StealthTileMap::TileMapF<width, length, numLayers>& tileMap) { }
+            constexpr TerrainMapSpriteManager(const Stealth::Tensor::Tensor3F<width, length, numLayers>& tileMap) { }
 
             template <typename Palette>
             constexpr TerrainMapSpriteManager& createColorMap(int index, const TerrainMap<width, length, numLayers>& terrainMap, const Palette& palette) {
@@ -37,19 +37,19 @@ namespace StealthWorldGenerator {
             }
 
             template <typename Palette>
-            constexpr TerrainMapSpriteManager& createColorMap(int index, const StealthTileMap::TileMapF<width, length, numLayers>& tileMap, const Palette& palette) {
+            constexpr TerrainMapSpriteManager& createColorMap(int index, const Stealth::Tensor::Tensor3F<width, length, numLayers>& tileMap, const Palette& palette) {
                 colorMaps[index] = applyPalette(palette, tileMap);
                 return *this;
             }
 
             constexpr sf::Sprite getSpriteFromLayer(int index, int layer = 0) noexcept {
-                return spriteFromColorMap(StealthTileMap::layer(colorMaps[index], layer), textures[index]);
+                return spriteFromColorMap(Stealth::Tensor::layer(colorMaps[index], layer), textures[index]);
             }
         private:
             // Textures
             std::unordered_map<int, sf::Texture> textures;
             // Color Maps
-            std::unordered_map<int, typename StealthTileMap::TileMap<Color, width, length, numLayers>> colorMaps;
+            std::unordered_map<int, typename Stealth::Tensor::Tensor3<Color, width, length, numLayers>> colorMaps;
     };
 } /* StealthWorldGenerator */
 

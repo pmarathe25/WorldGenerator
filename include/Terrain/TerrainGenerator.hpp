@@ -1,6 +1,6 @@
 #ifndef TERRAIN_GENERATOR_H
 #define TERRAIN_GENERATOR_H
-#include "NoiseGenerator/NoiseGenerator.hpp"
+#include <Stealth/NoiseGenerator>
 #include "Terrain/TerrainMap.hpp"
 #include "Vector2.hpp"
 #include <random>
@@ -61,9 +61,10 @@ namespace StealthWorldGenerator {
         StealthNoiseGenerator::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>
             (terrainMap[TerrainMember::Foliage], StealthNoiseGenerator::DefaultDistribution, SeedGenerator());
         // Filter out foliage where there's water or the elevation is out of bounds
-        terrainMap[TerrainMember::Foliage] *= (!terrainMap[TerrainMember::WaterTable])
+        auto foliageMask = (!terrainMap[TerrainMember::WaterTable])
             && (terrainMap[TerrainMember::Elevation] >= config[TerrainSetting::Foliage].x)
             && (terrainMap[TerrainMember::Elevation] <= config[TerrainSetting::Foliage].y);
+        terrainMap[TerrainMember::Foliage] = Stealth::Tensor::hadamard(terrainMap[TerrainMember::Foliage], foliageMask);
         // Give it back!
         return terrainMap;
     }
