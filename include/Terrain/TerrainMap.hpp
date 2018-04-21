@@ -1,9 +1,8 @@
-#ifndef STEALTH_TERRAIN_MAP_H
-#define STEALTH_TERRAIN_MAP_H
+#pragma once
 #include <Stealth/Tensor3>
 #include <unordered_map>
 
-namespace StealthWorldGenerator {
+namespace Stealth::World {
     struct TerrainMember {
         enum {
             Elevation = 0,
@@ -16,11 +15,11 @@ namespace StealthWorldGenerator {
     };
 
     template <int widthAtCompileTime, int lengthAtCompileTime, int heightAtCompileTime = 1>
-    class TerrainMap : public std::unordered_map<int, typename Stealth::Tensor::Tensor3F<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>> {
+    class TerrainMap : public std::unordered_map<int, typename Tensor::Tensor3F<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>> {
         // Simple container for terrain related data.
         public:
-            typedef typename Stealth::Tensor::Tensor3F<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime> InternalTerrainNoiseMap;
-            typedef typename std::unordered_map<int, typename Stealth::Tensor::Tensor3F<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>> super;
+            typedef typename Tensor::Tensor3F<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime> InternalTerrainNoiseMap;
+            typedef typename std::unordered_map<int, typename Tensor::Tensor3F<widthAtCompileTime, lengthAtCompileTime, heightAtCompileTime>> super;
 
             constexpr TerrainMap() noexcept : super{} { }
 
@@ -53,6 +52,4 @@ namespace StealthWorldGenerator {
                 return super::size();
             }
     };
-} /* StealthWorldGenerator */
-
-#endif
+} /* Stealth::World */

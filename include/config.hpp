@@ -1,6 +1,4 @@
-#ifndef CONFIG_H
-#define CONFIG_H
-
+#pragma once
 // Viewing window
 constexpr int WINDOW_X = 1600;
 constexpr int WINDOW_Y = 900;
@@ -15,5 +13,3 @@ constexpr int TEMPERATURE_SCALE = 1600;
 constexpr int FOLIAGE_GROWTH_SCALE = 400;
 // Level of Detail
 constexpr int LOD = 6;
-
-#endif /* end of include guard: CONFIG_H */

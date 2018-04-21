@@ -7,7 +7,7 @@ TESTOBJS = $(addprefix $(BUILDDIR)/, terrainTest.o)
 # Headers
 INCLUDEPATH = include/
 INCLUDE = -I$(INCLUDEPATH)
-HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp Vector2.hpp \
+HEADERS = $(addprefix $(INCLUDEPATH)/, config.hpp \
 	Terrain/TerrainMap.hpp Terrain/TerrainGenerator.hpp)
 # Compiler settings
 CXX = g++
