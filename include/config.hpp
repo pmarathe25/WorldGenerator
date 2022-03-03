@@ -1,15 +1,17 @@
 #pragma once
 // Viewing window
-constexpr int WINDOW_X = 1600;
-constexpr int WINDOW_Y = 900;
-// Zoom level
+constexpr int WINDOW_X = 800;
+constexpr int WINDOW_Y = 800;
+// Zoom level - higher values zoom more
 constexpr int SCALE_X = 100;
 constexpr int SCALE_Y = 100;
 // Temporal elements
-constexpr int FRAMERATE = 60;
+constexpr int FRAMERATE = 0;
 constexpr int NUM_TERRAIN_LAYERS = 1;
-constexpr int EROSION_SCALE = 1600;
-constexpr int TEMPERATURE_SCALE = 1600;
-constexpr int FOLIAGE_GROWTH_SCALE = 400;
+// Higher erosion scale means slower erosion. Only relevant if FRAMERATE and NUM_TERRAIN_LAYERS is set.
+constexpr int EROSION_SCALE = NUM_TERRAIN_LAYERS * 8;
+constexpr int TEMPERATURE_SCALE = 600;
+// Large foliage growth scale makes foliage smoother
+constexpr int FOLIAGE_GROWTH_SCALE = 800;
 // Level of Detail
-constexpr int LOD = 6;
+constexpr int LOD = 8;

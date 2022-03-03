@@ -1,9 +1,9 @@
 #include "Terrain/TerrainGenerator.hpp"
 #include "Terrain/TerrainMapSpriteManager.hpp"
 #include "config.hpp"
-#include <Stealth/Color>
-#include <Stealth/Benchmark>
-#include <Stealth/util>
+#include <Color>
+#include <chrono>
+#include <thread>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
@@ -19,43 +19,80 @@ const std::unordered_map<sf::Keyboard::Key, int> keyBindings = {
     {sf::Keyboard::E, TerrainMember::Elevation},
     {sf::Keyboard::T, TerrainMember::Temperature},
     {sf::Keyboard::W, TerrainMember::WaterTable},
-    {sf::Keyboard::F, TerrainMember::Foliage}
+    {sf::Keyboard::F, TerrainMember::Foliage},
 };
 
-std::array<bool, TerrainMember::TerrainMemberSize> visibleLayers;
+std::array<bool, TerrainMember::SIZE> visibleLayers{
+    /*Elevation=*/ true,
+    /*WaterTable=*/ true,
+    /*Foliage=*/ true,
+    /*Temperature=*/ false,
+    /*Moisture=*/ false,
+};
 
-std::vector<long> seedStore;
-int currentSeed = 0;
 
 // Palettes
 const DiscreteColorPalette elevationPalette{
-    {Color(0x000000FF), Color(0x242424FF), Color(0x484848FF),
-    Color(0x6C6C6CFF), Color(0x909090FF), Color(0xB4B4B4FF),
-    Color(0xD8D8D8FF), Color(0xFFFFFFFF)}
+    {
+        Color(12, 6, 0, 255), 
+        Color(24, 18, 12, 255), 
+        Color(48, 36, 17, 255), 
+        Color(68, 54, 17, 255), 
+        Color(92, 72, 44, 255),
+        Color(110, 96, 60, 255),
+        Color(136, 108, 70, 255), 
+        Color(147, 126, 88, 255), 
+        Color(165, 144, 105, 255), 
+        Color(195, 162, 125, 255), 
+        Color(202, 180, 165, 255),
+        Color(212, 198, 181, 255),
+        Color(220, 216, 200, 255), 
+        Color(240, 234, 216, 255), 
+        Color(255, 255, 255, 255)
+    }
 };
-const GradientColorPalette temperaturePalette{Color(0x1530FFA0), Color(0xFF3015A0)};
-const GradientColorPalette seaLevelPalette{Color(0x0000FF00), Color(0x0000FF80)};
-const GradientColorPalette foliagePalette{Color(0x77DD0000), Color(0x112200FF)};
+const GradientColorPalette seaLevelPalette{
+        Color(0, 0, 0, 0), 
+        Color(20, 40, 255, 127)
+};
+const GradientColorPalette foliagePalette{
+    Color(64, 255, 0, 0), 
+    Color(17, 34, 0, 255)
+};
+const GradientColorPalette temperaturePalette{
+    Color(21, 48, 255, 200), 
+    Color(255, 48, 21, 200)
+};
 
-// Configure the terrain generator
-constexpr auto temperateGrasslands = TerrainConfig().set(TerrainSetting::Elevation, 0.0f, 1.0f)
-    .set(TerrainSetting::WaterTable, 0.45f).set(TerrainSetting::Foliage, 0.25f, 0.60f).set(TerrainSetting::Temperature, 0.5f, 0.167f);
+// Configure the terrain generator. This can change the overall look of the map
+constexpr auto temperateGrasslands = TerrainConfig()
+    // Mean/Std-dev of elevations to generate
+    .set(TerrainSetting::Elevation, 0.4f, 0.25f)
+    // Water table height. Anything below this will be submerged in water.
+    .set(TerrainSetting::WaterTable, 0.32f)
+    // Elevation range in which foliage can grow 
+    .set(TerrainSetting::Foliage, 0.3f, 0.5f)
+    // Mean/Std-dev of temperature
+    .set(TerrainSetting::Temperature, 0.5f, 0.3f);
 
 template <typename TerrainMapMember, typename SpriteManagerType>
 constexpr void updateColorMaps(const TerrainMapMember& terrainMap, SpriteManagerType& spriteManager) {
     spriteManager.createColorMap(TerrainMember::Elevation, terrainMap, elevationPalette)
-        .createColorMap(TerrainMember::Temperature, terrainMap, temperaturePalette)
         .createColorMap(TerrainMember::WaterTable, terrainMap, seaLevelPalette)
-        .createColorMap(TerrainMember::Foliage, terrainMap, foliagePalette);
+        .createColorMap(TerrainMember::Foliage, terrainMap, foliagePalette)
+        .createColorMap(TerrainMember::Temperature, terrainMap, temperaturePalette)
+    ;
 }
 
 int main() {
+    long currentSeed = 0;
+
     // Generate! Erosion should be much slower (larger scale) than foliage growth
     TerrainMap<WINDOW_X, WINDOW_Y, NUM_TERRAIN_LAYERS> terrainMap;
     TerrainScaleConfig<SCALE_X, SCALE_Y, EROSION_SCALE, TEMPERATURE_SCALE, FOLIAGE_GROWTH_SCALE, LOD> terrainScaleConfig;
-    // Store seeds
-    seedStore.push_back(Stealth::getCurrentTime());
-    Stealth::World::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
+
+    Stealth::World::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, currentSeed);
+
     // Sprite manager
     TerrainMapSpriteManager spriteManager{terrainMap};
     // Create sprites from this terrainMap.
@@ -85,20 +122,25 @@ int main() {
                     if (keyBindings.count(event.key.code) > 0) {
                         visibleLayers[keyBindings.at(event.key.code)] ^= true;
                     } else if (event.key.code == sf::Keyboard::Right) {
-                        if (++currentSeed >= seedStore.size()) seedStore.push_back(Stealth::getCurrentTime());
-                        Stealth::World::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
+                        ++currentSeed;
+                        Stealth::World::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, currentSeed);
                         updateColorMaps(terrainMap, spriteManager);
                     } else if (event.key.code == sf::Keyboard::Left) {
-                        currentSeed = (currentSeed == 0) ? 0 : currentSeed - 1;
-                        Stealth::World::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, seedStore[currentSeed]);
+                        --currentSeed;
+                        Stealth::World::generateTerrainMap(terrainMap, temperateGrasslands, terrainScaleConfig, currentSeed);
                         updateColorMaps(terrainMap, spriteManager);
                     }
                 }
             }
             frameEnd = std::chrono::steady_clock::now();
-            if constexpr (FRAMERATE > 0) Stealth::sleepMS((long) 1000.0f / FRAMERATE - (std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count()));
+            if constexpr (FRAMERATE > 0)
+            {
+                std::this_thread::sleep_for(
+                    std::chrono::milliseconds(
+                        (long) 1000.0f / FRAMERATE
+                    )
+                );
+            } 
         }
-        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(frameEnd - frameStart).count() << '\r' << std::flush;
     }
-    std::cout << std::endl;
 }

@@ -1,6 +1,6 @@
 #pragma once
-#include <Stealth/Tensor3>
-#include <Stealth/Color>
+#include <Tensor3>
+#include <Color>
 #include "Terrain/TerrainMap.hpp"
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
@@ -10,7 +10,7 @@ namespace Stealth::World {
 
     namespace {
         template <typename TileMapType>
-        constexpr sf::Sprite spriteFromColorMap(const TileMapType& colors, sf::Texture& texture) {
+        sf::Sprite spriteFromColorMap(const TileMapType& colors, sf::Texture& texture) {
             sf::Image im;
             sf::Sprite sprite;
             im.create(colors.width(), colors.length(), (uint8_t*) colors.data());
@@ -41,7 +41,7 @@ namespace Stealth::World {
                 return *this;
             }
 
-            constexpr sf::Sprite getSpriteFromLayer(int index, int layer = 0) noexcept {
+            sf::Sprite getSpriteFromLayer(int index, int layer = 0) noexcept {
                 return spriteFromColorMap(Tensor::layer(colorMaps[index], layer), textures[index]);
             }
         private:

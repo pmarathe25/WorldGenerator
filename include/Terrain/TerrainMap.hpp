@@ -1,5 +1,5 @@
 #pragma once
-#include <Stealth/Tensor3>
+#include <Tensor3>
 #include <unordered_map>
 
 namespace Stealth::World {
@@ -10,7 +10,7 @@ namespace Stealth::World {
             Foliage,
             Temperature,
             Moisture,
-            TerrainMemberSize
+            SIZE
         };
     };
 

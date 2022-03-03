@@ -1,5 +1,5 @@
 #pragma once
-#include <Stealth/NoiseGenerator>
+#include <NoiseGenerator>
 #include "Terrain/TerrainMap.hpp"
 #include <random>
 
@@ -39,21 +39,19 @@ namespace Stealth::World {
     constexpr TerrainMap<width, length, layers>& generateTerrainMap(TerrainMap<width, length, layers>& terrainMap,
         const TerrainConfig& config, const TerrainScaleConfig<scaleX, scaleY, erosionScale, temperatureScale,
         foliageGrowthScale, numOctaves>& dim, long seed = 0) noexcept {
-        // Generate seeds
-        std::mt19937 SeedGenerator{seed};
         // Create land
         Noise::generateOctaves<width, length, layers, scaleX, scaleY, erosionScale, numOctaves>
-            (terrainMap[TerrainMember::Elevation], std::uniform_real_distribution{config[TerrainSetting::Elevation](0),
-            config[TerrainSetting::Elevation](1)}, SeedGenerator());
+            (terrainMap[TerrainMember::Elevation], std::normal_distribution{config[TerrainSetting::Elevation](0),
+            config[TerrainSetting::Elevation](1)}, seed++);
         // Temperature
         Noise::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>
             (terrainMap[TerrainMember::Temperature], std::normal_distribution(config[TerrainSetting::Temperature](0),
-            config[TerrainSetting::Temperature](1)), SeedGenerator());
+            config[TerrainSetting::Temperature](1)), seed++);
         // Create water
         terrainMap[TerrainMember::WaterTable] = terrainMap[TerrainMember::Elevation] <= config[TerrainSetting::WaterTable](0);
         // Create plant life
         Noise::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>
-            (terrainMap[TerrainMember::Foliage], Noise::DefaultDistribution{0.f, 1.f}, SeedGenerator());
+            (terrainMap[TerrainMember::Foliage], Noise::DefaultDistribution{0.f, 1.f}, seed++);
         // Filter out foliage where there's water or the elevation is out of bounds
         auto foliageMask = (!terrainMap[TerrainMember::WaterTable])
             && (terrainMap[TerrainMember::Elevation] >= config[TerrainSetting::Foliage](0))
