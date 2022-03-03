@@ -39,19 +39,20 @@ namespace Stealth::World {
     constexpr TerrainMap<width, length, layers>& generateTerrainMap(TerrainMap<width, length, layers>& terrainMap,
         const TerrainConfig& config, const TerrainScaleConfig<scaleX, scaleY, erosionScale, temperatureScale,
         foliageGrowthScale, numOctaves>& dim, long seed = 0) noexcept {
+        const float decayFactor{0.62F};
         // Create land
         Noise::generateOctaves<width, length, layers, scaleX, scaleY, erosionScale, numOctaves>
             (terrainMap[TerrainMember::Elevation], std::normal_distribution{config[TerrainSetting::Elevation](0),
-            config[TerrainSetting::Elevation](1)}, seed++);
+            config[TerrainSetting::Elevation](1)}, seed++, decayFactor);
         // Temperature
         Noise::generateOctaves<width, length, layers, scaleX * 2, scaleY * 2, temperatureScale, numOctaves>
             (terrainMap[TerrainMember::Temperature], std::normal_distribution(config[TerrainSetting::Temperature](0),
-            config[TerrainSetting::Temperature](1)), seed++);
+            config[TerrainSetting::Temperature](1)), seed++, decayFactor);
         // Create water
         terrainMap[TerrainMember::WaterTable] = terrainMap[TerrainMember::Elevation] <= config[TerrainSetting::WaterTable](0);
         // Create plant life
         Noise::generateOctaves<width, length, layers, scaleX, scaleY, foliageGrowthScale, numOctaves>
-            (terrainMap[TerrainMember::Foliage], Noise::DefaultDistribution{0.f, 1.f}, seed++);
+            (terrainMap[TerrainMember::Foliage], Noise::DefaultDistribution{0.f, 1.f}, seed++, decayFactor);
         // Filter out foliage where there's water or the elevation is out of bounds
         auto foliageMask = (!terrainMap[TerrainMember::WaterTable])
             && (terrainMap[TerrainMember::Elevation] >= config[TerrainSetting::Foliage](0))

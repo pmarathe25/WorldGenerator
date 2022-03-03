@@ -34,26 +34,25 @@ std::array<bool, TerrainMember::SIZE> visibleLayers{
 // Palettes
 const DiscreteColorPalette elevationPalette{
     {
-        Color(12, 6, 0, 255), 
-        Color(24, 18, 12, 255), 
-        Color(48, 36, 17, 255), 
-        Color(68, 54, 17, 255), 
-        Color(92, 72, 44, 255),
-        Color(110, 96, 60, 255),
-        Color(136, 108, 70, 255), 
-        Color(147, 126, 88, 255), 
-        Color(165, 144, 105, 255), 
-        Color(195, 162, 125, 255), 
-        Color(202, 180, 165, 255),
-        Color(212, 198, 181, 255),
-        Color(220, 216, 200, 255), 
+        Color(10, 0, 0, 255), 
+        Color(20, 14, 6, 255), 
+        Color(45, 27, 17, 255), 
+        Color(64, 42, 17, 255), 
+        Color(86, 65, 44, 255),
+        Color(108, 80, 60, 255),
+        Color(125, 100, 70, 255), 
+        Color(150, 116, 88, 255), 
+        Color(169, 135, 105, 255), 
+        Color(199, 160, 125, 255), 
+        Color(206, 185, 165, 255),
+        Color(224, 216, 200, 255), 
         Color(240, 234, 216, 255), 
         Color(255, 255, 255, 255)
     }
 };
 const GradientColorPalette seaLevelPalette{
         Color(0, 0, 0, 0), 
-        Color(20, 40, 255, 127)
+        Color(20, 40, 255, 115)
 };
 const GradientColorPalette foliagePalette{
     Color(64, 255, 0, 0), 
